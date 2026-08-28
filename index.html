@@ -339,6 +339,7 @@
     <div class="mode-selector">
         <button id="btn-mode-controller" onclick="setMode('controller')">Mode HP (Kasir)</button>
         <button id="btn-mode-tv" onclick="setMode('tv')">Mode TV (Display)</button>
+    <button class="btn-action" onclick="testSound()" style="background-color: #22c55e; margin-left: 5px;">🔊 Cek Sound</button>
     </div>
 
     <div class="grid-container" id="tablesGrid"></div>
@@ -1500,6 +1501,21 @@
         }
 
         init();
+        function testSound() {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        
+        const pesan = new SpeechSynthesisUtterance("Pemberitahuan. Suara sistem R21 Pool and Cafe sudah aktif.");
+        pesan.lang = 'id-ID';
+        pesan.rate = 0.9;
+        pesan.pitch = 1.0;
+
+        window.speechSynthesis.speak(pesan);
+    } else {
+        alert("Sistem suara tidak didukung di browser atau TV ini.");
+    }
+                }
+        
     </script>
 </body>
 </html>
