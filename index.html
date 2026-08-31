@@ -1528,23 +1528,19 @@ sakelarLampu(index + 1, false);
 <script>
   function sakelarLampu(nomorMeja, status) {
     var nilai = status ? "1" : "0"; 
-    var secret = "TGOVnUocfqgdoULy9ZxgGx0Y4gammmu9ttr45HI4";
-    var baseUrl = "https://billing0015-32812-default-rtdb.firebaseio.com/vTfGwLoX/relays/billing";
-    var url = baseUrl + nomorMeja + ".json?auth=" + secret;
+    var secret = "vpUITWAA8LWzPxs3hCUSG4d2ZPUR2O6tojYFFpX8";
+    var url = "https://billing8-huda-656565-default-rtdb.firebaseio.com/billing/relays/billing" + nomorMeja + ".json?auth=" + secret;
 
     fetch(url, {
       method: 'PUT',
       body: JSON.stringify(nilai)
     })
     .then(function(res) { return res.json(); })
-    .then(function(data) {
-      console.log("Berhasil:", data);
-    })
-    .catch(function(err) {
-      console.error("Gagal:", err);
-    });
+    .then(function(data) { console.log("Berhasil:", data); })
+    .catch(function(err) { console.error("Gagal:", err); });
   }
 </script>
+
 
     
     
