@@ -1528,24 +1528,24 @@ sakelarLampu(index + 1, false);
 <script>
   function sakelarLampu(nomorMeja, status) {
     var nilai = status ? "1" : "0"; 
-    var perintah = status ? "on" : "off";
-
-    // 1. TEMBAK LANGSUNG KE IP LOKAL MODUL (INSTAN TANPA DELAY)
-    var urlLokal = "http://192.168.1.20/relay?meja=" + nomorMeja + "&state=" + perintah;
-    fetch(urlLokal, { mode: 'no-cors' })
-      .catch(function(err) { console.log("Lokal offline, backup via cloud"); });
-
-    // 2. SIMPAN & SINKRON DATA KE CLOUD FIREBASE
     var secret = "TGOVnUocfqgdoULy9ZxgGx0Y4gammmu9ttr45HI4";
-    var urlCloud = "https://billing0015-32812-default-rtdb.firebaseio.com/vTfGwLoX/relays/billing" + nomorMeja + ".json?auth=" + secret;
+    var url = "https://billing0015-32812-default-rtdb.firebaseio.com/vTfGwLoX/relays/billing" + nomorMeja + ".json?auth=" + secret;
 
-    fetch(urlCloud, {
+    fetch(url, {
       method: 'PUT',
       body: JSON.stringify(nilai),
       headers: { 'Content-Type': 'application/json' }
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      console.log("Berhasil kirim ke Firebase:", data);
+    })
+    .catch(function(err) {
+      console.error("Gagal kirim:", err);
     });
   }
 </script>
+
     
 </body>
 </html>
