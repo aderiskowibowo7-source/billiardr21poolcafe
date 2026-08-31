@@ -935,6 +935,9 @@
         }
 
         function executeAddTime(index, minutes, customerName) {
+           // TAMBAHKAN BARIS INI (Ingat: index + 1 karena nomor meja mulai dari 1)
+sakelarLampu(index + 1, true);
+        
             var now = Date.now();
             var currentTable = tablesData[index] || { endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, warned: false, expiredWarned: false, customerName: "", fnbList: [] };
             var baseTime = (currentTable.isRunning && currentTable.endTime > now) ? currentTable.endTime : now;
@@ -1009,6 +1012,8 @@
         }
 
         function resetTimerOnly(index) {
+            // TAMBAHKAN BARIS INI
+sakelarLampu(index + 1, false);
             if (confirm("Reset/Kosongkan timer Meja " + (index + 1) + " tanpa simpan omset?")) {
                 clearTableDataLocal(index);
                 db.ref('tables').set(tablesData);
