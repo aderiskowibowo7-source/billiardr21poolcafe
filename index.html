@@ -1517,5 +1517,29 @@
                 }
         
     </script>
+    <script>
+  // KONEKSI KE FIREBASE MODUL IOT LAMPU
+  const configModulIoT = {
+    databaseURL: "https://billing0015-32812-default-rtdb.firebaseio.com/vTfGwLoX/",
+    secret: "TGOVnUocfqgdoULy9ZxgGx0Y4gammmu9ttr45HI4"
+  };
+
+  // Inisialisasi Firebase Sekunder (Khusus Sakelar IoT)
+  const appIoT = firebase.initializeApp(configModulIoT, "appIoT");
+  const dbIoT = appIoT.database();
+
+  // FUNGSI UNTUK SAKELAR LAMPU MEJA BILIAR
+  function sakelarLampu(nomorMeja, status) {
+    const nilai = status ? 1 : 0; // 1 = Nyala, 0 = Mati
+    dbIoT.ref('relay' + nomorMeja).set(nilai)
+      .then(() => {
+        console.log(`Lampu Meja ${nomorMeja} diubah jadi: ${nilai}`);
+      })
+      .catch((err) => {
+        console.error("Gagal kirim perintah ke modul:", err);
+      });
+  }
+    </script>
+    
 </body>
 </html>
