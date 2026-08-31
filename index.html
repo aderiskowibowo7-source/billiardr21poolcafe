@@ -1522,42 +1522,30 @@ sakelarLampu(index + 1, false);
                 }
         
     </script>
-    <!-- DRIVER / LIBRARY FIREBASE UTAMA (WAJIB ADA AGAR TIDAK EROR) -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
-  // KONEKSI KE FIREBASE MODUL IOT LAMPU
-  const configModulIoT = {
-    databaseURL: "https://billing0015-32812-default-rtdb.firebaseio.com/vTfGwLoX/",
-    secret: "TGOVnUocfqgdoULy9ZxgGx0Y4gammmu9ttr45HI4"
-  };
-
-  let appIoT, dbIoT;
-  try {
-    appIoT = firebase.initializeApp(configModulIoT, "appIoT");
-    dbIoT = appIoT.database();
-  } catch (e) {
-    console.error("Firebase IoT init error:", e);
-  }
-
-  // FUNGSI UNTUK SAKELAR LAMPU MEJA BILIAR (DISESUAIKAN PATH MODUL)
   function sakelarLampu(nomorMeja, status) {
-    if (!dbIoT) {
-      console.warn("Database IoT belum siap");
-      return;
-    }
-    const nilai = status ? "1" : "0"; 
+    var nilai = status ? "1" : "0"; 
+    var secret = "TGOVnUocfqgdoULy9ZxgGx0Y4gammmu9ttr45HI4";
+    var baseUrl = "https://billing0015-32812-default-rtdb.firebaseio.com/vTfGwLoX/relays/billing";
+    var url = baseUrl + nomorMeja + ".json?auth=" + secret;
 
-    dbIoT.ref('relays/billing' + nomorMeja).set(nilai)
-      .then(() => {
-        console.log(`Lampu Meja ${nomorMeja} diubah jadi: ${nilai}`);
-      })
-      .catch((err) => {
-        console.error("Gagal kirim perintah ke modul:", err);
-      });
+    fetch(url, {
+      method: 'PUT',
+      body: JSON.stringify(nilai)
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      console.log("Berhasil:", data);
+    })
+    .catch(function(err) {
+      console.error("Gagal:", err);
+    });
   }
-            </script>
+</script>
+
     
     
 </body>
