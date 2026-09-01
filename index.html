@@ -25,270 +25,240 @@
             background-color: var(--bg-color);
             color: var(--text);
             margin: 0;
-            padding: 20px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: relative;
             min-height: 100vh;
+            box-sizing: border-box;
         }
 
-        h1#page-title { margin-bottom: 2px; font-size: 1.5rem; text-align: center; position: relative; z-index: 1; }
+        h1#page-title { margin-bottom: 2px; font-size: 1.3rem; text-align: center; }
         .brand-subtitle {
-            font-size: 1.2rem;
+            font-size: 1.05rem;
             color: var(--price-color);
             font-weight: bold;
             margin-bottom: 8px;
             letter-spacing: 2px;
-            position: relative; z-index: 1;
         }
         
-        .status-badge {
-            font-size: 0.8rem;
-            padding: 4px 12px;
-            border-radius: 12px;
-            margin-bottom: 5px;
-            background: #334155;
-            color: #94a3b8;
-            font-weight: bold;
-            position: relative; z-index: 1;
-        }
-        .status-badge.online { background: #065f46; color: #34d399; }
-
-        #tvDigitalClock {
-            display: none;
-            font-size: 1.5rem;
-            font-weight: bold;
-            font-family: monospace;
-            color: #38bdf8;
-            margin-bottom: 15px;
-            position: relative; z-index: 1;
-        }
-
-        .top-panel {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-bottom: 15px;
-            position: relative; z-index: 1;
-        }
-
-        .rate-config, .report-panel {
-            background-color: var(--card-bg);
-            padding: 10px 15px;
-            border-radius: 8px;
+        .header-status-bar {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 0.9rem;
-            border: 1px solid #334155;
+            margin-bottom: 10px;
         }
-        .rate-config input {
-            width: 80px;
-            padding: 5px;
-            border-radius: 4px;
-            border: 1px solid #475569;
-            background-color: #0f172a;
-            color: white;
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: #334155;
+            color: #94a3b8;
             font-weight: bold;
-            text-align: right;
         }
-
-        .btn-action {
-            background-color: #16a34a;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
+        .status-badge.online { background: #065f46; color: #34d399; }
+        .relay-status-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 12px;
             font-weight: bold;
-            cursor: pointer;
-            font-size: 0.85rem;
+            background: #991b1b;
+            color: #fca5a5;
         }
-        .btn-action:active { opacity: 0.8; }
-        .btn-owner-only { display: none; }
+        .relay-status-badge.connected { background: #065f46; color: #34d399; }
 
-        .mode-selector { margin-bottom: 20px; display: flex; gap: 10px; position: relative; z-index: 1; }
+        .mode-selector { margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
         .mode-selector button {
-            padding: 8px 16px; font-weight: bold; cursor: pointer; border: none;
-            border-radius: 6px; background: #334155; color: white;
+            padding: 8px 12px; font-weight: bold; cursor: pointer; border: none;
+            border-radius: 6px; background: #334155; color: white; font-size: 0.8rem;
         }
         .mode-selector button.active { background: var(--accent); }
+        .btn-setting { background: #475569 !important; color: white !important; }
         
+        /* MODE HP KASIR: 1 KOLOM KE BAWAH (BISA SCROLL KE BAWAH DENGAN PAS) */
         .grid-container {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px; width: 100%; max-width: 1200px;
-            position: relative; z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            max-width: 500px;
         }
+        
         .table-card {
-            background-color: var(--card-bg); border-radius: 12px; padding: 15px;
+            background-color: var(--card-bg); border-radius: 12px; padding: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex;
-            flex-direction: column; align-items: center; border: 2px solid #334155;
+            flex-direction: column; border: 2px solid #334155;
             transition: all 0.2s ease;
+            box-sizing: border-box;
+            width: 100%;
         }
         .table-card.active { border-color: var(--accent); }
         .table-card.warning { border-color: var(--warning); }
         .table-card.expired { border-color: var(--danger); }
         
-        .table-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; }
-        
+        .card-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 8px;
+            border-bottom: 1px dashed #334155;
+            padding-bottom: 6px;
+        }
+        .table-title { font-size: 1.05rem; font-weight: bold; color: white; }
         .customer-tv-display {
-            font-size: 1.1rem;
+            font-size: 0.85rem;
             font-weight: 800;
             color: var(--cust-color);
             text-transform: uppercase;
-            letter-spacing: 1px;
             background: rgba(250, 204, 21, 0.1);
-            padding: 4px 15px;
+            padding: 3px 10px;
             border-radius: 6px;
-            margin-bottom: 8px;
             border: 1px solid rgba(250, 204, 21, 0.2);
-            text-align: center;
-            width: 85%;
-            word-break: break-word;
+            max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
+        .card-body-split {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        /* SEMBUNYIKAN RINCIAN KASIR DI HP */
+        .card-left-detail {
+            display: none;
+        }
+
+        .card-right-timer {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
         .timer-display {
-            font-size: 2.5rem; font-family: monospace; font-weight: bold;
-            margin: 5px 0 2px 0; color: #94a3b8;
+            font-size: 2.2rem; font-family: monospace; font-weight: bold;
+            margin: 0; color: #94a3b8; line-height: 1;
         }
-
-        .selesai-display {
-            font-size: 0.95rem;
-            font-weight: bold;
-            color: var(--warning);
-            margin-bottom: 8px;
-        }
+        .selesai-display { font-size: 0.8rem; font-weight: bold; color: var(--warning); margin: 4px 0; }
 
         .table-card.active .timer-display { color: var(--accent); }
         .table-card.warning .timer-display { color: var(--warning); }
-        .table-card.expired .timer-display {
-            color: var(--danger); animation: blink 1s infinite;
-        }
+        .table-card.expired .timer-display { color: var(--danger); animation: blink 1s infinite; }
 
         .price-display {
-            font-size: 1.2rem; font-weight: bold; color: var(--price-color);
-            margin-bottom: 5px; background: rgba(56, 189, 248, 0.1);
-            padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(56, 189, 248, 0.2);
-            display: flex; align-items: center; gap: 6px; justify-content: center;
-        }
-        .durasi-tag { font-size: 0.85rem; color: #f8fafc; font-weight: normal; }
-
-        .fnb-summary {
-            font-size: 0.8rem; color: #cbd5e1; margin-bottom: 8px; font-weight: 600;
+            font-size: 1.1rem; font-weight: bold; color: var(--price-color);
+            background: rgba(56, 189, 248, 0.1);
+            padding: 4px 12px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.2);
+            text-align: center; width: 90%;
         }
 
         @keyframes blink { 50% { opacity: 0.3; } }
         
-        .controls { display: flex; flex-direction: column; gap: 5px; width: 100%; margin-top: 5px; }
+        .controls { display: flex; flex-direction: column; gap: 5px; width: 100%; }
         .btn-row { display: flex; gap: 5px; width: 100%; }
         .controls button {
-            flex: 1; padding: 10px 6px; border: none; border-radius: 5px;
-            font-weight: bold; cursor: pointer; font-size: 0.85rem;
+            flex: 1; padding: 8px 4px; border: none; border-radius: 5px;
+            font-weight: bold; cursor: pointer; font-size: 0.8rem;
         }
+        .btn-start { background-color: #2563eb; color: white; }
         .btn-stop { background-color: var(--danger); color: white; }
-        .btn-time { background-color: #3b82f6; color: white; }
         .btn-fnb { background-color: #f59e0b; color: white; }
         .btn-pay { background-color: #10b981; color: white; font-weight: bold; }
         .btn-move { background-color: #8b5cf6; color: white; font-weight: bold; }
         .controls button:active { opacity: 0.7; transform: scale(0.98); }
         
+        /* MODAL POPUP */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); z-index: 100; justify-content: center; align-items: center;
         }
         .modal-content {
-            background: var(--card-bg); padding: 20px; border-radius: 12px; width: 90%; max-width: 500px;
+            background: var(--card-bg); padding: 18px; border-radius: 12px; width: 90%; max-width: 450px;
             border: 1px solid #475569; max-height: 85vh; overflow-y: auto;
         }
-        .modal-title { font-weight: bold; font-size: 1.2rem; margin-bottom: 12px; color: var(--price-color); text-align: center; }
+        .modal-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 12px; color: var(--price-color); text-align: center; }
         
-        .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        .form-group label { font-size: 0.8rem; font-weight: bold; color: #cbd5e1; }
         .form-group input, .form-group select {
-            padding: 10px; border-radius: 6px; border: 1px solid #475569;
-            background-color: #0f172a; color: white; font-size: 0.9rem;
+            padding: 9px; border-radius: 6px; border: 1px solid #475569;
+            background-color: #0f172a; color: white; font-size: 0.85rem;
         }
 
-        .fnb-added-list { margin-top: 10px; border-top: 1px solid #334155; padding-top: 10px; }
-        .fnb-added-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px dashed #334155; font-size: 0.85rem; }
-        .btn-del-item { background: #ef4444; color: white; border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        .duration-preset-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+        .duration-preset-grid button {
+            background: #334155; color: white; border: 1px solid #475569; padding: 10px;
+            border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem;
+        }
 
-        .modal-footer { display: flex; gap: 10px; margin-top: 15px; }
-        .modal-footer button { flex: 1; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .fnb-added-list { margin-top: 10px; border-top: 1px solid #334155; padding-top: 8px; }
+        .fnb-added-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dashed #334155; font-size: 0.8rem; }
+        .btn-del-item { background: #ef4444; color: white; border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
+
+        .modal-footer { display: flex; gap: 8px; margin-top: 15px; }
+        .modal-footer button { flex: 1; padding: 9px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
 
         .history-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 10px; }
         .history-table th, .history-table td { border: 1px solid #334155; padding: 8px; text-align: left; }
         .history-table th { background-color: #0f172a; color: var(--price-color); }
 
-        /* TAMPILAN MODE TV FULL SCREEN PAS 1 LAYAR */
+        /* MODE TV DISPLAY: Tetap Grid 3 Kolom & Rincian Pesanan Tampil di Kiri */
         body.tv-mode {
-    padding: 8px !important;
-    height: 100vh;
-    box-sizing: border-box;
-    overflow: hidden;
-    justify-content: center;
-    background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), 
-                url('bg-tv.png') no-repeat center center / cover !important;
-}
+            padding: 8px !important;
+            height: 100vh;
+            box-sizing: border-box;
+            overflow: hidden;
+            justify-content: center;
+            background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), 
+                        url('bg-tv.png') no-repeat center center / cover !important;
+        }
         body.tv-mode h1#page-title, 
         body.tv-mode .controls, 
-        body.tv-mode .top-panel, 
-        body.tv-mode .mode-selector,
-        body.tv-mode #tvDigitalClock { 
-            display: none !important; 
-        }
+        body.tv-mode .header-status-bar, 
+        body.tv-mode .mode-selector { display: none !important; }
 
         body.tv-mode .brand-subtitle { font-size: 1.4rem; margin-bottom: 4px; letter-spacing: 2px; text-align: center; }
         body.tv-mode .grid-container { 
-            grid-template-columns: repeat(3, 1fr); 
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important; 
             gap: 8px; 
             max-width: 100%;
-            align-items: center;
         }
-        body.tv-mode .table-card { padding: 6px 10px; border-radius: 8px; }
-        body.tv-mode .timer-display { font-size: 2.2rem; margin: 2px 0; }
-        body.tv-mode .selesai-display { font-size: 0.8rem; margin-bottom: 4px; }
-        body.tv-mode .price-display { font-size: 1rem; margin-bottom: 2px; padding: 2px 8px; }
-        body.tv-mode .table-title { font-size: 1.1rem; margin-bottom: 2px; }
-        body.tv-mode .customer-tv-display { font-size: 0.9rem; padding: 2px 8px; margin-bottom: 4px; }
-
-        /* JAM MELAYANG (FLOATING WATERMARK) DI TENGAH TV */
-        .tv-clock-box {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 99;
-            background: rgba(245, 158, 11, 0.88);
-            color: #0f172a;
-            font-size: 1.4rem;
-            font-weight: 900;
-            font-family: monospace;
-            text-align: center;
-            padding: 3px 14px;
-            border-radius: 8px;
-            box-shadow: 0 0 12px rgba(245, 158, 11, 0.8);
-            border: 2px solid #ffffff;
-            pointer-events: none;
+        body.tv-mode .table-card { padding: 8px 10px; border-radius: 8px; }
+        
+        /* POPUP RINCIAN DINAMIS KHUSUS MODE TV */
+        body.tv-mode .card-body-split {
+            display: flex !important;
+            flex-direction: row;
+            gap: 8px;
+            width: 100%;
         }
-        body.tv-mode .tv-clock-box { 
-    display: none !important; 
-}
-
-
-        body.owner-mode .controls { display: none !important; }
-        body.owner-mode .grid-container {
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 10px;
+        body.tv-mode .card-left-detail {
+            display: flex !important;
+            flex: 1;
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 6px;
+            padding: 6px;
+            border: 1px solid #334155;
+            max-height: 100px;
+            overflow-y: auto;
         }
-        body.owner-mode .table-card { padding: 10px; border-radius: 8px; }
-        body.owner-mode .table-title { font-size: 1.05rem; margin-bottom: 2px; }
-        body.owner-mode .customer-tv-display { font-size: 0.85rem; padding: 2px 8px; margin-bottom: 4px; }
-        body.owner-mode .timer-display { font-size: 1.8rem; margin: 2px 0; }
-        body.owner-mode .selesai-display { font-size: 0.8rem; margin-bottom: 4px; }
-        body.owner-mode .price-display { font-size: 1rem; padding: 2px 8px; margin-bottom: 2px; }
-        body.owner-mode .fnb-summary { font-size: 0.75rem; margin-bottom: 0; }
+        body.tv-mode .detail-title { font-size: 0.7rem; color: #94a3b8; font-weight: bold; margin-bottom: 2px; }
+        body.tv-mode .detail-items-list { font-size: 0.7rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 2px; }
+        body.tv-mode .detail-item-row { display: flex; justify-content: space-between; gap: 4px; }
+
+        body.tv-mode .card-right-timer { flex: 1.1; }
+        body.tv-mode .timer-display { font-size: 2rem; margin: 2px 0; }
+        body.tv-mode .selesai-display { font-size: 0.75rem; margin-bottom: 2px; }
+        body.tv-mode .price-display { font-size: 0.95rem; margin-bottom: 2px; padding: 2px 6px; }
+        body.tv-mode .table-title { font-size: 1.05rem; }
+        body.tv-mode .customer-tv-display { font-size: 0.85rem; padding: 2px 6px; max-width: 100%; }
 
         #receiptPrintArea { display: none; }
         @media print {
@@ -308,42 +278,111 @@
     </style>
 </head>
 <body>
-
     <h1 id="page-title">Sistem Timer & Kasir</h1>
-    <div class="brand-subtitle">R21 POOL & CAFE</div>
-    <div id="statusBadge" class="status-badge">Menghubungkan Cloud...</div>
-    <div id="tvDigitalClock">🕒 00:00:00</div>
+    <div class="brand-subtitle" id="displayBrandName">R21 POOL & CAFE</div>
     
-    <!-- ELEMEN JAM MELAYANG DI TENGAH TV -->
-    <div class="tv-clock-box" id="tvCenterClock">🕒 00:00:00</div>
-    
-    <div class="top-panel">
-        <div class="rate-config btn-owner-only" id="rateSection">
-            <label for="hourlyRate">Tarif/Jam:</label>
-            <input type="number" id="hourlyRate" value="40000" step="1000" onchange="updateHourlyRate(this.value)">
-        </div>
-        <div class="report-panel">
-            <button class="btn-action" style="background:#0d9488;" onclick="openPosCafeModal()">🛒 Transaksi Cafe</button>
-            <button class="btn-action" style="background:#d97706;" onclick="openInventoryModal()">📦 Stok Cafe</button>
-        </div>
-        <div class="report-panel btn-owner-only" id="reportSection">
-            <button class="btn-action" onclick="sendWaReport()">📱 Kirim Laporan WA</button>
-            <button class="btn-action" style="background:#0284c7;" onclick="openStaffManagerModal()">👥 Kelola Karyawan</button>
-        </div>
-        <div class="report-panel">
-            <button class="btn-action" style="background:#8b5cf6;" onclick="openHistoryModal()">📜 Riwayat Transaksi</button>
-            <button class="btn-action" style="background:#ef4444;" onclick="logout()">🔒 Logout (<span id="userRoleBadge">-</span>)</button>
-        </div>
+    <div class="header-status-bar">
+        <div id="statusBadge" class="status-badge">Cloud: Connecting...</div>
+        <div id="relayStatusBadge" class="relay-status-badge">Relay IP: 192.168.1.20</div>
     </div>
-
+    
+    <!-- HEADER BARIS TOMBOL (MODE & SETTING) -->
     <div class="mode-selector">
         <button id="btn-mode-controller" onclick="setMode('controller')">Mode HP (Kasir)</button>
         <button id="btn-mode-tv" onclick="setMode('tv')">Mode TV (Display)</button>
-    <button class="btn-action" onclick="testSound()" style="background-color: #22c55e; margin-left: 5px;">🔊 Cek Sound</button>
+        <button style="background-color: #22c55e;" onclick="testSound()">🔊 Cek Sound</button>
+        <button class="btn-setting" onclick="openSettingModal()">⚙️ Setting</button>
     </div>
 
+    <!-- GRID MEJA BILIAR (MODE HP: 1 KOLOM SCROLL KE BAWAH) -->
     <div class="grid-container" id="tablesGrid"></div>
 
+    <!-- MODAL POP-UP PILIH DURASI MEJA -->
+    <div class="modal-overlay" id="durationModal">
+        <div class="modal-content" style="max-width:360px;">
+            <div class="modal-title" id="durationModalTitle">Mulai Meja X</div>
+            <div class="form-group">
+                <label>Nama Pelanggan (Wajib):</label>
+                <input type="text" id="durationCustName" placeholder="Masukkan nama..." style="text-transform:uppercase;">
+            </div>
+            <div style="font-size:0.8rem; font-weight:bold; color:#cbd5e1; margin-bottom:6px;">Pilih / Tambah Durasi:</div>
+            <div class="duration-preset-grid">
+                <button onclick="addPresetMinutes(30)">+30 Min</button>
+                <button onclick="addPresetMinutes(60)">+1 Jam</button>
+                <button onclick="addPresetMinutes(120)">+2 Jam</button>
+            </div>
+            <div class="form-group">
+                <label>Total Durasi Dipilih (Menit):</label>
+                <input type="number" id="customMinutesInput" value="60" min="1" oninput="updateDurationPreview()">
+            </div>
+            <div style="background:#0f172a; padding:10px; border-radius:6px; text-align:center; font-weight:bold; color:var(--price-color); margin-bottom:12px;" id="durationPreviewTxt">
+                Total: 1 Jam (Rp 40.000)
+            </div>
+            <div class="modal-footer">
+                <button style="background:#ef4444; color:white;" onclick="closeDurationModal()">❌ Batal</button>
+                <button style="background:#22c55e; color:white;" onclick="confirmStartDuration()">▶️ START & NYALAKAN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ⚙️ SETTING PUSAT -->
+    <div class="modal-overlay" id="settingModal">
+        <div class="modal-content" style="max-width:480px;">
+            <div class="modal-title">⚙️ PENGATURAN SIKASIR R21</div>
+            
+            <!-- LIST 1: PROFIL USAHA -->
+            <div style="background:#0f172a; padding:12px; border-radius:8px; border:1px solid #334155; margin-bottom:10px;">
+                <div style="font-size:0.85rem; font-weight:bold; color:var(--price-color); margin-bottom:8px;">🏢 PROFIL USAHA</div>
+                <div class="form-group" style="margin-bottom:6px;">
+                    <input type="text" id="cfgBizName" placeholder="Nama Usaha (misal: R21 POOL & CAFE)">
+                </div>
+                <div class="form-group" style="margin-bottom:6px;">
+                    <input type="text" id="cfgBizAddress" placeholder="Alamat Usaha">
+                </div>
+                <div class="form-group" style="margin-bottom:8px;">
+                    <input type="text" id="cfgBizPhone" placeholder="No. Telepon / WA Usaha">
+                </div>
+                <button class="btn-action" style="background:#2563eb; width:100%; padding:8px;" onclick="saveBizProfile()">Simpan Profil Usaha</button>
+            </div>
+
+            <!-- LIST 2: IP RELAY & TARIF -->
+            <div style="background:#0f172a; padding:12px; border-radius:8px; border:1px solid #334155; margin-bottom:10px;">
+                <div style="font-size:0.85rem; font-weight:bold; color:var(--price-color); margin-bottom:8px;">🔌 KONEKSI & TARIF</div>
+                <div class="form-group" style="margin-bottom:6px;">
+                    <label>IP Modul Relay Lokal:</label>
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" id="cfgRelayIp" placeholder="192.168.1.20" style="flex:1;">
+                        <button style="background:#16a34a; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="saveRelayIp()">Simpan IP</button>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Tarif Biliar / Jam (Rp):</label>
+                    <input type="number" id="hourlyRate" value="40000" step="1000" onchange="updateHourlyRate(this.value)">
+                </div>
+            </div>
+
+            <!-- LIST 3: MANAJEMEN OPERASIONAL -->
+            <div style="background:#0f172a; padding:12px; border-radius:8px; border:1px solid #334155; margin-bottom:10px;">
+                <div style="font-size:0.85rem; font-weight:bold; color:var(--price-color); margin-bottom:8px;">☕ MANAJEMEN & LAPORAN</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                    <button class="btn-action" style="background:#0d9488; padding:8px;" onclick="openPosCafeModal()">🛒 Transaksi Cafe</button>
+                    <button class="btn-action" style="background:#d97706; padding:8px;" onclick="openInventoryModal()">📦 Stok Cafe</button>
+                    <button class="btn-action" style="background:#8b5cf6; padding:8px;" onclick="openHistoryModal()">📜 Riwayat Transaksi</button>
+                    <button class="btn-action" style="background:#16a34a; padding:8px;" onclick="sendWaReport()">📱 Kirim WA Shift</button>
+                </div>
+                <div class="btn-owner-only" style="margin-top:8px; display:flex; gap:8px;">
+                    <button class="btn-action" style="background:#0284c7; flex:1; padding:8px;" onclick="openStaffManagerModal()">👥 Kelola Karyawan</button>
+                    <button class="btn-action" style="background:#ef4444; flex:1; padding:8px;" onclick="logout()">🔒 Logout (<span id="userRoleBadge">-</span>)</button>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button style="background:#64748b; color:white;" onclick="closeSettingModal()">Tutup Setting</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL POPUP LAINNYA -->
     <div class="modal-overlay" id="loginModal">
         <div class="modal-content" style="max-width:320px; text-align:center;">
             <div class="modal-title">LOGIN SYSTEM</div>
@@ -351,21 +390,7 @@
                 <input type="text" id="loginUsername" placeholder="Username">
                 <input type="password" id="loginPassword" placeholder="Password">
             </div>
-            <button class="btn-action" style="width:100%; padding:10px; margin-top:5px;" onclick="processLogin()">Masuk</button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="custNameModal">
-        <div class="modal-content" style="max-width:350px;">
-            <div class="modal-title" id="custNameModalTitle">Buka Meja X</div>
-            <div class="form-group">
-                <label style="font-size:0.85rem; font-weight:bold;">Nama Pelanggan (Wajib Diisi):</label>
-                <input type="text" id="modalCustomerNameInput" placeholder="Masukkan nama pelanggan..." style="text-transform:uppercase;">
-            </div>
-            <div class="modal-footer">
-                <button style="background:#ef4444; color:white;" onclick="closeCustNameModal()">Batal</button>
-                <button style="background:#22c55e; color:white;" onclick="confirmStartTable()">Mulai Main</button>
-            </div>
+            <button class="btn-action" style="width:100%; padding:10px; margin-top:5px; background:#22c55e;" onclick="processLogin()">Masuk</button>
         </div>
     </div>
 
@@ -373,7 +398,7 @@
         <div class="modal-content" style="max-width:350px;">
             <div class="modal-title" id="moveTableModalTitle">Pindah Meja</div>
             <div class="form-group">
-                <label style="font-size:0.85rem; font-weight:bold;">Pilih Meja Tujuan (Kosong):</label>
+                <label>Pilih Meja Tujuan (Kosong):</label>
                 <select id="targetTableSelect"></select>
             </div>
             <div class="modal-footer">
@@ -395,7 +420,7 @@
                 Total Bayar: <span id="payGrandTotal">Rp 0</span>
             </div>
             <div class="form-group">
-                <label style="font-size:0.85rem; font-weight:bold;">Metode Pembayaran:</label>
+                <label>Metode Pembayaran:</label>
                 <select id="payMethodSelect" onchange="toggleSplitBillInput()">
                     <option value="Tunai">💵 Tunai (Cash)</option>
                     <option value="QRIS">📱 QRIS</option>
@@ -403,35 +428,34 @@
                 </select>
             </div>
             <div id="splitBillInputs" style="display:none;" class="form-group">
-                <label style="font-size:0.8rem; color:#94a3b8;">Nominal Tunai (Cash):</label>
+                <label>Nominal Tunai (Cash):</label>
                 <input type="number" id="splitCashInput" placeholder="0" oninput="calcSplitBillSisa()">
-                <label style="font-size:0.8rem; color:#94a3b8;">Nominal QRIS (Otomatis Sisa):</label>
+                <label>Nominal QRIS (Otomatis Sisa):</label>
                 <input type="number" id="splitQrisInput" placeholder="0" readonly style="background:#1e293b; color:#38bdf8;">
             </div>
             <div class="modal-footer">
                 <button style="background:#ef4444; color:white;" onclick="closePayModal()">Batal</button>
-                <button style="background:#22c55e; color:white;" onclick="confirmPayAndFinish()">LUNAS / SIMPAN</button>
+                <button style="background:#22c55e; color:white;" onclick="confirmPayAndFinish()">LUNAS & SIMPAN</button>
             </div>
         </div>
     </div>
+
     <div class="modal-overlay" id="posCafeModal">
         <div class="modal-content" style="max-width:400px;">
             <div class="modal-title">TRANSAKSI CAFE (NON-BILIAR)</div>
             <div class="form-group">
                 <input type="text" id="posCustName" placeholder="Nama Pembeli" style="text-transform:uppercase;">
-                <select id="posItemSelect">
-                    <option value="">-- Pilih Barang dari Stok --</option>
-                </select>
+                <select id="posItemSelect"><option value="">-- Pilih Barang dari Stok --</option></select>
                 <input type="number" id="posItemQty" placeholder="Jumlah (Pcs)" value="1" min="1">
                 <button class="btn-action" style="background:#3b82f6;" onclick="addPosCafeItem()">+ Tambahkan Ke Keranjang</button>
             </div>
-            <div style="font-weight:bold; font-size:0.9rem; margin-top:10px;">Keranjang Pesanan:</div>
+            <div style="font-weight:bold; font-size:0.85rem; margin-top:10px;">Keranjang Pesanan:</div>
             <div class="fnb-added-list" id="posCartList"></div>
             <div style="font-size:1.1rem; font-weight:bold; color:var(--price-color); text-align:right; margin-top:10px;">
                 Total: <span id="posCartTotal">Rp 0</span>
             </div>
             <div class="form-group" style="margin-top:10px;">
-                <label style="font-size:0.85rem; font-weight:bold;">Metode Pembayaran:</label>
+                <label>Metode Pembayaran:</label>
                 <select id="posPayMethod">
                     <option value="Tunai">💵 Tunai (Cash)</option>
                     <option value="QRIS">📱 QRIS</option>
@@ -453,7 +477,7 @@
                 <input type="number" id="invItemStock" placeholder="Stok Awal (Jumlah)">
                 <button class="btn-action" style="background:#22c55e;" onclick="saveInventoryItem()">+ Simpan Barang Baru</button>
             </div>
-            <div style="font-weight:bold; font-size:0.9rem; margin-top:10px;">Daftar Stok Saat Ini:</div>
+            <div style="font-weight:bold; font-size:0.85rem; margin-top:10px;">Daftar Stok Saat Ini:</div>
             <div class="fnb-added-list" id="inventoryListContainer"></div>
             <div class="modal-footer" style="margin-top:15px;">
                 <button style="background:#64748b; color:white;" onclick="closeInventoryModal()">Tutup</button>
@@ -469,7 +493,7 @@
                 <input type="password" id="newStaffPassword" placeholder="Password Karyawan Baru">
                 <button class="btn-action" style="background:#22c55e;" onclick="addStaffAccount()">+ Buat Akun Karyawan</button>
             </div>
-            <div style="font-weight:bold; font-size:0.9rem; margin-top:15px;">Daftar Akun Karyawan:</div>
+            <div style="font-weight:bold; font-size:0.85rem; margin-top:15px;">Daftar Akun Karyawan:</div>
             <div class="fnb-added-list" id="staffListContainer"></div>
             <div class="modal-footer" style="margin-top:20px;">
                 <button style="background:#64748b; color:white;" onclick="closeStaffManagerModal()">Tutup</button>
@@ -481,15 +505,13 @@
         <div class="modal-content">
             <div class="modal-title" id="modalTableTitle">Tambah Pesanan Cafe</div>
             <div class="form-group">
-                <label style="font-size:0.85rem;">Pilih Dari Stok Barang:</label>
-                <select id="tableFnbStockSelect" onchange="autoFillTableFnbPrice()">
-                    <option value="">-- Pilih Barang --</option>
-                </select>
+                <label>Pilih Dari Stok Barang:</label>
+                <select id="tableFnbStockSelect" onchange="autoFillTableFnbPrice()"><option value="">-- Pilih Barang --</option></select>
                 <input type="text" id="manualFnbName" placeholder="Nama Makanan/Minuman">
                 <input type="number" id="manualFnbPrice" placeholder="Harga (Rp)">
                 <button class="btn-action" style="background:#3b82f6;" onclick="addManualFnbItem()">+ Tambahkan Pesanan</button>
             </div>
-            <div style="font-weight:bold; font-size:0.9rem; margin-top:10px;">Daftar Pesanan Meja Ini:</div>
+            <div style="font-weight:bold; font-size:0.85rem; margin-top:10px;">Daftar Pesanan Meja Ini:</div>
             <div class="fnb-added-list" id="fnbAddedList"></div>
             <div class="modal-footer">
                 <button style="background:#ef4444; color:white;" onclick="closeFnbModal()">Batal</button>
@@ -502,7 +524,7 @@
         <div class="modal-content" style="max-width:650px;">
             <div class="modal-title">RIWAYAT TRANSAKSI OPERASIONAL</div>
             <div style="margin-bottom:10px; display:flex; align-items:center; gap:10px;">
-                <label style="font-size:0.85rem;">Filter Tanggal Operasional:</label>
+                <label>Filter Tanggal:</label>
                 <input type="date" id="historyDateFilter" style="padding:5px; border-radius:4px; border:1px solid #475569; background:#0f172a; color:white;" onchange="renderHistoryTable()">
             </div>
             <div style="overflow-x:auto;">
@@ -526,11 +548,12 @@
         </div>
     </div>
 
+    <!-- STRUK PRINT AREA DINAMIS -->
     <div id="receiptPrintArea">
         <div class="receipt-header">
-            <div class="receipt-title">R21 POOL & CAFE</div>
-            <div>Jl. Biliar No. 21</div>
-            <div>Telp: 0811-4989-333</div>
+            <div class="receipt-title" id="printBizName">R21 POOL & CAFE</div>
+            <div id="printBizAddress">Jl. Biliar No. 21</div>
+            <div id="printBizPhone">Telp: 0811-4989-333</div>
         </div>
         <div class="receipt-line"><span>Tanggal:</span><span id="recDate">-</span></div>
         <div class="receipt-line"><span>No. Struk:</span><span id="recId">-</span></div>
@@ -545,7 +568,7 @@
         <div class="receipt-line"><span>Metode Bayar:</span><span id="recMethod">Tunai</span></div>
         <div class="receipt-footer">
             <p>Terima kasih atas kunjungan Anda!</p>
-            <p>-- R21 Pool & Cafe --</p>
+            <p>-- <span id="printFooterBizName">R21 Pool & Cafe</span> --</p>
         </div>
     </div>
     <script>
@@ -558,7 +581,16 @@
         var db = firebase.database();
         var TOTAL_TABLES = 6;
         var hourlyRate = 40000;
-        var OWNER_WA = "628114989333";
+
+        // BIZ PROFILE DINAMIS (LOCALSTORAGE)
+        var bizProfile = JSON.parse(localStorage.getItem('R21_BIZ_PROFILE')) || {
+            name: "R21 POOL & CAFE",
+            address: "Jl. Biliar No. 21",
+            phone: "0811-4989-333"
+        };
+
+        // IP RELAY DINAMIS (LOCALSTORAGE)
+        var currentIpRelay = localStorage.getItem('IP_RELAY_BILIAR') || '192.168.1.20';
 
         var currentUserRole = localStorage.getItem('r21_user_role') || null;
         var currentUsername = localStorage.getItem('r21_username') || '';
@@ -575,11 +607,11 @@
         var tempFnbList = [];
         var posCartList = [];
         var pendingStartTableIndex = null;
-        var pendingStartMinutes = 0;
         var activeMoveSourceIndex = null;
 
         var currentMode = localStorage.getItem('biliard_mode') || 'controller';
 
+        // SYNC DATA FIREBASE
         db.ref('staffs').on('value', function(snapshot) {
             staffAccounts = snapshot.val() || {};
             renderStaffList();
@@ -591,235 +623,10 @@
             populateStockDropdowns();
         });
 
-        function processLogin() {
-            var rawUser = document.getElementById('loginUsername').value.trim();
-            var rawPass = document.getElementById('loginPassword').value.trim();
-
-            if (!rawUser || !rawPass) { alert("Masukkan Username dan Password!"); return; }
-
-            var userLower = rawUser.toLowerCase();
-            var passLower = rawPass.toLowerCase();
-
-            if (userLower === 'owner' && passLower === '9999') {
-                currentUserRole = 'owner';
-                currentUsername = 'Pemilik';
-            } else {
-                var foundStaffKey = null;
-                var keys = Object.keys(staffAccounts);
-                
-                for (var i = 0; i < keys.length; i++) {
-                    var k = keys[i];
-                    if (k.toLowerCase() === userLower && staffAccounts[k].password.toLowerCase() === passLower) {
-                        foundStaffKey = k;
-                        break;
-                    }
-                }
-
-                if (foundStaffKey) {
-                    currentUserRole = 'karyawan';
-                    currentUsername = foundStaffKey;
-                } else {
-                    alert("Username atau Password Salah!");
-                    return;
-                }
-            }
-
-            localStorage.setItem('r21_user_role', currentUserRole);
-            localStorage.setItem('r21_username', currentUsername);
-            document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('loginUsername').value = '';
-            document.getElementById('loginPassword').value = '';
-            applyUserRolePermissions();
-        }
-
-        function logout() {
-            currentUserRole = null;
-            currentUsername = '';
-            localStorage.removeItem('r21_user_role');
-            localStorage.removeItem('r21_username');
-            document.body.classList.remove('owner-mode');
-            if (currentMode !== 'tv') {
-                document.getElementById('loginModal').style.display = 'flex';
-            }
-        }
-
-        function applyUserRolePermissions() {
-            var ownerElements = document.querySelectorAll('.btn-owner-only');
-            var roleBadge = document.getElementById('userRoleBadge');
-            
-            if (currentUserRole === 'owner') {
-                ownerElements.forEach(function(el) { el.style.display = 'flex'; });
-                if(roleBadge) roleBadge.innerText = currentUsername + " (Monitoring)";
-                document.body.classList.add('owner-mode');
-            } else {
-                ownerElements.forEach(function(el) { el.style.display = 'none'; });
-                if(roleBadge) roleBadge.innerText = currentUsername || 'Karyawan';
-                document.body.classList.remove('owner-mode');
-            }
-        }
-
-        function updateClock() {
-            var now = new Date();
-            var jam = String(now.getHours()).padStart(2, '0');
-            var menit = String(now.getMinutes()).padStart(2, '0');
-            var detik = String(now.getSeconds()).padStart(2, '0');
-            var timeString = '🕒 ' + jam + ':' + menit + ':' + detik;
-
-            var tvClock = document.getElementById('tvDigitalClock');
-            if(tvClock) tvClock.innerText = timeString;
-
-            var tvCenterClock = document.getElementById('tvCenterClock');
-            if(tvCenterClock) tvCenterClock.innerText = timeString;
-        }
-        setInterval(updateClock, 1000);
-
-        function formatJam(timestamp) {
-            if (!timestamp || timestamp <= 0) return "-";
-            var date = new Date(timestamp);
-            return String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0');
-        }
-
-        function formatTeksDurasi(bookedMinutes) {
-            if (!bookedMinutes || bookedMinutes <= 0) return "";
-            var jam = Math.floor(bookedMinutes / 60);
-            var sisaMnt = bookedMinutes % 60;
-            var txt = "(";
-            if (jam > 0) txt += jam + " Jam ";
-            if (sisaMnt > 0) txt += sisaMnt + " Min";
-            return txt.trim() + ")";
-        }
-
-        function formatRupiah(number) {
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
-        }
-
-        /* SUARA PERINGATAN BAHASA INDONESIA (RATE: 0.85) */
-        function speakWarning(text) {
-            if (currentMode !== 'tv') return;
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                var speech = new SpeechSynthesisUtterance(text);
-                speech.lang = 'id-ID';
-                speech.rate = 0.85;
-                window.speechSynthesis.speak(speech);
-            }
-        }
-
-        function calculateFnbTotal(fnbArray) {
-            var total = 0;
-            if (!fnbArray || !Array.isArray(fnbArray)) return 0;
-            fnbArray.forEach(function(item) { total += parseInt(item.price) || 0; });
-            return total;
-        }
-
-        function updateTimers() {
-            var now = Date.now();
-            for (var i = 0; i < TOTAL_TABLES; i++) {
-                var table = tablesData[i] || { endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, warned: false, expiredWarned: false, customerName: "", fnbList: [] };
-                var timerEl = document.getElementById('timer-' + i);
-                var jamMulaiSelesaiEl = document.getElementById('jam-mulai-selesai-' + i);
-                var durasiMainEl = document.getElementById('durasi-main-' + i);
-                var priceEl = document.getElementById('price-' + i);
-                var fnbSummaryEl = document.getElementById('fnb-summary-' + i);
-                var cardEl = document.getElementById('card-' + i);
-                var custTvEl = document.getElementById('cust-tv-' + i);
-                
-                var normalControls = document.getElementById('controls-normal-' + i);
-                var expiredControls = document.getElementById('controls-expired-' + i);
-                var btnResetEl = document.getElementById('btn-reset-' + i);
-
-                if (!timerEl) continue;
-
-                if (custTvEl) { 
-                    custTvEl.innerText = table.customerName ? table.customerName.toUpperCase() : "-"; 
-                }
-
-                var bookedMinutes = table.bookedMinutes || 0;
-                var tablePrice = (bookedMinutes / 60) * hourlyRate;
-                var fnbTotal = calculateFnbTotal(table.fnbList);
-                var grandTotal = tablePrice + fnbTotal;
-
-                if (durasiMainEl) {
-                    durasiMainEl.innerText = formatTeksDurasi(bookedMinutes);
-                }
-
-                if (fnbSummaryEl) { fnbSummaryEl.innerText = fnbTotal > 0 ? "+ Cafe: " + formatRupiah(fnbTotal) : ""; }
-
-                if (btnResetEl) {
-                    var elapsedSec = (now - (table.startTime || 0)) / 1000;
-                    if (table.isRunning && elapsedSec > 30) {
-                        btnResetEl.style.display = 'none';
-                    } else {
-                        btnResetEl.style.display = 'block';
-                    }
-                }
-
-                if (!table.isRunning || table.endTime <= now) {
-                    timerEl.innerText = "00:00:00";
-                    if(jamMulaiSelesaiEl) jamMulaiSelesaiEl.innerText = "🕒 Jam: -";
-
-                    if (table.isRunning && table.endTime <= now) {
-                        cardEl.classList.remove('active', 'warning');
-                        cardEl.classList.add('expired');
-                        priceEl.innerText = formatRupiah(grandTotal);
-
-                        /* PERINGATAN SUARA WAKTU HABIS (PAS 00:00:00) */
-                        if (!table.expiredWarned) {
-                            table.expiredWarned = true;
-                            if (currentMode === 'tv') {
-                                speakWarning('Perhatian, waktu bermain Meja ' + (i + 1) + ' telah habis.');
-                            }
-                        }
-
-                        if (normalControls && expiredControls) {
-                            normalControls.style.display = 'none';
-                            expiredControls.style.display = 'flex';
-                        }
-                    } else {
-                        cardEl.classList.remove('active', 'warning', 'expired');
-                        priceEl.innerText = formatRupiah(fnbTotal);
-
-                        if (normalControls && expiredControls) {
-                            normalControls.style.display = 'flex';
-                            expiredControls.style.display = 'none';
-                        }
-                    }
-                } else {
-                    cardEl.classList.add('active'); cardEl.classList.remove('expired');
-                    
-                    if(jamMulaiSelesaiEl) {
-                        jamMulaiSelesaiEl.innerText = "🕒 " + formatJam(table.startTime) + " - " + formatJam(table.endTime);
-                    }
-
-                    var diff = table.endTime - now;
-                    var totalSeconds = Math.floor(diff / 1000);
-                    priceEl.innerText = formatRupiah(grandTotal);
-
-                    if (normalControls && expiredControls) {
-                        normalControls.style.display = 'flex';
-                        expiredControls.style.display = 'none';
-                    }
-
-                    /* PERINGATAN SUARA SISA 5 MENIT */
-                    if (totalSeconds <= 300 && !table.warned) {
-                        table.warned = true;
-                        if (currentMode === 'tv') {
-                            speakWarning('Perhatian, waktu bermain Meja ' + (i + 1) + ' tersisa lima menit lagi.');
-                        }
-                        cardEl.classList.add('warning');
-                    }
-
-                    var hours = String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, '0');
-                    var minutes = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
-                    var seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
-                    timerEl.innerText = hours + ':' + minutes + ':' + seconds;
-                }
-            }
-        }
         db.ref('.info/connected').on('value', function(snap) {
             var badge = document.getElementById('statusBadge');
             if (snap.val() === true) {
-                badge.innerText = "Cloud Terhubung (Sync Aktif)"; badge.classList.add('online');
+                badge.innerText = "Cloud Terhubung"; badge.classList.add('online');
             } else {
                 badge.innerText = "Menghubungkan Cloud..."; badge.classList.remove('online');
             }
@@ -832,111 +639,176 @@
 
         db.ref('rate').on('value', function(snapshot) {
             var rate = snapshot.val();
-            if (rate !== null) { hourlyRate = rate; document.getElementById('hourlyRate').value = rate; updateTimers(); }
+            if (rate !== null) { 
+                hourlyRate = rate; 
+                var el = document.getElementById('hourlyRate');
+                if (el) el.value = rate; 
+                updateTimers(); 
+            }
         });
 
         db.ref('history').on('value', function(snapshot) {
             dailyHistoryRaw = snapshot.val() || {};
         });
 
-        function setMode(mode, save) {
-            if (save !== false) save = true;
-            currentMode = mode;
-            if (save) localStorage.setItem('biliard_mode', mode);
+        // CEK SOUND & SUARA PERINGATAN
+        db.ref('audioTrigger').on('value', function(snap) {
+            var val = snap.val();
+            if (val && currentMode === 'tv') { playTvChimeSound(); }
+        });
+
+        function testSound() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                var pesan = new SpeechSynthesisUtterance("Pemberitahuan. Suara sistem R21 Pool and Cafe terhubung dengan baik.");
+                pesan.lang = 'id-ID'; pesan.rate = 0.9;
+                window.speechSynthesis.speak(pesan);
+            }
+            db.ref('audioTrigger').set(Date.now());
+        }
+
+        function playTvChimeSound() {
+            if ('speechSynthesis' in window) {
+                var speech = new SpeechSynthesisUtterance("Tes suara dari HP Kasir diterima.");
+                speech.lang = 'id-ID';
+                window.speechSynthesis.speak(speech);
+            }
+        }
+
+        function speakWarning(text) {
+            if (currentMode !== 'tv') return;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                var speech = new SpeechSynthesisUtterance(text);
+                speech.lang = 'id-ID'; speech.rate = 0.85;
+                window.speechSynthesis.speak(speech);
+            }
+        }
+
+                               // CONTROL SAKELAR LAMPU RELAY (FORCE IMAGE PING)
+        function sakelarLampu(nomorMeja, status) {
+            var angkaMeja = String(nomorMeja).replace(/\D/g, '');
+            if (!angkaMeja) angkaMeja = "1";
+            var state = status ? "1" : "0"; 
+
+            // 1. Kirim Sinyal HTTP Lokal via Image Object
+            var targetUrl = "http://" + currentIpRelay + "/" + angkaMeja + "/" + state;
+            var imgPing = new Image();
             
-            if (mode === 'tv') {
-                document.body.classList.add('tv-mode');
-                document.getElementById('loginModal').style.display = 'none';
-                document.getElementById('btn-mode-tv').classList.add('active');
-                document.getElementById('btn-mode-controller').classList.remove('active');
-            } else {
-                document.body.classList.remove('tv-mode');
-                document.getElementById('btn-mode-controller').classList.add('active');
-                document.getElementById('btn-mode-tv').classList.remove('active');
-                if (!currentUserRole) {
-                    document.getElementById('loginModal').style.display = 'flex';
-                }
-            }
+            // Bypass cache browser agar request selalu terkirim ulang
+            imgPing.src = targetUrl + "?t=" + new Date().getTime();
+
+            // 2. Sync Sinyal ke Firebase Cloud
+            var secret = "TGOVnUocfqgdoULy9ZxgGx0Y4gammmu9ttr45HI4";
+            var isPowered = status ? true : false;
+            var urlCloud = "https://billing0015-32812-default-rtdb.firebaseio.com/vTfGwLoX/relays/billing" + angkaMeja + ".json?auth=" + secret;
+
+            fetch(urlCloud, {
+                method: 'PUT',
+                body: JSON.stringify(isPowered),
+                headers: { 'Content-Type': 'application/json' }
+            }).catch(function(e) { console.log("Cloud sync error", e); });
         }
 
-        function updateHourlyRate(val) { db.ref('rate').set(parseInt(val) || 0); }
-
-        function renderTables() {
-            var grid = document.getElementById('tablesGrid');
-            grid.innerHTML = '';
-            for (var i = 0; i < TOTAL_TABLES; i++) {
-                var card = document.createElement('div');
-                card.className = 'table-card'; card.id = 'card-' + i;
-                card.innerHTML = 
-                    '<div class="table-title">MEJA ' + (i + 1) + '</div>' +
-                    '<div class="customer-tv-display" id="cust-tv-' + i + '">-</div>' +
-                    '<div class="timer-display" id="timer-' + i + '">00:00:00</div>' +
-                    '<div class="selesai-display" id="jam-mulai-selesai-' + i + '">🕒 Jam: -</div>' +
-                    '<div class="price-display">' +
-                        '<span id="price-' + i + '">Rp 0</span>' +
-                        '<span class="durasi-tag" id="durasi-main-' + i + '"></span>' +
-                    '</div>' +
-                    '<div class="fnb-summary" id="fnb-summary-' + i + '"></div>' +
-                    
-                    '<div class="controls" id="controls-normal-' + i + '">' +
-                        '<div class="btn-row">' +
-                            '<button class="btn-time" onclick="handleTimeClick(' + i + ', 30)">+30m</button>' +
-                            '<button class="btn-time" onclick="handleTimeClick(' + i + ', 60)">+1 Jam</button>' +
-                            '<button class="btn-fnb" onclick="openFnbModal(' + i + ')">☕ Cafe</button>' +
-                        '</div>' +
-                        '<div class="btn-row">' +
-                            '<button class="btn-move" onclick="openMoveTableModal(' + i + ')">🔀 Pindah</button>' +
-                            '<button class="btn-pay" onclick="openPayModal(' + i + ')">💳 Bayar</button>' +
-                            '<button class="btn-stop" id="btn-reset-' + i + '" onclick="resetTimerOnly(' + i + ')">Reset</button>' +
-                        '</div>' +
-                    '</div>' +
-
-                    '<div class="controls" id="controls-expired-' + i + '" style="display:none;">' +
-                        '<div class="btn-row">' +
-                            '<button class="btn-time" style="background:#2563eb;" onclick="handleTimeClick(' + i + ', 30)">+ 30m</button>' +
-                            '<button class="btn-time" style="background:#2563eb;" onclick="handleTimeClick(' + i + ', 60)">+ 1 Jam</button>' +
-                        '</div>' +
-                        '<div class="btn-row" style="margin-top:5px;">' +
-                            '<button class="btn-pay" style="padding:12px;" onclick="openPayModal(' + i + ')">💳 LANJUT PEMBAYARAN</button>' +
-                        '</div>' +
-                    '</div>';
-                grid.appendChild(card);
-            }
-            updateTimers();
+        // PENGATURAN MODAL SETTING & PROFIL USAHA
+        function openSettingModal() {
+            document.getElementById('cfgBizName').value = bizProfile.name;
+            document.getElementById('cfgBizAddress').value = bizProfile.address;
+            document.getElementById('cfgBizPhone').value = bizProfile.phone;
+            document.getElementById('cfgRelayIp').value = currentIpRelay;
+            document.getElementById('settingModal').style.display = 'flex';
         }
 
-        function handleTimeClick(index, minutes) {
-            var currentTable = tablesData[index] || { endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, warned: false, expiredWarned: false, customerName: "", fnbList: [] };
+        function closeSettingModal() {
+            document.getElementById('settingModal').style.display = 'none';
+        }
+
+        function saveBizProfile() {
+            var n = document.getElementById('cfgBizName').value.trim();
+            var a = document.getElementById('cfgBizAddress').value.trim();
+            var p = document.getElementById('cfgBizPhone').value.trim();
+            if (!n) { alert("Nama usaha wajib diisi!"); return; }
             
-            if (currentTable.isRunning || (currentTable.customerName && currentTable.customerName !== "")) {
-                executeAddTime(index, minutes, currentTable.customerName);
-            } else {
-                pendingStartTableIndex = index;
-                pendingStartMinutes = minutes;
-                document.getElementById('custNameModalTitle').innerText = "Buka Meja " + (index + 1);
-                document.getElementById('modalCustomerNameInput').value = "";
-                document.getElementById('custNameModal').style.display = 'flex';
+            bizProfile = { name: n, address: a, phone: p };
+            localStorage.setItem('R21_BIZ_PROFILE', JSON.stringify(bizProfile));
+            applyBizProfileUI();
+            alert("✅ Profil usaha berhasil diperbarui!");
+        }
+
+        function saveRelayIp() {
+            var ip = document.getElementById('cfgRelayIp').value.trim();
+            if (ip) {
+                currentIpRelay = ip;
+                localStorage.setItem('IP_RELAY_BILIAR', ip);
+                updateRelayBadge();
+                alert("✅ IP Relay berhasil diperbarui: " + ip);
             }
         }
 
-        function closeCustNameModal() {
-            document.getElementById('custNameModal').style.display = 'none';
+        function updateRelayBadge() {
+            var b = document.getElementById('relayStatusBadge');
+            if(b) b.innerText = "Relay IP: " + currentIpRelay;
+        }
+
+        function applyBizProfileUI() {
+            document.getElementById('displayBrandName').innerText = bizProfile.name;
+            document.getElementById('printBizName').innerText = bizProfile.name;
+            document.getElementById('printBizAddress').innerText = bizProfile.address;
+            document.getElementById('printBizPhone').innerText = "Telp: " + bizProfile.phone;
+            document.getElementById('printFooterBizName').innerText = bizProfile.name;
+        }
+
+        // LOGIKA MODAL POP-UP DURASI
+        function openDurationModal(index) {
+            pendingStartTableIndex = index;
+            var t = tablesData[index];
+            document.getElementById('durationModalTitle').innerText = "Atur Main Meja " + (index + 1);
+            document.getElementById('durationCustName').value = t.customerName || "";
+            document.getElementById('customMinutesInput').value = "60";
+            updateDurationPreview();
+            document.getElementById('durationModal').style.display = 'flex';
+        }
+
+        function closeDurationModal() {
+            document.getElementById('durationModal').style.display = 'none';
             pendingStartTableIndex = null;
-            pendingStartMinutes = 0;
         }
 
-        function confirmStartTable() {
-            var name = document.getElementById('modalCustomerNameInput').value.trim();
-            if (!name) { alert("Nama pelanggan tidak boleh kosong!"); return; }
+        function addPresetMinutes(mnt) {
+            var input = document.getElementById('customMinutesInput');
+            var curr = parseInt(input.value) || 0;
+            input.value = curr + mnt;
+            updateDurationPreview();
+        }
+
+        function updateDurationPreview() {
+            var mnt = parseInt(document.getElementById('customMinutesInput').value) || 0;
+            var jam = Math.floor(mnt / 60);
+            var sisa = mnt % 60;
+            var txtDurasi = "";
+            if (jam > 0) txtDurasi += jam + " Jam ";
+            if (sisa > 0) txtDurasi += sisa + " Min";
+            if (!txtDurasi) txtDurasi = "0 Min";
+
+            var estHarga = (mnt / 60) * hourlyRate;
+            document.getElementById('durationPreviewTxt').innerText = "Total: " + txtDurasi.trim() + " (" + formatRupiah(estHarga) + ")";
+        }
+
+        function confirmStartDuration() {
+            var name = document.getElementById('durationCustName').value.trim();
+            var minutes = parseInt(document.getElementById('customMinutesInput').value) || 0;
+
+            if (!name) { alert("Nama pelanggan wajib diisi!"); return; }
+            if (minutes <= 0) { alert("Durasi menit harus lebih dari 0!"); return; }
+
             if (pendingStartTableIndex !== null) {
-                executeAddTime(pendingStartTableIndex, pendingStartMinutes, name.toUpperCase());
-                closeCustNameModal();
+                executeAddTime(pendingStartTableIndex, minutes, name.toUpperCase());
+                closeDurationModal();
             }
         }
 
         function executeAddTime(index, minutes, customerName) {
-           // TAMBAHKAN BARIS INI (Ingat: index + 1 karena nomor meja mulai dari 1)
-sakelarLampu(index + 1, true);
+            sakelarLampu(index + 1, true);
         
             var now = Date.now();
             var currentTable = tablesData[index] || { endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, warned: false, expiredWarned: false, customerName: "", fnbList: [] };
@@ -953,17 +825,273 @@ sakelarLampu(index + 1, true);
             tablesData[index].customerName = customerName;
             db.ref('tables').set(tablesData);
         }
+                // RENDER KARTU MEJA (MODE HP: RINGKAS LEGA | MODE TV: 2 KOLOM BESERTA RINCIAN)
+        function renderTables() {
+            var grid = document.getElementById('tablesGrid');
+            grid.innerHTML = '';
+            for (var i = 0; i < TOTAL_TABLES; i++) {
+                var card = document.createElement('div');
+                card.className = 'table-card'; card.id = 'card-' + i;
+                card.innerHTML = 
+                    '<div class="card-header-row">' +
+                        '<div class="table-title">MEJA ' + (i + 1) + '</div>' +
+                        '<div class="customer-tv-display" id="cust-tv-' + i + '">-</div>' +
+                    '</div>' +
 
+                    '<div class="card-body-split">' +
+                        '<!-- SISI KIRI: RINCIAN DINAMIS (OTOMATIS MUNCUL KHUSUS MODE TV) -->' +
+                        '<div class="card-left-detail">' +
+                            '<div class="detail-title">📜 RINCIAN MEJA</div>' +
+                            '<div class="detail-items-list" id="detail-list-' + i + '">' +
+                                '<div class="detail-item-row"><span>Belum main</span></div>' +
+                            '</div>' +
+                        '</div>' +
+
+                        '<!-- SISI KANAN: TIMER & HARGA -->' +
+                        '<div class="card-right-timer">' +
+                            '<div class="timer-display" id="timer-' + i + '">00:00:00</div>' +
+                            '<div class="selesai-display" id="jam-mulai-selesai-' + i + '">🕒 Jam: -</div>' +
+                            '<div class="price-display"><span id="price-' + i + '">Rp 0</span></div>' +
+                        '</div>' +
+                    '</div>' +
+                    
+                    '<div class="controls" id="controls-normal-' + i + '">' +
+                        '<div class="btn-row">' +
+                            '<button class="btn-start" onclick="openDurationModal(' + i + ')">⏱️ Main / Tambah</button>' +
+                            '<button class="btn-fnb" onclick="openFnbModal(' + i + ')">☕ Cafe</button>' +
+                        '</div>' +
+                        '<div class="btn-row">' +
+                            '<button class="btn-move" onclick="openMoveTableModal(' + i + ')">🔀 Pindah</button>' +
+                            '<button class="btn-pay" onclick="openPayModal(' + i + ')">💳 Bayar</button>' +
+                            '<button class="btn-stop" id="btn-reset-' + i + '" onclick="resetTimerOnly(' + i + ')">Reset</button>' +
+                        '</div>' +
+                        '<div class="btn-row" style="margin-top:4px;">' +
+                            '<button style="background:#16a34a; color:white; padding:5px;" onclick="sakelarLampu(' + (i + 1) + ', true)">💡 ON</button>' +
+                            '<button style="background:#dc2626; color:white; padding:5px;" onclick="sakelarLampu(' + (i + 1) + ', false)">💡 OFF</button>' +
+                        '</div>' +
+                    '</div>' +
+
+                    '<div class="controls" id="controls-expired-' + i + '" style="display:none;">' +
+                        '<div class="btn-row">' +
+                            '<button class="btn-start" onclick="openDurationModal(' + i + ')">+ Tambah Waktu</button>' +
+                        '</div>' +
+                        '<div class="btn-row" style="margin-top:4px;">' +
+                            '<button class="btn-pay" style="padding:10px;" onclick="openPayModal(' + i + ')">💳 LANJUT PEMBAYARAN</button>' +
+                        '</div>' +
+                    '</div>';
+                grid.appendChild(card);
+            }
+            updateTimers();
+        }
+
+        // UPDATE TIMER & RINCIAN PESANAN
+        function updateTimers() {
+            var now = Date.now();
+            for (var i = 0; i < TOTAL_TABLES; i++) {
+                var table = tablesData[i] || { endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, warned: false, expiredWarned: false, customerName: "", fnbList: [] };
+                var timerEl = document.getElementById('timer-' + i);
+                var jamMulaiSelesaiEl = document.getElementById('jam-mulai-selesai-' + i);
+                var priceEl = document.getElementById('price-' + i);
+                var cardEl = document.getElementById('card-' + i);
+                var custTvEl = document.getElementById('cust-tv-' + i);
+                var detailListEl = document.getElementById('detail-list-' + i);
+                
+                var normalControls = document.getElementById('controls-normal-' + i);
+                var expiredControls = document.getElementById('controls-expired-' + i);
+                var btnResetEl = document.getElementById('btn-reset-' + i);
+
+                if (!timerEl) continue;
+
+                if (custTvEl) { custTvEl.innerText = table.customerName ? table.customerName.toUpperCase() : "-"; }
+
+                var bookedMinutes = table.bookedMinutes || 0;
+                var tablePrice = (bookedMinutes / 60) * hourlyRate;
+                var fnbTotal = calculateFnbTotal(table.fnbList);
+                var grandTotal = tablePrice + fnbTotal;
+
+                // RENDER RINCIAN DINAMIS (TAMPIL DI LAYAR TV)
+                if (detailListEl) {
+                    detailListEl.innerHTML = '';
+                    if (bookedMinutes > 0) {
+                        var jamTxt = (bookedMinutes / 60) + " Jam";
+                        detailListEl.innerHTML += '<div class="detail-item-row"><span class="detail-item-name">🎱 Biliar (' + jamTxt + ')</span><span>' + formatRupiah(tablePrice) + '</span></div>';
+                    }
+                    if (table.fnbList && table.fnbList.length > 0) {
+                        table.fnbList.forEach(function(item) {
+                            detailListEl.innerHTML += '<div class="detail-item-row"><span class="detail-item-name">☕ ' + item.name + '</span><span>' + formatRupiah(item.price) + '</span></div>';
+                        });
+                    }
+                    if (bookedMinutes === 0 && (!table.fnbList || table.fnbList.length === 0)) {
+                        detailListEl.innerHTML = '<div class="detail-item-row"><span style="color:#64748b;">Belum ada pesanan</span></div>';
+                    }
+                }
+
+                if (btnResetEl) {
+                    var elapsedSec = (now - (table.startTime || 0)) / 1000;
+                    if (table.isRunning && elapsedSec > 30) { btnResetEl.style.display = 'none'; } 
+                    else { btnResetEl.style.display = 'block'; }
+                }
+
+                if (!table.isRunning || table.endTime <= now) {
+                    timerEl.innerText = "00:00:00";
+                    if(jamMulaiSelesaiEl) jamMulaiSelesaiEl.innerText = "🕒 Jam: -";
+
+                    if (table.isRunning && table.endTime <= now) {
+                        cardEl.classList.remove('active', 'warning');
+                        cardEl.classList.add('expired');
+                        priceEl.innerText = formatRupiah(grandTotal);
+
+                        if (!table.expiredWarned) {
+                            table.expiredWarned = true;
+                            if (currentMode === 'tv') {
+                                speakWarning('Perhatian, waktu bermain Meja ' + (i + 1) + ' telah habis.');
+                            }
+                        }
+
+                        if (normalControls && expiredControls) {
+                            normalControls.style.display = 'none'; expiredControls.style.display = 'flex';
+                        }
+                    } else {
+                        cardEl.classList.remove('active', 'warning', 'expired');
+                        priceEl.innerText = formatRupiah(grandTotal);
+
+                        if (normalControls && expiredControls) {
+                            normalControls.style.display = 'flex'; expiredControls.style.display = 'none';
+                        }
+                    }
+                } else {
+                    cardEl.classList.add('active'); cardEl.classList.remove('expired');
+                    
+                    if(jamMulaiSelesaiEl) {
+                        jamMulaiSelesaiEl.innerText = "🕒 " + formatJam(table.startTime) + " - " + formatJam(table.endTime);
+                    }
+
+                    var diff = table.endTime - now;
+                    var totalSeconds = Math.floor(diff / 1000);
+                    priceEl.innerText = formatRupiah(grandTotal);
+
+                    if (normalControls && expiredControls) {
+                        normalControls.style.display = 'flex'; expiredControls.style.display = 'none';
+                    }
+
+                    if (totalSeconds <= 300 && !table.warned) {
+                        table.warned = true;
+                        if (currentMode === 'tv') {
+                            speakWarning('Perhatian, waktu bermain Meja ' + (i + 1) + ' tersisa lima menit lagi.');
+                        }
+                        cardEl.classList.add('warning');
+                    }
+
+                    var hours = String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, '0');
+                    var minutes = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
+                    var seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
+                    timerEl.innerText = hours + ':' + minutes + ':' + seconds;
+                }
+            }
+        }
+        // KONTROL UMUM & AUTH
+        function processLogin() {
+            var rawUser = document.getElementById('loginUsername').value.trim();
+            var rawPass = document.getElementById('loginPassword').value.trim();
+
+            if (!rawUser || !rawPass) { alert("Masukkan Username dan Password!"); return; }
+
+            var userLower = rawUser.toLowerCase();
+            var passLower = rawPass.toLowerCase();
+
+            if (userLower === 'owner' && passLower === '9999') {
+                currentUserRole = 'owner'; currentUsername = 'Pemilik';
+            } else {
+                var foundStaffKey = null;
+                var keys = Object.keys(staffAccounts);
+                for (var i = 0; i < keys.length; i++) {
+                    var k = keys[i];
+                    if (k.toLowerCase() === userLower && staffAccounts[k].password.toLowerCase() === passLower) {
+                        foundStaffKey = k; break;
+                    }
+                }
+                if (foundStaffKey) { currentUserRole = 'karyawan'; currentUsername = foundStaffKey; } 
+                else { alert("Username atau Password Salah!"); return; }
+            }
+
+            localStorage.setItem('r21_user_role', currentUserRole);
+            localStorage.setItem('r21_username', currentUsername);
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            applyUserRolePermissions();
+        }
+
+        function logout() {
+            currentUserRole = null; currentUsername = '';
+            localStorage.removeItem('r21_user_role');
+            localStorage.removeItem('r21_username');
+            document.body.classList.remove('owner-mode');
+            if (currentMode !== 'tv') { document.getElementById('loginModal').style.display = 'flex'; }
+            closeSettingModal();
+        }
+
+        function applyUserRolePermissions() {
+            var ownerElements = document.querySelectorAll('.btn-owner-only');
+            var roleBadge = document.getElementById('userRoleBadge');
+            
+            if (currentUserRole === 'owner') {
+                ownerElements.forEach(function(el) { el.style.display = 'flex'; });
+                if(roleBadge) roleBadge.innerText = currentUsername + " (Owner)";
+                document.body.classList.add('owner-mode');
+            } else {
+                ownerElements.forEach(function(el) { el.style.display = 'none'; });
+                if(roleBadge) roleBadge.innerText = currentUsername || 'Karyawan';
+                document.body.classList.remove('owner-mode');
+            }
+        }
+
+        function formatJam(timestamp) {
+            if (!timestamp || timestamp <= 0) return "-";
+            var date = new Date(timestamp);
+            return String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0');
+        }
+
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
+        }
+
+        function calculateFnbTotal(fnbArray) {
+            var total = 0;
+            if (!fnbArray || !Array.isArray(fnbArray)) return 0;
+            fnbArray.forEach(function(item) { total += parseInt(item.price) || 0; });
+            return total;
+        }
+
+        function setMode(mode, save) {
+            if (save !== false) save = true;
+            currentMode = mode;
+            if (save) localStorage.setItem('biliard_mode', mode);
+            
+            if (mode === 'tv') {
+                document.body.classList.add('tv-mode');
+                document.getElementById('loginModal').style.display = 'none';
+                document.getElementById('btn-mode-tv').classList.add('active');
+                document.getElementById('btn-mode-controller').classList.remove('active');
+            } else {
+                document.body.classList.remove('tv-mode');
+                document.getElementById('btn-mode-controller').classList.add('active');
+                document.getElementById('btn-mode-tv').classList.remove('active');
+                if (!currentUserRole) { document.getElementById('loginModal').style.display = 'flex'; }
+            }
+        }
+
+        function updateHourlyRate(val) { db.ref('rate').set(parseInt(val) || 0); }
+
+        // PINDAH MEJA & RESET
         function openMoveTableModal(sourceIndex) {
             var currentTable = tablesData[sourceIndex];
             if (!currentTable || !currentTable.isRunning || currentTable.endTime <= Date.now()) {
                 alert("Meja ini sedang tidak aktif!"); return;
             }
-
             activeMoveSourceIndex = sourceIndex;
             var selectEl = document.getElementById('targetTableSelect');
-            selectEl.innerHTML = '';
-            var emptyCount = 0;
+            selectEl.innerHTML = ''; var emptyCount = 0;
 
             for (var i = 0; i < TOTAL_TABLES; i++) {
                 if (i !== sourceIndex) {
@@ -974,18 +1102,13 @@ sakelarLampu(index + 1, true);
                     }
                 }
             }
-
-            if (emptyCount === 0) {
-                alert("Tidak ada meja kosong yang tersedia untuk pindah!"); return;
-            }
-
+            if (emptyCount === 0) { alert("Tidak ada meja kosong tersedia!"); return; }
             document.getElementById('moveTableModalTitle').innerText = "Pindah Dari Meja " + (sourceIndex + 1);
             document.getElementById('moveTableModal').style.display = 'flex';
         }
 
         function closeMoveTableModal() {
-            document.getElementById('moveTableModal').style.display = 'none';
-            activeMoveSourceIndex = null;
+            document.getElementById('moveTableModal').style.display = 'none'; activeMoveSourceIndex = null;
         }
 
         function confirmMoveTable() {
@@ -993,14 +1116,14 @@ sakelarLampu(index + 1, true);
             var targetIndex = parseInt(document.getElementById('targetTableSelect').value);
             if (isNaN(targetIndex)) return;
 
+            sakelarLampu(activeMoveSourceIndex + 1, false); 
+            sakelarLampu(targetIndex + 1, true);         
+
             tablesData[targetIndex] = JSON.parse(JSON.stringify(tablesData[activeMoveSourceIndex]));
             clearTableDataLocal(activeMoveSourceIndex);
 
             db.ref('tables').set(tablesData, function(err) {
-                if (!err) {
-                    closeMoveTableModal();
-                    alert("Berhasil pindah ke Meja " + (targetIndex + 1) + "!");
-                }
+                if (!err) { closeMoveTableModal(); alert("Berhasil pindah ke Meja " + (targetIndex + 1) + "!"); }
             });
         }
 
@@ -1012,21 +1135,172 @@ sakelarLampu(index + 1, true);
         }
 
         function resetTimerOnly(index) {
-            // TAMBAHKAN BARIS INI
-sakelarLampu(index + 1, false);
-            if (confirm("Reset/Kosongkan timer Meja " + (index + 1) + " tanpa simpan omset?")) {
-                clearTableDataLocal(index);
-                db.ref('tables').set(tablesData);
+            sakelarLampu(index + 1, false);
+            if (confirm("Reset Meja " + (index + 1) + " tanpa simpan omset?")) {
+                clearTableDataLocal(index); db.ref('tables').set(tablesData);
             }
         }
+        // KONTROL UMUM & AUTH
+        function processLogin() {
+            var rawUser = document.getElementById('loginUsername').value.trim();
+            var rawPass = document.getElementById('loginPassword').value.trim();
+
+            if (!rawUser || !rawPass) { alert("Masukkan Username dan Password!"); return; }
+
+            var userLower = rawUser.toLowerCase();
+            var passLower = rawPass.toLowerCase();
+
+            if (userLower === 'owner' && passLower === '9999') {
+                currentUserRole = 'owner'; currentUsername = 'Pemilik';
+            } else {
+                var foundStaffKey = null;
+                var keys = Object.keys(staffAccounts);
+                for (var i = 0; i < keys.length; i++) {
+                    var k = keys[i];
+                    if (k.toLowerCase() === userLower && staffAccounts[k].password.toLowerCase() === passLower) {
+                        foundStaffKey = k; break;
+                    }
+                }
+                if (foundStaffKey) { currentUserRole = 'karyawan'; currentUsername = foundStaffKey; } 
+                else { alert("Username atau Password Salah!"); return; }
+            }
+
+            localStorage.setItem('r21_user_role', currentUserRole);
+            localStorage.setItem('r21_username', currentUsername);
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            applyUserRolePermissions();
+        }
+
+        function logout() {
+            currentUserRole = null; currentUsername = '';
+            localStorage.removeItem('r21_user_role');
+            localStorage.removeItem('r21_username');
+            document.body.classList.remove('owner-mode');
+            if (currentMode !== 'tv') { document.getElementById('loginModal').style.display = 'flex'; }
+            closeSettingModal();
+        }
+
+        function applyUserRolePermissions() {
+            var ownerElements = document.querySelectorAll('.btn-owner-only');
+            var roleBadge = document.getElementById('userRoleBadge');
+            
+            if (currentUserRole === 'owner') {
+                ownerElements.forEach(function(el) { el.style.display = 'flex'; });
+                if(roleBadge) roleBadge.innerText = currentUsername + " (Owner)";
+                document.body.classList.add('owner-mode');
+            } else {
+                ownerElements.forEach(function(el) { el.style.display = 'none'; });
+                if(roleBadge) roleBadge.innerText = currentUsername || 'Karyawan';
+                document.body.classList.remove('owner-mode');
+            }
+        }
+
+        function formatJam(timestamp) {
+            if (!timestamp || timestamp <= 0) return "-";
+            var date = new Date(timestamp);
+            return String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0');
+        }
+
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
+        }
+
+        function calculateFnbTotal(fnbArray) {
+            var total = 0;
+            if (!fnbArray || !Array.isArray(fnbArray)) return 0;
+            fnbArray.forEach(function(item) { total += parseInt(item.price) || 0; });
+            return total;
+        }
+
+        function setMode(mode, save) {
+            if (save !== false) save = true;
+            currentMode = mode;
+            if (save) localStorage.setItem('biliard_mode', mode);
+            
+            if (mode === 'tv') {
+                document.body.classList.add('tv-mode');
+                document.getElementById('loginModal').style.display = 'none';
+                document.getElementById('btn-mode-tv').classList.add('active');
+                document.getElementById('btn-mode-controller').classList.remove('active');
+            } else {
+                document.body.classList.remove('tv-mode');
+                document.getElementById('btn-mode-controller').classList.add('active');
+                document.getElementById('btn-mode-tv').classList.remove('active');
+                if (!currentUserRole) { document.getElementById('loginModal').style.display = 'flex'; }
+            }
+        }
+
+        function updateHourlyRate(val) { db.ref('rate').set(parseInt(val) || 0); }
+
+        // PINDAH MEJA & RESET
+        function openMoveTableModal(sourceIndex) {
+            var currentTable = tablesData[sourceIndex];
+            if (!currentTable || !currentTable.isRunning || currentTable.endTime <= Date.now()) {
+                alert("Meja ini sedang tidak aktif!"); return;
+            }
+            activeMoveSourceIndex = sourceIndex;
+            var selectEl = document.getElementById('targetTableSelect');
+            selectEl.innerHTML = ''; var emptyCount = 0;
+
+            for (var i = 0; i < TOTAL_TABLES; i++) {
+                if (i !== sourceIndex) {
+                    var t = tablesData[i];
+                    if (!t || (!t.isRunning && (!t.customerName || t.customerName === ""))) {
+                        selectEl.innerHTML += '<option value="' + i + '">Meja ' + (i + 1) + '</option>';
+                        emptyCount++;
+                    }
+                }
+            }
+            if (emptyCount === 0) { alert("Tidak ada meja kosong tersedia!"); return; }
+            document.getElementById('moveTableModalTitle').innerText = "Pindah Dari Meja " + (sourceIndex + 1);
+            document.getElementById('moveTableModal').style.display = 'flex';
+        }
+
+        function closeMoveTableModal() {
+            document.getElementById('moveTableModal').style.display = 'none'; activeMoveSourceIndex = null;
+        }
+
+        function confirmMoveTable() {
+            if (activeMoveSourceIndex === null) return;
+            var targetIndex = parseInt(document.getElementById('targetTableSelect').value);
+            if (isNaN(targetIndex)) return;
+
+            sakelarLampu(activeMoveSourceIndex + 1, false); 
+            sakelarLampu(targetIndex + 1, true);         
+
+            tablesData[targetIndex] = JSON.parse(JSON.stringify(tablesData[activeMoveSourceIndex]));
+            clearTableDataLocal(activeMoveSourceIndex);
+
+            db.ref('tables').set(tablesData, function(err) {
+                if (!err) { closeMoveTableModal(); alert("Berhasil pindah ke Meja " + (targetIndex + 1) + "!"); }
+            });
+        }
+
+        function clearTableDataLocal(index) {
+            tablesData[index].endTime = 0; tablesData[index].bookedMinutes = 0;
+            tablesData[index].startTime = 0; tablesData[index].isRunning = false;
+            tablesData[index].warned = false; tablesData[index].expiredWarned = false;
+            tablesData[index].customerName = ""; tablesData[index].fnbList = [];
+        }
+
+        function resetTimerOnly(index) {
+            sakelarLampu(index + 1, false);
+            if (confirm("Reset Meja " + (index + 1) + " tanpa simpan omset?")) {
+                clearTableDataLocal(index); db.ref('tables').set(tablesData);
+            }
+        }
+        // KONTROL PEMBAYARAN & SPLIT BILL
         function openPayModal(index) {
+            sakelarLampu(parseInt(index) + 1, false);
             var table = tablesData[index];
             var bookedMinutes = table.bookedMinutes || 0;
             var tablePrice = (bookedMinutes / 60) * hourlyRate;
             var fnbTotal = calculateFnbTotal(table.fnbList);
             var grandTotal = tablePrice + fnbTotal;
 
-            if (grandTotal === 0) { alert("Meja ini belum memiliki rincian transaksi."); return; }
+            if (grandTotal === 0) { alert("Meja ini belum memiliki transaksi."); return; }
 
             activePayTableIndex = index;
             document.getElementById('payModalTitle').innerText = "Rincian Pembayaran Meja " + (index + 1);
@@ -1056,9 +1330,7 @@ sakelarLampu(index + 1, false);
                 div.style.display = 'flex';
                 document.getElementById('splitCashInput').value = '';
                 document.getElementById('splitQrisInput').value = '';
-            } else {
-                div.style.display = 'none';
-            }
+            } else { div.style.display = 'none'; }
         }
 
         function calcSplitBillSisa() {
@@ -1083,20 +1355,14 @@ sakelarLampu(index + 1, false);
             var grandTotal = tablePrice + fnbTotal;
             var method = document.getElementById('payMethodSelect').value;
 
-            var cashPaid = grandTotal;
-            var qrisPaid = 0;
-
+            var cashPaid = grandTotal; var qrisPaid = 0;
             if (method === 'Split') {
                 cashPaid = parseInt(document.getElementById('splitCashInput').value) || 0;
                 qrisPaid = parseInt(document.getElementById('splitQrisInput').value) || 0;
                 if ((cashPaid + qrisPaid) !== grandTotal) {
-                    alert("Jumlah pembayaran Split Bill harus pas dengan total tagihan (" + formatRupiah(grandTotal) + ")!");
-                    return;
+                    alert("Jumlah Split Bill harus pas dengan total (" + formatRupiah(grandTotal) + ")!"); return;
                 }
-            } else if (method === 'QRIS') {
-                cashPaid = 0;
-                qrisPaid = grandTotal;
-            }
+            } else if (method === 'QRIS') { cashPaid = 0; qrisPaid = grandTotal; }
 
             var now = new Date();
             var historyItem = {
@@ -1117,26 +1383,23 @@ sakelarLampu(index + 1, false);
 
             db.ref('history').push(historyItem, function(err) {
                 if (!err) {
+                    printReceiptFromObj(historyItem);
                     clearTableDataLocal(index);
                     db.ref('tables').set(tablesData);
                     closePayModal();
-                    alert("Pembayaran berhasil disimpan!");
                 }
             });
         }
 
-        function openInventoryModal() {
-            renderInventoryList();
-            document.getElementById('inventoryModal').style.display = 'flex';
-        }
+        // MANAJEMEN STOK & POS CAFE (NON-BILIAR)
+        function openInventoryModal() { renderInventoryList(); document.getElementById('inventoryModal').style.display = 'flex'; }
         function closeInventoryModal() { document.getElementById('inventoryModal').style.display = 'none'; }
 
         function saveInventoryItem() {
             var name = document.getElementById('invItemName').value.trim();
             var price = parseInt(document.getElementById('invItemPrice').value) || 0;
             var stock = parseInt(document.getElementById('invItemStock').value) || 0;
-
-            if (!name || price <= 0) { alert("Isi nama dan harga barang!"); return; }
+            if (!name || price <= 0) { alert("Isi nama dan harga!"); return; }
 
             db.ref('inventory/' + name).set({ price: price, stock: stock }, function(err) {
                 if (!err) {
@@ -1150,17 +1413,14 @@ sakelarLampu(index + 1, false);
 
         function renderInventoryList() {
             var container = document.getElementById('inventoryListContainer');
-            if (!container) return;
-            container.innerHTML = '';
+            if (!container) return; container.innerHTML = '';
             var keys = Object.keys(inventoryData);
             if (keys.length === 0) {
-                container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:10px; font-size:0.85rem;">Belum ada stok barang</div>';
-                return;
+                container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:10px;">Belum ada stok</div>'; return;
             }
             keys.forEach(function(key) {
                 var item = inventoryData[key];
-                var row = document.createElement('div');
-                row.className = 'fnb-added-item';
+                var row = document.createElement('div'); row.className = 'fnb-added-item';
                 row.innerHTML = '<div><b>' + key + '</b> - ' + formatRupiah(item.price) + ' (Stok: ' + (item.stock || 0) + ')</div>' +
                     '<button class="btn-del-item" onclick="deleteInventoryItem(\'' + key + '\')">Hapus</button>';
                 container.appendChild(row);
@@ -1168,15 +1428,13 @@ sakelarLampu(index + 1, false);
         }
 
         function deleteInventoryItem(key) {
-            if (confirm("Hapus '" + key + "' dari daftar stok?")) {
-                db.ref('inventory/' + key).remove();
-            }
+            if (confirm("Hapus '" + key + "'?")) { db.ref('inventory/' + key).remove(); }
         }
 
         function populateStockDropdowns() {
             var sel1 = document.getElementById('posItemSelect');
             var sel2 = document.getElementById('tableFnbStockSelect');
-            if (sel1) sel1.innerHTML = '<option value="">-- Pilih Barang dari Stok --</option>';
+            if (sel1) sel1.innerHTML = '<option value="">-- Pilih Barang stok --</option>';
             if (sel2) sel2.innerHTML = '<option value="">-- Pilih Barang --</option>';
 
             Object.keys(inventoryData).forEach(function(k) {
@@ -1194,11 +1452,9 @@ sakelarLampu(index + 1, false);
                 document.getElementById('manualFnbPrice').value = inventoryData[selectedName].price;
             }
         }
-
+        // TRANSAKSI CAFE (NON-BILIAR) & PESANAN MEJA
         function openPosCafeModal() {
-            posCartList = [];
-            document.getElementById('posCustName').value = '';
-            renderPosCart();
+            posCartList = []; document.getElementById('posCustName').value = ''; renderPosCart();
             document.getElementById('posCafeModal').style.display = 'flex';
         }
         function closePosCafeModal() { document.getElementById('posCafeModal').style.display = 'none'; }
@@ -1206,10 +1462,9 @@ sakelarLampu(index + 1, false);
         function addPosCafeItem() {
             var nameSelect = document.getElementById('posItemSelect').value;
             var qty = parseInt(document.getElementById('posItemQty').value) || 1;
-
-            if (!nameSelect || !inventoryData[nameSelect]) { alert("Pilih barang dari daftar stok!"); return; }
+            if (!nameSelect || !inventoryData[nameSelect]) { alert("Pilih barang dari stok!"); return; }
             var item = inventoryData[nameSelect];
-            if ((item.stock || 0) < qty) { alert("Stok barang tidak mencukupi!"); return; }
+            if ((item.stock || 0) < qty) { alert("Stok tidak mencukupi!"); return; }
 
             posCartList.push({ name: nameSelect, price: item.price * qty, qty: qty, unitPrice: item.price });
             renderPosCart();
@@ -1218,13 +1473,11 @@ sakelarLampu(index + 1, false);
         function deletePosCartItem(idx) { posCartList.splice(idx, 1); renderPosCart(); }
 
         function renderPosCart() {
-            var container = document.getElementById('posCartList');
-            container.innerHTML = '';
+            var container = document.getElementById('posCartList'); container.innerHTML = '';
             var total = 0;
             posCartList.forEach(function(item, idx) {
                 total += item.price;
-                var row = document.createElement('div');
-                row.className = 'fnb-added-item';
+                var row = document.createElement('div'); row.className = 'fnb-added-item';
                 row.innerHTML = '<div><b>' + item.name + '</b> (' + item.qty + 'x) - ' + formatRupiah(item.price) + '</div>' +
                     '<button class="btn-del-item" onclick="deletePosCartItem(' + idx + ')">Hapus</button>';
                 container.appendChild(row);
@@ -1235,26 +1488,18 @@ sakelarLampu(index + 1, false);
         function processPosCafePayment() {
             var cust = document.getElementById('posCustName').value.trim() || 'PEMBELI CAFE';
             var method = document.getElementById('posPayMethod').value;
-            var total = 0;
-            posCartList.forEach(function(i) { total += i.price; });
-
-            if (posCartList.length === 0 || total === 0) { alert("Keranjang belanja masih kosong!"); return; }
+            var total = 0; posCartList.forEach(function(i) { total += i.price; });
+            if (posCartList.length === 0 || total === 0) { alert("Keranjang kosong!"); return; }
 
             var now = new Date();
             var historyItem = {
                 time: now.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}),
                 date: now.toLocaleDateString('id-ID'),
                 opDate: getOperationalDate(now),
-                table: 'CAFE',
-                customer: cust.toUpperCase(),
-                duration: 0,
-                tablePrice: 0,
-                fnbPrice: total,
-                total: total,
-                method: method,
-                cashPaid: method === 'Tunai' ? total : 0,
-                qrisPaid: method === 'QRIS' ? total : 0,
-                fnbList: posCartList
+                table: 'CAFE', customer: cust.toUpperCase(),
+                duration: 0, tablePrice: 0, fnbPrice: total, total: total,
+                method: method, cashPaid: method === 'Tunai' ? total : 0,
+                qrisPaid: method === 'QRIS' ? total : 0, fnbList: posCartList
             };
 
             posCartList.forEach(function(i) {
@@ -1266,8 +1511,8 @@ sakelarLampu(index + 1, false);
 
             db.ref('history').push(historyItem, function(err) {
                 if (!err) {
+                    printReceiptFromObj(historyItem);
                     closePosCafeModal();
-                    alert("Transaksi Cafe Berhasil Disimpan!");
                 }
             });
         }
@@ -1284,13 +1529,11 @@ sakelarLampu(index + 1, false);
         function addManualFnbItem() {
             var name = document.getElementById('manualFnbName').value.trim();
             var price = parseInt(document.getElementById('manualFnbPrice').value) || 0;
-            if (!name || price <= 0) { alert("Isi nama dan harga pesanan!"); return; }
+            if (!name || price <= 0) { alert("Isi pesanan!"); return; }
             
             if (inventoryData[name]) {
                 var currentStock = inventoryData[name].stock || 0;
-                if (currentStock > 0) {
-                    db.ref('inventory/' + name + '/stock').set(currentStock - 1);
-                }
+                if (currentStock > 0) { db.ref('inventory/' + name + '/stock').set(currentStock - 1); }
             }
 
             tempFnbList.push({ name: name, price: price });
@@ -1303,7 +1546,7 @@ sakelarLampu(index + 1, false);
         function renderTempFnbList() {
             var container = document.getElementById('fnbAddedList'); container.innerHTML = '';
             if (tempFnbList.length === 0) {
-                container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:10px; font-size:0.85rem;">Belum ada pesanan cafe</div>'; return;
+                container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:10px;">Belum ada pesanan</div>'; return;
             }
             tempFnbList.forEach(function(item, idx) {
                 var row = document.createElement('div'); row.className = 'fnb-added-item';
@@ -1314,53 +1557,49 @@ sakelarLampu(index + 1, false);
 
         function closeFnbModal() { document.getElementById('fnbModal').style.display = 'none'; }
         function saveFnbModal() {
-            if (activeFnbTableIndex !== null) { tablesData[activeFnbTableIndex].fnbList = tempFnbList; db.ref('tables').set(tablesData); }
+            if (activeFnbTableIndex !== null) { 
+                tablesData[activeFnbTableIndex].fnbList = tempFnbList; 
+                db.ref('tables').set(tablesData); 
+            }
             closeFnbModal();
         }
+
+        // KELOLA AKUN KARYAWAN
         function openStaffManagerModal() { renderStaffList(); document.getElementById('staffManagerModal').style.display = 'flex'; }
         function closeStaffManagerModal() { document.getElementById('staffManagerModal').style.display = 'none'; }
 
         function addStaffAccount() {
             var uInput = document.getElementById('newStaffUsername');
             var pInput = document.getElementById('newStaffPassword');
-            var u = uInput.value.trim();
-            var p = pInput.value.trim();
-
-            if (!u || !p) { alert("Isi Username dan Password karyawan!"); return; }
-            if (u.toLowerCase() === 'owner') { alert("Username 'owner' tidak boleh digunakan!"); return; }
+            var u = uInput.value.trim(); var p = pInput.value.trim();
+            if (!u || !p) { alert("Isi Username dan Password!"); return; }
+            if (u.toLowerCase() === 'owner') { alert("Username 'owner' dilarang!"); return; }
 
             db.ref('staffs/' + u).set({ password: p }, function(err) {
-                if (!err) {
-                    alert("Akun karyawan '" + u + "' berhasil dibuat!");
-                    uInput.value = ''; pInput.value = '';
-                }
+                if (!err) { alert("Akun '" + u + "' dibuat!"); uInput.value = ''; pInput.value = ''; }
             });
         }
 
         function deleteStaffAccount(u) {
-            if (confirm("Hapus akun karyawan '" + u + "'?")) {
-                db.ref('staffs/' + u).remove();
-            }
+            if (confirm("Hapus akun '" + u + "'?")) { db.ref('staffs/' + u).remove(); }
         }
 
         function renderStaffList() {
             var container = document.getElementById('staffListContainer');
-            if (!container) return;
-            container.innerHTML = '';
+            if (!container) return; container.innerHTML = '';
             var keys = Object.keys(staffAccounts);
             if (keys.length === 0) {
-                container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:10px; font-size:0.85rem;">Belum ada akun karyawan</div>';
-                return;
+                container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:10px;">Belum ada akun karyawan</div>'; return;
             }
             keys.forEach(function(key) {
-                var row = document.createElement('div');
-                row.className = 'fnb-added-item';
+                var row = document.createElement('div'); row.className = 'fnb-added-item';
                 row.innerHTML = '<div><b>' + key + '</b> (Pass: ' + staffAccounts[key].password + ')</div>' +
                     '<button class="btn-del-item" onclick="deleteStaffAccount(\'' + key + '\')">Hapus</button>';
                 container.appendChild(row);
             });
         }
 
+        // RIWAYAT TRANSAKSI OPERASIONAL
         function getOperationalDate(dateObj) {
             var d = new Date(dateObj);
             if (d.getHours() < 8) { d.setDate(d.getDate() - 1); }
@@ -1368,7 +1607,6 @@ sakelarLampu(index + 1, false);
         }
 
         function openHistoryModal() {
-            var todayOpDate = getOperationalDate(new Date());
             var filterInput = document.getElementById('historyDateFilter');
             if (filterInput && !filterInput.value) {
                 var d = new Date();
@@ -1384,9 +1622,7 @@ sakelarLampu(index + 1, false);
             var filterVal = document.getElementById('historyDateFilter').value;
             var targetOpDate = filterVal ? new Date(filterVal).toLocaleDateString('id-ID') : getOperationalDate(new Date());
 
-            var keys = Object.keys(dailyHistoryRaw);
-            var count = 0;
-
+            var keys = Object.keys(dailyHistoryRaw); var count = 0;
             keys.reverse().forEach(function(key) {
                 var item = dailyHistoryRaw[key];
                 var itemOpDate = item.opDate || item.date;
@@ -1408,24 +1644,22 @@ sakelarLampu(index + 1, false);
                     tbody.appendChild(tr);
                 }
             });
-
-            if (count === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#94a3b8;">Tidak ada riwayat transaksi pada tanggal operasional ini</td></tr>'; }
+            if (count === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#94a3b8;">Tidak ada riwayat transaksi pada tanggal ini</td></tr>'; }
         }
 
         function closeHistoryModal() { document.getElementById('historyModal').style.display = 'none'; }
 
         function deleteHistoryItem(key) {
-            if (confirm("Hapus transaksi ini dari riwayat?")) {
-                db.ref('history/' + key).remove(function() { renderHistoryTable(); });
-            }
+            if (confirm("Hapus transaksi ini?")) { db.ref('history/' + key).remove(function() { renderHistoryTable(); }); }
         }
 
         function reprintHistory(key) {
             if (dailyHistoryRaw[key]) { printReceiptFromObj(dailyHistoryRaw[key]); }
         }
 
-        /* CETAK STRUK PEMBAYARAN DENGAN RINCIAN TUNAI & QRIS UNTUK SPLIT BILL */
+        // CETAK STRUK STRUKTUR DINAMIS
         function printReceiptFromObj(item) {
+            applyBizProfileUI();
             var dateStr = (item.date || '-') + ' ' + (item.time || '-');
             document.getElementById('recDate').innerText = dateStr;
             document.getElementById('recId').innerText = 'TRX-' + Math.floor(1000 + Math.random() * 9000);
@@ -1436,12 +1670,8 @@ sakelarLampu(index + 1, false);
 
             var methodEl = document.getElementById('recMethod');
             if (item.method === 'Split') {
-                var tunaiVal = formatRupiah(item.cashPaid || 0);
-                var qrisVal = formatRupiah(item.qrisPaid || 0);
-                methodEl.innerHTML = 'Split Bill<br><small style="font-size:10px;">(Tunai: ' + tunaiVal + ' | QRIS: ' + qrisVal + ')</small>';
-            } else {
-                methodEl.innerText = item.method || "Tunai";
-            }
+                methodEl.innerHTML = 'Split Bill<br><small style="font-size:10px;">(Tunai: ' + formatRupiah(item.cashPaid || 0) + ' | QRIS: ' + formatRupiah(item.qrisPaid || 0) + ')</small>';
+            } else { methodEl.innerText = item.method || "Tunai"; }
 
             var recFnbListEl = document.getElementById('recFnbList'); recFnbListEl.innerHTML = '';
             if (item.fnbList && Array.isArray(item.fnbList)) {
@@ -1455,6 +1685,7 @@ sakelarLampu(index + 1, false);
             window.print();
         }
 
+        // LAPORAN SHIFT WHATSAPP
         function sendWaReport() {
             var currentOpDate = getOperationalDate(new Date());
             var totalOmset = 0; var totalSewa = 0; var totalFnb = 0;
@@ -1470,29 +1701,31 @@ sakelarLampu(index + 1, false);
                     if (item.method === 'Split') {
                         totalTunai += item.cashPaid || 0;
                         totalQris += item.qrisPaid || 0;
-                    } else if (item.method === 'QRIS') {
-                        totalQris += item.total || 0;
-                    } else {
-                        totalTunai += item.total || 0;
-                    }
+                    } else if (item.method === 'QRIS') { totalQris += item.total || 0; } 
+                    else { totalTunai += item.total || 0; }
                     transactionCount++;
                 }
             });
 
-            var message = "📊 *LAPORAN OMSET SHIFT NIGHT R21 POOL & CAFE*\n";
-            message += "📅 Operasional Tgl: " + currentOpDate + "\n__________________________________\n\n";
+            var message = "📊 *LAPORAN SHIFT " + bizProfile.name.toUpperCase() + "*\n";
+            message += "📅 Tanggal Operasional: " + currentOpDate + "\n__________________________________\n\n";
             message += "📈 Total Transaksi: " + transactionCount + " Sesi\n";
             message += "🎱 Sewa Meja: " + formatRupiah(totalSewa) + "\n";
             message += "☕ Pesanan Cafe: " + formatRupiah(totalFnb) + "\n__________________________________\n";
             message += "💵 *Tunai:* " + formatRupiah(totalTunai) + "\n";
             message += "📱 *QRIS:* " + formatRupiah(totalQris) + "\n__________________________________\n";
             message += "💰 *TOTAL OMSET SHIFT: " + formatRupiah(totalOmset) + "*\n\n";
-            message += "_Laporan dikirim otomatis dari Sistem Kasir R21._";
+            message += "_Laporan dikirim otomatis dari Sistem Kasir._";
 
-            window.open("https://wa.me/" + OWNER_WA + "?text=" + encodeURIComponent(message), '_blank');
+            var cleanPhone = bizProfile.phone.replace(/\D/g, '');
+            if (cleanPhone.startsWith('0')) cleanPhone = '62' + cleanPhone.substring(1);
+            window.open("https://wa.me/" + cleanPhone + "?text=" + encodeURIComponent(message), '_blank');
         }
 
+        // INISIALISASI UTAMA
         function init() {
+            applyBizProfileUI();
+            updateRelayBadge();
             setMode(currentMode, false);
             if (currentUserRole && currentMode !== 'tv') {
                 document.getElementById('loginModal').style.display = 'none';
@@ -1501,51 +1734,10 @@ sakelarLampu(index + 1, false);
                 document.getElementById('loginModal').style.display = 'flex';
             }
             renderTables();
-            updateClock();
             setInterval(updateTimers, 1000);
         }
 
         init();
-        function testSound() {
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        
-        const pesan = new SpeechSynthesisUtterance("Pemberitahuan. Suara sistem R21 Pool and Cafe sudah aktif.");
-        pesan.lang = 'id-ID';
-        pesan.rate = 0.9;
-        pesan.pitch = 1.0;
-
-        window.speechSynthesis.speak(pesan);
-    } else {
-        alert("Sistem suara tidak didukung di browser atau TV ini.");
-    }
-                }
-        
     </script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-<script>
-  function sakelarLampu(nomorMeja, status) {
-    var nilai = status ? "1" : "0"; 
-    var secret = "TGOVnUocfqgdoULy9ZxgGx0Y4gammmu9ttr45HI4";
-    var url = "https://billing0015-32812-default-rtdb.firebaseio.com/vTfGwLoX/relays/billing" + nomorMeja + ".json?auth=" + secret;
-
-    fetch(url, {
-      method: 'PUT',
-      body: JSON.stringify(nilai),
-      headers: { 'Content-Type': 'application/json' }
-    })
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
-      console.log("Berhasil kirim ke Firebase:", data);
-    })
-    .catch(function(err) {
-      console.error("Gagal kirim:", err);
-    });
-  }
-</script>
-
-    
 </body>
 </html>
