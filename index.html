@@ -75,7 +75,6 @@
         .mode-selector button.active { background: var(--accent); }
         .btn-setting { background: #475569 !important; color: white !important; }
         
-        /* MODE HP KASIR: 1 KOLOM KE BAWAH (BISA SCROLL KE BAWAH DENGAN PAS) */
         .grid-container {
             display: flex;
             flex-direction: column;
@@ -128,7 +127,6 @@
             margin-bottom: 10px;
         }
 
-        /* SEMBUNYIKAN RINCIAN KASIR DI HP */
         .card-left-detail {
             display: none;
         }
@@ -172,8 +170,7 @@
         .btn-pay { background-color: #10b981; color: white; font-weight: bold; }
         .btn-move { background-color: #8b5cf6; color: white; font-weight: bold; }
         .controls button:active { opacity: 0.7; transform: scale(0.98); }
-        
-        /* MODAL POPUP */
+                /* MODAL POPUP */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); z-index: 100; justify-content: center; align-items: center;
@@ -208,7 +205,14 @@
         .history-table th, .history-table td { border: 1px solid #334155; padding: 8px; text-align: left; }
         .history-table th { background-color: #0f172a; color: var(--price-color); }
 
-        /* MODE TV DISPLAY: Tetap Grid 3 Kolom & Rincian Pesanan Tampil di Kiri */
+        .history-summary-box {
+            background: #0f172a; border: 1px solid #334155; border-radius: 8px;
+            padding: 10px; margin-top: 12px; display: flex; justify-content: space-between;
+            align-items: center; flex-wrap: wrap; gap: 10px;
+        }
+        .history-summary-total { font-weight: bold; font-size: 0.95rem; color: var(--accent); }
+
+        /* MODE TV DISPLAY */
         body.tv-mode {
             padding: 8px !important;
             height: 100vh;
@@ -232,7 +236,6 @@
         }
         body.tv-mode .table-card { padding: 8px 10px; border-radius: 8px; }
         
-        /* POPUP RINCIAN DINAMIS KHUSUS MODE TV */
         body.tv-mode .card-body-split {
             display: flex !important;
             flex-direction: row;
@@ -249,8 +252,7 @@
             max-height: 100px;
             overflow-y: auto;
         }
-        body.tv-mode .detail-title { font-size: 0.7rem; color: #94a3b8; font-weight: bold; margin-bottom: 2px; }
-        body.tv-mode .detail-items-list { font-size: 0.7rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 2px; }
+        body.tv-mode .detail-items-list { font-size: 0.7rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 2px; width: 100%; }
         body.tv-mode .detail-item-row { display: flex; justify-content: space-between; gap: 4px; }
 
         body.tv-mode .card-right-timer { flex: 1.1; }
@@ -294,7 +296,7 @@
         <button class="btn-setting" onclick="openSettingModal()">⚙️ Setting</button>
     </div>
 
-    <!-- GRID MEJA BILIAR (MODE HP: 1 KOLOM SCROLL KE BAWAH) -->
+    <!-- GRID MEJA BILIAR -->
     <div class="grid-container" id="tablesGrid"></div>
 
     <!-- MODAL POP-UP PILIH DURASI MEJA -->
@@ -382,7 +384,7 @@
         </div>
     </div>
 
-    <!-- MODAL POPUP LAINNYA -->
+    <!-- MODAL LOGIN -->
     <div class="modal-overlay" id="loginModal">
         <div class="modal-content" style="max-width:320px; text-align:center;">
             <div class="modal-title">LOGIN SYSTEM</div>
@@ -393,7 +395,7 @@
             <button class="btn-action" style="width:100%; padding:10px; margin-top:5px; background:#22c55e;" onclick="processLogin()">Masuk</button>
         </div>
     </div>
-
+    <!-- MODAL PINDAH MEJA -->
     <div class="modal-overlay" id="moveTableModal">
         <div class="modal-content" style="max-width:350px;">
             <div class="modal-title" id="moveTableModalTitle">Pindah Meja</div>
@@ -408,6 +410,7 @@
         </div>
     </div>
 
+    <!-- MODAL BAYAR -->
     <div class="modal-overlay" id="payModal">
         <div class="modal-content" style="max-width:400px;">
             <div class="modal-title" id="payModalTitle">Rincian Pembayaran Meja X</div>
@@ -440,6 +443,7 @@
         </div>
     </div>
 
+    <!-- MODAL TRANSAKSI CAFE -->
     <div class="modal-overlay" id="posCafeModal">
         <div class="modal-content" style="max-width:400px;">
             <div class="modal-title">TRANSAKSI CAFE (NON-BILIAR)</div>
@@ -468,6 +472,7 @@
         </div>
     </div>
 
+    <!-- MODAL STOK CAFE -->
     <div class="modal-overlay" id="inventoryModal">
         <div class="modal-content" style="max-width:450px;">
             <div class="modal-title">STOK BARANG CAFE</div>
@@ -485,6 +490,7 @@
         </div>
     </div>
 
+    <!-- MODAL KELOLA KARYAWAN -->
     <div class="modal-overlay" id="staffManagerModal">
         <div class="modal-content" style="max-width:400px;">
             <div class="modal-title">KELOLA AKUN KARYAWAN</div>
@@ -501,6 +507,7 @@
         </div>
     </div>
 
+    <!-- MODAL PESANAN MEJA CAFE -->
     <div class="modal-overlay" id="fnbModal">
         <div class="modal-content">
             <div class="modal-title" id="modalTableTitle">Tambah Pesanan Cafe</div>
@@ -520,6 +527,7 @@
         </div>
     </div>
 
+    <!-- MODAL RIWAYAT TRANSAKSI -->
     <div class="modal-overlay" id="historyModal">
         <div class="modal-content" style="max-width:650px;">
             <div class="modal-title">RIWAYAT TRANSAKSI OPERASIONAL</div>
@@ -542,13 +550,23 @@
                     <tbody id="historyTableBody"></tbody>
                 </table>
             </div>
-            <div class="modal-footer" style="margin-top:20px;">
+
+            <!-- RINGKASAN TOTAL UANG & TOMBOL WA WA SHIFT -->
+            <div class="history-summary-box">
+                <div>
+                    Total Transaksi: <span id="historyTotalCount" style="font-weight:bold; color:white;">0</span> | 
+                    Total Uang: <span id="historyTotalAmount" class="history-summary-total">Rp 0</span>
+                </div>
+                <button style="background:#16a34a; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="sendWaReport()">📱 Kirim WA Shift</button>
+            </div>
+
+            <div class="modal-footer" style="margin-top:15px;">
                 <button style="background:#64748b; color:white;" onclick="closeHistoryModal()">Tutup</button>
             </div>
         </div>
     </div>
 
-    <!-- STRUK PRINT AREA DINAMIS -->
+    <!-- AREA CETAK STRUK -->
     <div id="receiptPrintArea">
         <div class="receipt-header">
             <div class="receipt-title" id="printBizName">R21 POOL & CAFE</div>
@@ -571,7 +589,7 @@
             <p>-- <span id="printFooterBizName">R21 Pool & Cafe</span> --</p>
         </div>
     </div>
-    <script>
+        <script>
         var firebaseConfig = {
             databaseURL: "https://billiard-21-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
@@ -649,6 +667,7 @@
 
         db.ref('history').on('value', function(snapshot) {
             dailyHistoryRaw = snapshot.val() || {};
+            renderHistoryTable();
         });
 
         // CEK SOUND & SUARA PERINGATAN
@@ -685,23 +704,30 @@
             }
         }
 
-                               // CONTROL SAKELAR LAMPU RELAY (FORCE IMAGE PING)
+        // CONTROL SAKELAR LAMPU RELAY (MAPPING HARDWARE BARU)
         function sakelarLampu(nomorMeja, status) {
-            var angkaMeja = String(nomorMeja).replace(/\D/g, '');
-            if (!angkaMeja) angkaMeja = "1";
+            var mejaInt = parseInt(nomorMeja);
+            var channelRelay = mejaInt;
+
+                  // Mapping Channel Baru Fix: Meja 1 -> CH 7, Meja 4 -> CH 8
+        if (mejaInt === 1) {
+            channelRelay = 7;
+        } else if (mejaInt === 4) {
+            channelRelay = 8;
+        }
+
+
             var state = status ? "1" : "0"; 
 
             // 1. Kirim Sinyal HTTP Lokal via Image Object
-            var targetUrl = "http://" + currentIpRelay + "/" + angkaMeja + "/" + state;
+            var targetUrl = "http://" + currentIpRelay + "/" + channelRelay + "/" + state;
             var imgPing = new Image();
-            
-            // Bypass cache browser agar request selalu terkirim ulang
             imgPing.src = targetUrl + "?t=" + new Date().getTime();
 
             // 2. Sync Sinyal ke Firebase Cloud
             var secret = "TGOVnUocfqgdoULy9ZxgGx0Y4gammmu9ttr45HI4";
             var isPowered = status ? true : false;
-            var urlCloud = "https://billing0015-32812-default-rtdb.firebaseio.com/vTfGwLoX/relays/billing" + angkaMeja + ".json?auth=" + secret;
+            var urlCloud = "https://billing0015-32812-default-rtdb.firebaseio.com/vTfGwLoX/relays/billing" + channelRelay + ".json?auth=" + secret;
 
             fetch(urlCloud, {
                 method: 'PUT',
@@ -709,8 +735,7 @@
                 headers: { 'Content-Type': 'application/json' }
             }).catch(function(e) { console.log("Cloud sync error", e); });
         }
-
-        // PENGATURAN MODAL SETTING & PROFIL USAHA
+                // PENGATURAN MODAL SETTING & PROFIL USAHA
         function openSettingModal() {
             document.getElementById('cfgBizName').value = bizProfile.name;
             document.getElementById('cfgBizAddress').value = bizProfile.address;
@@ -825,7 +850,8 @@
             tablesData[index].customerName = customerName;
             db.ref('tables').set(tablesData);
         }
-                // RENDER KARTU MEJA (MODE HP: RINGKAS LEGA | MODE TV: 2 KOLOM BESERTA RINCIAN)
+
+        // RENDER KARTU MEJA
         function renderTables() {
             var grid = document.getElementById('tablesGrid');
             grid.innerHTML = '';
@@ -839,15 +865,10 @@
                     '</div>' +
 
                     '<div class="card-body-split">' +
-                        '<!-- SISI KIRI: RINCIAN DINAMIS (OTOMATIS MUNCUL KHUSUS MODE TV) -->' +
                         '<div class="card-left-detail">' +
-                            '<div class="detail-title">📜 RINCIAN MEJA</div>' +
-                            '<div class="detail-items-list" id="detail-list-' + i + '">' +
-                                '<div class="detail-item-row"><span>Belum main</span></div>' +
-                            '</div>' +
+                            '<div class="detail-items-list" id="detail-list-' + i + '"></div>' +
                         '</div>' +
 
-                        '<!-- SISI KANAN: TIMER & HARGA -->' +
                         '<div class="card-right-timer">' +
                             '<div class="timer-display" id="timer-' + i + '">00:00:00</div>' +
                             '<div class="selesai-display" id="jam-mulai-selesai-' + i + '">🕒 Jam: -</div>' +
@@ -884,7 +905,7 @@
             updateTimers();
         }
 
-        // UPDATE TIMER & RINCIAN PESANAN
+        // UPDATE TIMER & KEDIP RELAY 30 DETIK TERAKHIR
         function updateTimers() {
             var now = Date.now();
             for (var i = 0; i < TOTAL_TABLES; i++) {
@@ -909,7 +930,7 @@
                 var fnbTotal = calculateFnbTotal(table.fnbList);
                 var grandTotal = tablePrice + fnbTotal;
 
-                // RENDER RINCIAN DINAMIS (TAMPIL DI LAYAR TV)
+                // RENDER DETAIL MEJA MODE TV (TANPA TULISAN "RINCIAN MEJA", BERSIH JIKA KOSONG)
                 if (detailListEl) {
                     detailListEl.innerHTML = '';
                     if (bookedMinutes > 0) {
@@ -921,9 +942,6 @@
                             detailListEl.innerHTML += '<div class="detail-item-row"><span class="detail-item-name">☕ ' + item.name + '</span><span>' + formatRupiah(item.price) + '</span></div>';
                         });
                     }
-                    if (bookedMinutes === 0 && (!table.fnbList || table.fnbList.length === 0)) {
-                        detailListEl.innerHTML = '<div class="detail-item-row"><span style="color:#64748b;">Belum ada pesanan</span></div>';
-                    }
                 }
 
                 if (btnResetEl) {
@@ -932,6 +950,7 @@
                     else { btnResetEl.style.display = 'block'; }
                 }
 
+                // WAKTU HABIS ATAU MEJA IDLE
                 if (!table.isRunning || table.endTime <= now) {
                     timerEl.innerText = "00:00:00";
                     if(jamMulaiSelesaiEl) jamMulaiSelesaiEl.innerText = "🕒 Jam: -";
@@ -943,6 +962,8 @@
 
                         if (!table.expiredWarned) {
                             table.expiredWarned = true;
+                            // OTOMATIS MATIKAN RELAY / LAMPU SAAT 00:00
+                            sakelarLampu(i + 1, false);
                             if (currentMode === 'tv') {
                                 speakWarning('Perhatian, waktu bermain Meja ' + (i + 1) + ' telah habis.');
                             }
@@ -973,6 +994,14 @@
                     if (normalControls && expiredControls) {
                         normalControls.style.display = 'flex'; expiredControls.style.display = 'none';
                     }
+
+                                        // SINYAL PERINGATAN 30 DETIK: MATI SEBENTAR PAS DETIK KE-30 SAJA
+                    if (totalSeconds === 30) {
+                        sakelarLampu(i + 1, false); // Matikan sebentar pas detik ke-30
+                    } else if (totalSeconds < 30 && totalSeconds > 0) {
+                        sakelarLampu(i + 1, true);  // Detik 29 sampai 1 balik nyala normal
+                    }
+
 
                     if (totalSeconds <= 300 && !table.warned) {
                         table.warned = true;
@@ -1140,157 +1169,7 @@
                 clearTableDataLocal(index); db.ref('tables').set(tablesData);
             }
         }
-        // KONTROL UMUM & AUTH
-        function processLogin() {
-            var rawUser = document.getElementById('loginUsername').value.trim();
-            var rawPass = document.getElementById('loginPassword').value.trim();
 
-            if (!rawUser || !rawPass) { alert("Masukkan Username dan Password!"); return; }
-
-            var userLower = rawUser.toLowerCase();
-            var passLower = rawPass.toLowerCase();
-
-            if (userLower === 'owner' && passLower === '9999') {
-                currentUserRole = 'owner'; currentUsername = 'Pemilik';
-            } else {
-                var foundStaffKey = null;
-                var keys = Object.keys(staffAccounts);
-                for (var i = 0; i < keys.length; i++) {
-                    var k = keys[i];
-                    if (k.toLowerCase() === userLower && staffAccounts[k].password.toLowerCase() === passLower) {
-                        foundStaffKey = k; break;
-                    }
-                }
-                if (foundStaffKey) { currentUserRole = 'karyawan'; currentUsername = foundStaffKey; } 
-                else { alert("Username atau Password Salah!"); return; }
-            }
-
-            localStorage.setItem('r21_user_role', currentUserRole);
-            localStorage.setItem('r21_username', currentUsername);
-            document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('loginUsername').value = '';
-            document.getElementById('loginPassword').value = '';
-            applyUserRolePermissions();
-        }
-
-        function logout() {
-            currentUserRole = null; currentUsername = '';
-            localStorage.removeItem('r21_user_role');
-            localStorage.removeItem('r21_username');
-            document.body.classList.remove('owner-mode');
-            if (currentMode !== 'tv') { document.getElementById('loginModal').style.display = 'flex'; }
-            closeSettingModal();
-        }
-
-        function applyUserRolePermissions() {
-            var ownerElements = document.querySelectorAll('.btn-owner-only');
-            var roleBadge = document.getElementById('userRoleBadge');
-            
-            if (currentUserRole === 'owner') {
-                ownerElements.forEach(function(el) { el.style.display = 'flex'; });
-                if(roleBadge) roleBadge.innerText = currentUsername + " (Owner)";
-                document.body.classList.add('owner-mode');
-            } else {
-                ownerElements.forEach(function(el) { el.style.display = 'none'; });
-                if(roleBadge) roleBadge.innerText = currentUsername || 'Karyawan';
-                document.body.classList.remove('owner-mode');
-            }
-        }
-
-        function formatJam(timestamp) {
-            if (!timestamp || timestamp <= 0) return "-";
-            var date = new Date(timestamp);
-            return String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0');
-        }
-
-        function formatRupiah(number) {
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
-        }
-
-        function calculateFnbTotal(fnbArray) {
-            var total = 0;
-            if (!fnbArray || !Array.isArray(fnbArray)) return 0;
-            fnbArray.forEach(function(item) { total += parseInt(item.price) || 0; });
-            return total;
-        }
-
-        function setMode(mode, save) {
-            if (save !== false) save = true;
-            currentMode = mode;
-            if (save) localStorage.setItem('biliard_mode', mode);
-            
-            if (mode === 'tv') {
-                document.body.classList.add('tv-mode');
-                document.getElementById('loginModal').style.display = 'none';
-                document.getElementById('btn-mode-tv').classList.add('active');
-                document.getElementById('btn-mode-controller').classList.remove('active');
-            } else {
-                document.body.classList.remove('tv-mode');
-                document.getElementById('btn-mode-controller').classList.add('active');
-                document.getElementById('btn-mode-tv').classList.remove('active');
-                if (!currentUserRole) { document.getElementById('loginModal').style.display = 'flex'; }
-            }
-        }
-
-        function updateHourlyRate(val) { db.ref('rate').set(parseInt(val) || 0); }
-
-        // PINDAH MEJA & RESET
-        function openMoveTableModal(sourceIndex) {
-            var currentTable = tablesData[sourceIndex];
-            if (!currentTable || !currentTable.isRunning || currentTable.endTime <= Date.now()) {
-                alert("Meja ini sedang tidak aktif!"); return;
-            }
-            activeMoveSourceIndex = sourceIndex;
-            var selectEl = document.getElementById('targetTableSelect');
-            selectEl.innerHTML = ''; var emptyCount = 0;
-
-            for (var i = 0; i < TOTAL_TABLES; i++) {
-                if (i !== sourceIndex) {
-                    var t = tablesData[i];
-                    if (!t || (!t.isRunning && (!t.customerName || t.customerName === ""))) {
-                        selectEl.innerHTML += '<option value="' + i + '">Meja ' + (i + 1) + '</option>';
-                        emptyCount++;
-                    }
-                }
-            }
-            if (emptyCount === 0) { alert("Tidak ada meja kosong tersedia!"); return; }
-            document.getElementById('moveTableModalTitle').innerText = "Pindah Dari Meja " + (sourceIndex + 1);
-            document.getElementById('moveTableModal').style.display = 'flex';
-        }
-
-        function closeMoveTableModal() {
-            document.getElementById('moveTableModal').style.display = 'none'; activeMoveSourceIndex = null;
-        }
-
-        function confirmMoveTable() {
-            if (activeMoveSourceIndex === null) return;
-            var targetIndex = parseInt(document.getElementById('targetTableSelect').value);
-            if (isNaN(targetIndex)) return;
-
-            sakelarLampu(activeMoveSourceIndex + 1, false); 
-            sakelarLampu(targetIndex + 1, true);         
-
-            tablesData[targetIndex] = JSON.parse(JSON.stringify(tablesData[activeMoveSourceIndex]));
-            clearTableDataLocal(activeMoveSourceIndex);
-
-            db.ref('tables').set(tablesData, function(err) {
-                if (!err) { closeMoveTableModal(); alert("Berhasil pindah ke Meja " + (targetIndex + 1) + "!"); }
-            });
-        }
-
-        function clearTableDataLocal(index) {
-            tablesData[index].endTime = 0; tablesData[index].bookedMinutes = 0;
-            tablesData[index].startTime = 0; tablesData[index].isRunning = false;
-            tablesData[index].warned = false; tablesData[index].expiredWarned = false;
-            tablesData[index].customerName = ""; tablesData[index].fnbList = [];
-        }
-
-        function resetTimerOnly(index) {
-            sakelarLampu(index + 1, false);
-            if (confirm("Reset Meja " + (index + 1) + " tanpa simpan omset?")) {
-                clearTableDataLocal(index); db.ref('tables').set(tablesData);
-            }
-        }
         // KONTROL PEMBAYARAN & SPLIT BILL
         function openPayModal(index) {
             sakelarLampu(parseInt(index) + 1, false);
@@ -1383,10 +1262,11 @@
 
             db.ref('history').push(historyItem, function(err) {
                 if (!err) {
-                    printReceiptFromObj(historyItem);
+                    // FITUR AUTO-CETAK STRUK DIHILANGKAN Sesuai Permintaan
                     clearTableDataLocal(index);
                     db.ref('tables').set(tablesData);
                     closePayModal();
+                    alert("✅ Pembayaran Meja " + (index + 1) + " Berhasil Disimpan!");
                 }
             });
         }
@@ -1511,8 +1391,8 @@
 
             db.ref('history').push(historyItem, function(err) {
                 if (!err) {
-                    printReceiptFromObj(historyItem);
                     closePosCafeModal();
+                    alert("✅ Transaksi Cafe Berhasil Disimpan!");
                 }
             });
         }
@@ -1599,7 +1479,7 @@
             });
         }
 
-        // RIWAYAT TRANSAKSI OPERASIONAL
+        // RIWAYAT TRANSAKSI OPERASIONAL & PENJUMLAHAN TOTAL UANG
         function getOperationalDate(dateObj) {
             var d = new Date(dateObj);
             if (d.getHours() < 8) { d.setDate(d.getDate() - 1); }
@@ -1618,16 +1498,24 @@
         }
 
         function renderHistoryTable() {
-            var tbody = document.getElementById('historyTableBody'); tbody.innerHTML = '';
+            var tbody = document.getElementById('historyTableBody'); 
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            
             var filterVal = document.getElementById('historyDateFilter').value;
             var targetOpDate = filterVal ? new Date(filterVal).toLocaleDateString('id-ID') : getOperationalDate(new Date());
 
-            var keys = Object.keys(dailyHistoryRaw); var count = 0;
+            var keys = Object.keys(dailyHistoryRaw); 
+            var count = 0;
+            var grandTotalAmount = 0;
+
             keys.reverse().forEach(function(key) {
                 var item = dailyHistoryRaw[key];
                 var itemOpDate = item.opDate || item.date;
                 if (itemOpDate === targetOpDate) {
                     count++;
+                    grandTotalAmount += (item.total || 0);
+
                     var tr = document.createElement('tr');
                     var deleteBtn = (currentUserRole === 'owner') ? '<button style="background:#ef4444; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" onclick="deleteHistoryItem(\'' + key + '\')">🗑️</button>' : '';
                     var methodTxt = item.method;
@@ -1644,7 +1532,16 @@
                     tbody.appendChild(tr);
                 }
             });
-            if (count === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#94a3b8;">Tidak ada riwayat transaksi pada tanggal ini</td></tr>'; }
+
+            if (count === 0) { 
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#94a3b8;">Tidak ada riwayat transaksi pada tanggal ini</td></tr>'; 
+            }
+
+            // Update Total Uang dan Jumlah Transaksi di Ringkasan Bawah Modal
+            var totalCountEl = document.getElementById('historyTotalCount');
+            var totalAmountEl = document.getElementById('historyTotalAmount');
+            if (totalCountEl) totalCountEl.innerText = count;
+            if (totalAmountEl) totalAmountEl.innerText = formatRupiah(grandTotalAmount);
         }
 
         function closeHistoryModal() { document.getElementById('historyModal').style.display = 'none'; }
@@ -1657,7 +1554,7 @@
             if (dailyHistoryRaw[key]) { printReceiptFromObj(dailyHistoryRaw[key]); }
         }
 
-        // CETAK STRUK STRUKTUR DINAMIS
+        // CETAK STRUK MANUAL VIA STRUKTUR DINAMIS
         function printReceiptFromObj(item) {
             applyBizProfileUI();
             var dateStr = (item.date || '-') + ' ' + (item.time || '-');
@@ -1687,7 +1584,9 @@
 
         // LAPORAN SHIFT WHATSAPP
         function sendWaReport() {
-            var currentOpDate = getOperationalDate(new Date());
+            var filterVal = document.getElementById('historyDateFilter').value;
+            var currentOpDate = filterVal ? new Date(filterVal).toLocaleDateString('id-ID') : getOperationalDate(new Date());
+
             var totalOmset = 0; var totalSewa = 0; var totalFnb = 0;
             var totalTunai = 0; var totalQris = 0; var transactionCount = 0;
 
