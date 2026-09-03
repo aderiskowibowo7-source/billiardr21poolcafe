@@ -212,55 +212,106 @@
         }
         .history-summary-total { font-weight: bold; font-size: 0.95rem; color: var(--accent); }
 
-        /* MODE TV DISPLAY */
-        body.tv-mode {
-            padding: 8px !important;
-            height: 100vh;
-            box-sizing: border-box;
-            overflow: hidden;
-            justify-content: center;
-            background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), 
-                        url('bg-tv.png') no-repeat center center / cover !important;
-        }
-        body.tv-mode h1#page-title, 
-        body.tv-mode .controls, 
-        body.tv-mode .header-status-bar, 
-        body.tv-mode .mode-selector { display: none !important; }
+            /* MODE TV DISPLAY (DITINGGIKAN & SESUAI SKETSA) */
+    body.tv-mode {
+        padding: 10px !important;
+        height: 100vh;
+        box-sizing: border-box;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), 
+                    url('bg-tv.png') no-repeat center center / cover !important;
+    }
+    body.tv-mode h1#page-title, 
+    body.tv-mode .controls, 
+    body.tv-mode .header-status-bar, 
+    body.tv-mode .mode-selector { display: none !important; }
 
-        body.tv-mode .brand-subtitle { font-size: 1.4rem; margin-bottom: 4px; letter-spacing: 2px; text-align: center; }
-        body.tv-mode .grid-container { 
-            display: grid !important;
-            grid-template-columns: repeat(3, 1fr) !important; 
-            gap: 8px; 
-            max-width: 100%;
-        }
-        body.tv-mode .table-card { padding: 8px 10px; border-radius: 8px; }
-        
-        body.tv-mode .card-body-split {
-            display: flex !important;
-            flex-direction: row;
-            gap: 8px;
-            width: 100%;
-        }
-        body.tv-mode .card-left-detail {
-            display: flex !important;
-            flex: 1;
-            background: rgba(15, 23, 42, 0.9);
-            border-radius: 6px;
-            padding: 6px;
-            border: 1px solid #334155;
-            max-height: 100px;
-            overflow-y: auto;
-        }
-        body.tv-mode .detail-items-list { font-size: 0.7rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 2px; width: 100%; }
-        body.tv-mode .detail-item-row { display: flex; justify-content: space-between; gap: 4px; }
+    body.tv-mode .brand-subtitle { 
+        font-size: 1.3rem; 
+        margin-bottom: 8px; 
+        letter-spacing: 2px; 
+        text-align: center; 
+    }
+    
+    body.tv-mode .grid-container { 
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important; 
+        grid-template-rows: repeat(2, 1fr) !important;
+        gap: 12px; 
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: 1;
+    }
+    
+    body.tv-mode .table-card { 
+        padding: 12px; 
+        border-radius: 10px; 
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-sizing: border-box;
+    }
+    
+    body.tv-mode .card-header-row {
+        margin-bottom: 6px;
+        padding-bottom: 6px;
+    }
+    
+    body.tv-mode .card-body-split {
+        display: flex !important;
+        flex-direction: column;
+        flex: 1;
+        gap: 6px;
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    body.tv-mode .card-left-detail {
+        display: flex !important;
+        flex: 1;
+        background: rgba(15, 23, 42, 0.6);
+        border-radius: 6px;
+        padding: 8px;
+        border: 1px solid #334155;
+        max-height: 100%;
+        overflow-y: auto;
+    }
+    
+    body.tv-mode .detail-items-list { 
+        font-size: 0.85rem; 
+        color: #cbd5e1; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 4px; 
+        width: 100%; 
+    }
+    body.tv-mode .detail-item-row { display: flex; justify-content: space-between; gap: 8px; }
 
-        body.tv-mode .card-right-timer { flex: 1.1; }
-        body.tv-mode .timer-display { font-size: 2rem; margin: 2px 0; }
-        body.tv-mode .selesai-display { font-size: 0.75rem; margin-bottom: 2px; }
-        body.tv-mode .price-display { font-size: 0.95rem; margin-bottom: 2px; padding: 2px 6px; }
-        body.tv-mode .table-title { font-size: 1.05rem; }
-        body.tv-mode .customer-tv-display { font-size: 0.85rem; padding: 2px 6px; max-width: 100%; }
+    body.tv-mode .card-right-timer { 
+        width: 100%; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: flex-end; 
+        border-top: 1px dashed #334155;
+        padding-top: 6px;
+    }
+    body.tv-mode .timer-display { font-size: 2.2rem; margin: 2px 0; font-weight: bold; }
+    body.tv-mode .selesai-display { font-size: 0.8rem; margin-bottom: 2px; }
+    body.tv-mode .price-display { 
+        font-size: 1rem; 
+        margin-bottom: 2px; 
+        padding: 4px 10px; 
+        width: 100%; 
+        box-sizing: border-box;
+        display: flex;
+        justify-content: space-between;
+    }
+    body.tv-mode .table-title { font-size: 1.1rem; }
+    body.tv-mode .customer-tv-display { font-size: 0.85rem; padding: 2px 8px; max-width: 100%; }
+    
 
         #receiptPrintArea { display: none; }
         @media print {
