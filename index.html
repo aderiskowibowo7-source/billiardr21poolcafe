@@ -618,11 +618,13 @@
 
         var currentMode = localStorage.getItem('biliard_mode') || 'controller';
 
-        // LOGIKA PROMO AKUMULASI 4+1 JAM
+                // LOGIKA PROMO AKUMULASI 4+1 YANG BENAR (MAIN 5 JAM: 4 JAM BAYAR, 1 JAM GRATIS)
         function calculateBillingLogic(totalMinutes) {
-            var fullHours = Math.floor(totalMinutes / 60);
-            var bonusHours = Math.floor(fullHours / 4);
-            var paidHours = fullHours - bonusHours;
+            var totalHours = Math.round(totalMinutes / 60);
+            var sets = Math.floor(totalHours / 5);
+            var remainder = totalHours % 5;
+            var paidHours = (sets * 4) + remainder;
+            var bonusHours = sets * 1; 
             var tablePrice = paidHours * hourlyRate;
             return {
                 paidHours: paidHours,
@@ -631,10 +633,17 @@
             };
         }
 
+
         // CONTROL SAKELAR LAMPU RELAY (MAPPING HARDWARE LAMA: MEJA 1 -> CH 7, MEJA 4 -> CH 8)
         function sakelarLampu(nomorMeja, status) {
             var mejaInt = parseInt(nomorMeja);
             var channelRelay = mejaInt;
+
+            if (mejaInt === 1) {
+                channelRelay = 7;
+            } else if (mejaInt === 4) {
+                channelRelay = 8;
+            }
 
             var state = status ? "1" : "0"; 
 
