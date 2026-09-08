@@ -618,13 +618,20 @@
 
         var currentMode = localStorage.getItem('biliard_mode') || 'controller';
 
-                // LOGIKA PROMO AKUMULASI 4+1 YANG BENAR (MAIN 5 JAM: 4 JAM BAYAR, 1 JAM GRATIS)
+                        // LOGIKA PROMO AKUMULASI 4+1 YANG PRESISI
         function calculateBillingLogic(totalMinutes) {
             var totalHours = Math.round(totalMinutes / 60);
-            var sets = Math.floor(totalHours / 5);
-            var remainder = totalHours % 5;
-            var paidHours = (sets * 4) + remainder;
-            var bonusHours = sets * 1; 
+            var paidHours = totalHours;
+            var bonusHours = 0;
+
+            // Promo 4+1 baru jalan jika total main sudah mencapai 5 jam atau lebih
+            if (totalHours >= 5) {
+                var sets = Math.floor(totalHours / 5);
+                var remainder = totalHours % 5;
+                paidHours = (sets * 4) + remainder;
+                bonusHours = totalHours - paidHours;
+            }
+
             var tablePrice = paidHours * hourlyRate;
             return {
                 paidHours: paidHours,
@@ -632,6 +639,7 @@
                 tablePrice: tablePrice
             };
         }
+
 
 
         // CONTROL SAKELAR LAMPU RELAY (MAPPING HARDWARE LAMA: MEJA 1 -> CH 7, MEJA 4 -> CH 8)
