@@ -3,118 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kasir & Timer Biliar R21</title>
+    <title>R21 Pool & Cafe - Management System</title>
     
+    <!-- Firebase SDK (v8) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent: #22c55e;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --text: #f8fafc;
-            --price-color: #38bdf8;
-            --subtext-color: #f1f5f9;
-            --cust-color: #facc15;
+            --bg-dark: #0b0f19;
+            --card-bg: #151e2e;
+            --card-border: #24344d;
+            --accent-green: #10b981;
+            --accent-blue: #38bdf8;
+            --accent-purple: #8b5cf6;
+            --warning-amber: #f59e0b;
+            --danger-red: #ef4444;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --gold-cust: #facc15;
         }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text);
+
+        * {
+            box-sizing: border-box;
             margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
             padding: 12px;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
         }
 
-        h1#page-title { margin-bottom: 2px; font-size: 1.3rem; text-align: center; }
-        .brand-subtitle {
-            font-size: 1.05rem;
-            color: var(--price-color);
-            font-weight: bold;
-            margin-bottom: 8px;
-            letter-spacing: 2px;
-        }
-        
-        .header-status-bar {
+        /* HEADER & STATUS BAR */
+        header {
+            width: 100%;
+            max-width: 1200px;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+        }
+
+        .header-status {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
             margin-bottom: 10px;
         }
-        .status-badge {
-            font-size: 0.75rem;
-            padding: 4px 10px;
-            border-radius: 12px;
-            background: #334155;
-            color: #94a3b8;
-            font-weight: bold;
-        }
-        .status-badge.online { background: #065f46; color: #34d399; }
-        .relay-status-badge {
-            font-size: 0.75rem;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-weight: bold;
-            background: #991b1b;
-            color: #fca5a5;
-        }
-        .relay-status-badge.connected { background: #065f46; color: #34d399; }
 
-        .mode-selector { margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-        .mode-selector button {
-            padding: 8px 12px; font-weight: bold; cursor: pointer; border: none;
-            border-radius: 6px; background: #334155; color: white; font-size: 0.8rem;
+        .badge-status {
+            font-size: 0.72rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: #1e293b;
+            color: var(--text-muted);
+            font-weight: 700;
+            border: 1px solid var(--card-border);
         }
-        .mode-selector button.active { background: var(--accent); }
-        .btn-setting { background: #475569 !important; color: white !important; }
-        
-        .grid-container {
+
+        .badge-status.online {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            border-color: var(--accent-green);
+        }
+
+        /* NAVIGASI MODE TAMPILAN */
+        .mode-nav {
             display: flex;
-            flex-direction: column;
+            gap: 6px;
+            background: var(--card-bg);
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .mode-nav button {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mode-nav button.active {
+            background: var(--accent-blue);
+            color: #000;
+        }
+
+        .mode-nav button.btn-cfg {
+            background: #334155;
+            color: #fff;
+        }
+                /* GRID LAYOUT CONTAINER */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 12px;
             width: 100%;
-            max-width: 500px;
+            max-width: 1200px;
         }
-        
+
+        /* 1. MODE HP (PORTRAIT) */
+        body.mode-portrait .grid-container {
+            grid-template-columns: 1fr;
+            max-width: 480px;
+        }
+
+        /* 2. MODE KASIR LANDSCAPE (DESKTOP / TABLET / ANDROID TV MOUSE) */
+        body.mode-landscape .grid-container {
+            grid-template-columns: repeat(3, 1fr);
+            max-width: 1200px;
+        }
+
+        /* 3. MODE TV DISPLAY (MONITORING PELANGGAN ONLY) */
+        body.mode-tv-display {
+            padding: 8px;
+            overflow: hidden;
+            background: linear-gradient(rgba(11, 15, 25, 0.85), rgba(11, 15, 25, 0.85)), 
+                        url('bg-tv.png') no-repeat center center / cover;
+        }
+
+        body.mode-tv-display header,
+        body.mode-tv-display .controls,
+        body.mode-tv-display .mode-nav,
+        body.mode-tv-display .header-status {
+            display: none !important;
+        }
+
+        body.mode-tv-display .grid-container {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 100%;
+            height: calc(100vh - 50px);
+        }
+
+        /* CARD MEJA BILIAR */
         .table-card {
-            background-color: var(--card-bg); border-radius: 12px; padding: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex;
-            flex-direction: column; border: 2px solid #334155;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 12px;
+            border: 2px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
             transition: all 0.2s ease;
-            box-sizing: border-box;
-            width: 100%;
         }
-        .table-card.active { border-color: var(--accent); }
-        .table-card.warning { border-color: var(--warning); }
-        .table-card.expired { border-color: var(--danger); }
-        
+
+        .table-card.active { border-color: var(--accent-green); }
+        .table-card.warning { border-color: var(--warning-amber); }
+        .table-card.expired { border-color: var(--danger-red); }
+
         .card-header-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            width: 100%;
-            margin-bottom: 8px;
-            border-bottom: 1px dashed #334155;
+            border-bottom: 1px dashed var(--card-border);
             padding-bottom: 6px;
+            margin-bottom: 8px;
         }
-        .table-title { font-size: 1.05rem; font-weight: bold; color: white; }
-        .customer-tv-display {
-            font-size: 0.85rem;
+
+        .table-title {
+            font-size: 1.1rem;
             font-weight: 800;
-            color: var(--cust-color);
-            text-transform: uppercase;
+            color: #fff;
+        }
+
+        .customer-tv-display {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--gold-cust);
             background: rgba(250, 204, 21, 0.1);
-            padding: 3px 10px;
+            padding: 3px 8px;
             border-radius: 6px;
             border: 1px solid rgba(250, 204, 21, 0.2);
-            max-width: 150px;
+            text-transform: uppercase;
+            max-width: 140px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -122,146 +208,213 @@
 
         .card-body-split {
             display: flex;
-            gap: 10px;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .timer-display {
+            font-size: 2.2rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 900;
+            color: var(--text-muted);
+            line-height: 1;
+        }
+
+        .table-card.active .timer-display { color: var(--accent-green); }
+        .table-card.warning .timer-display { color: var(--warning-amber); }
+        .table-card.expired .timer-display { color: var(--danger-red); animation: blink 1s infinite; }
+
+        @keyframes blink { 50% { opacity: 0.3; } }
+
+        .price-display {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--accent-blue);
+            background: rgba(56, 189, 248, 0.1);
+            padding: 4px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            text-align: center;
+            margin-top: 4px;
+        }
+
+        /* BADGE PROMO BONUS 1 JAM */
+        .promo-badge {
+            font-size: 0.7rem;
+            font-weight: 800;
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--accent-purple);
+            border: 1px solid var(--accent-purple);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-top: 4px;
+            text-align: center;
+            display: none;
+        }
+        .promo-badge.show { display: block; }
+                /* KONTROL & TOMBOL */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 6px;
             width: 100%;
+        }
+
+        .controls button {
+            flex: 1;
+            padding: 8px 4px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.78rem;
+            transition: all 0.15s ease;
+        }
+
+        .btn-start { background-color: #2563eb; color: #fff; }
+        .btn-stop { background-color: var(--danger-red); color: #fff; }
+        .btn-fnb { background-color: var(--warning-amber); color: #fff; }
+        .btn-pay { background-color: var(--accent-green); color: #fff; }
+        .btn-move { background-color: var(--accent-purple); color: #fff; }
+
+        .controls button:active {
+            opacity: 0.8;
+            transform: scale(0.97);
+        }
+
+        /* MODAL POP-UP OVERLAY */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 18px;
+            border-radius: 12px;
+            width: 92%;
+            max-width: 460px;
+            border: 1px solid var(--card-border);
+            max-height: 88vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-title {
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: var(--accent-blue);
+            text-align: center;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .form-group input, 
+        .form-group select {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--card-border);
+            background-color: var(--bg-dark);
+            color: #fff;
+            font-size: 0.85rem;
+        }
+
+        .duration-preset-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
             margin-bottom: 10px;
         }
 
-        .card-left-detail {
-            display: none;
-        }
-
-        .card-right-timer {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-        }
-        .timer-display {
-            font-size: 2.2rem; font-family: monospace; font-weight: bold;
-            margin: 0; color: #94a3b8; line-height: 1;
-        }
-        .selesai-display { font-size: 0.8rem; font-weight: bold; color: var(--warning); margin: 4px 0; }
-
-        .table-card.active .timer-display { color: var(--accent); }
-        .table-card.warning .timer-display { color: var(--warning); }
-        .table-card.expired .timer-display { color: var(--danger); animation: blink 1s infinite; }
-
-        .price-display {
-            font-size: 1.1rem; font-weight: bold; color: var(--price-color);
-            background: rgba(56, 189, 248, 0.1);
-            padding: 4px 12px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.2);
-            text-align: center; width: 90%;
-        }
-
-        @keyframes blink { 50% { opacity: 0.3; } }
-        
-        .controls { display: flex; flex-direction: column; gap: 5px; width: 100%; }
-        .btn-row { display: flex; gap: 5px; width: 100%; }
-        .controls button {
-            flex: 1; padding: 8px 4px; border: none; border-radius: 5px;
-            font-weight: bold; cursor: pointer; font-size: 0.8rem;
-        }
-        .btn-start { background-color: #2563eb; color: white; }
-        .btn-stop { background-color: var(--danger); color: white; }
-        .btn-fnb { background-color: #f59e0b; color: white; }
-        .btn-pay { background-color: #10b981; color: white; font-weight: bold; }
-        .btn-move { background-color: #8b5cf6; color: white; font-weight: bold; }
-        .controls button:active { opacity: 0.7; transform: scale(0.98); }
-                /* MODAL POPUP */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); z-index: 100; justify-content: center; align-items: center;
-        }
-        .modal-content {
-            background: var(--card-bg); padding: 18px; border-radius: 12px; width: 90%; max-width: 450px;
-            border: 1px solid #475569; max-height: 85vh; overflow-y: auto;
-        }
-        .modal-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 12px; color: var(--price-color); text-align: center; }
-        
-        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-        .form-group label { font-size: 0.8rem; font-weight: bold; color: #cbd5e1; }
-        .form-group input, .form-group select {
-            padding: 9px; border-radius: 6px; border: 1px solid #475569;
-            background-color: #0f172a; color: white; font-size: 0.85rem;
-        }
-
-        .duration-preset-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
         .duration-preset-grid button {
-            background: #334155; color: white; border: 1px solid #475569; padding: 10px;
-            border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem;
+            background: #1e293b;
+            color: #fff;
+            border: 1px solid var(--card-border);
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.85rem;
         }
 
-        .fnb-added-list { margin-top: 10px; border-top: 1px solid #334155; padding-top: 8px; }
-        .fnb-added-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dashed #334155; font-size: 0.8rem; }
-        .btn-del-item { background: #ef4444; color: white; border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
+        .modal-footer {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
 
-        .modal-footer { display: flex; gap: 8px; margin-top: 15px; }
-        .modal-footer button { flex: 1; padding: 9px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .modal-footer button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+        }
 
-        .history-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 10px; }
-        .history-table th, .history-table td { border: 1px solid #334155; padding: 8px; text-align: left; }
-        .history-table th { background-color: #0f172a; color: var(--price-color); }
+        /* TABEL RIWAYAT TRANSAKSI */
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            margin-top: 10px;
+        }
+
+        .history-table th, 
+        .history-table td {
+            border: 1px solid var(--card-border);
+            padding: 8px;
+            text-align: left;
+        }
+
+        .history-table th {
+            background-color: var(--bg-dark);
+            color: var(--accent-blue);
+        }
 
         .history-summary-box {
-            background: #0f172a; border: 1px solid #334155; border-radius: 8px;
-            padding: 10px; margin-top: 12px; display: flex; justify-content: space-between;
-            align-items: center; flex-wrap: wrap; gap: 10px;
+            background: var(--bg-dark);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-        .history-summary-total { font-weight: bold; font-size: 0.95rem; color: var(--accent); }
 
-        /* MODE TV DISPLAY */
-        body.tv-mode {
-            padding: 8px !important;
-            height: 100vh;
-            box-sizing: border-box;
-            overflow: hidden;
-            justify-content: center;
-            background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), 
-                        url('bg-tv.png') no-repeat center center / cover !important;
-        }
-        body.tv-mode h1#page-title, 
-        body.tv-mode .controls, 
-        body.tv-mode .header-status-bar, 
-        body.tv-mode .mode-selector { display: none !important; }
-
-        body.tv-mode .brand-subtitle { font-size: 1.4rem; margin-bottom: 4px; letter-spacing: 2px; text-align: center; }
-        body.tv-mode .grid-container { 
-            display: grid !important;
-            grid-template-columns: repeat(3, 1fr) !important; 
-            gap: 8px; 
-            max-width: 100%;
-        }
-        body.tv-mode .table-card { padding: 8px 10px; border-radius: 8px; }
-        
-        body.tv-mode .card-body-split {
-            display: flex !important;
-            flex-direction: row;
-            gap: 8px;
-            width: 100%;
-        }
-        body.tv-mode .card-left-detail {
-            display: flex !important;
-            flex: 1;
-            background: rgba(15, 23, 42, 0.9);
-            border-radius: 6px;
-            padding: 6px;
-            border: 1px solid #334155;
-            max-height: 100px;
-            overflow-y: auto;
-        }
-        body.tv-mode .detail-items-list { font-size: 0.7rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 2px; width: 100%; }
-        body.tv-mode .detail-item-row { display: flex; justify-content: space-between; gap: 4px; }
-
-        body.tv-mode .card-right-timer { flex: 1.1; }
-        body.tv-mode .timer-display { font-size: 2rem; margin: 2px 0; }
-        body.tv-mode .selesai-display { font-size: 0.75rem; margin-bottom: 2px; }
-        body.tv-mode .price-display { font-size: 0.95rem; margin-bottom: 2px; padding: 2px 6px; }
-        body.tv-mode .table-title { font-size: 1.05rem; }
-        body.tv-mode .customer-tv-display { font-size: 0.85rem; padding: 2px 6px; max-width: 100%; }
-
+        /* CETAK STRUK RECEIPT */
         #receiptPrintArea { display: none; }
         @media print {
             body * { visibility: hidden; }
@@ -273,68 +426,171 @@
                 color: black; background: white; padding: 5px;
             }
             .receipt-header { text-align: center; border-bottom: 1px dashed black; padding-bottom: 5px; margin-bottom: 5px; }
-            .receipt-title { font-weight: bold; font-size: 14px; }
             .receipt-line { display: flex; justify-content: space-between; margin: 3px 0; }
-            .receipt-footer { text-align: center; border-top: 1px dashed black; margin-top: 8px; padding-top: 5px; font-size: 10px; }
         }
     </style>
 </head>
-<body>
-    <h1 id="page-title">Sistem Timer & Kasir</h1>
-    <div class="brand-subtitle" id="displayBrandName">R21 POOL & CAFE</div>
-    
-    <div class="header-status-bar">
-        <div id="statusBadge" class="status-badge">Cloud: Connecting...</div>
-        <div id="relayStatusBadge" class="relay-status-badge">Relay IP: 192.168.1.20</div>
-    </div>
-    
-    <!-- HEADER BARIS TOMBOL (MODE & SETTING) -->
-    <div class="mode-selector">
-        <button id="btn-mode-controller" onclick="setMode('controller')">Mode HP (Kasir)</button>
-        <button id="btn-mode-tv" onclick="setMode('tv')">Mode TV (Display)</button>
-        <button style="background-color: #22c55e;" onclick="testSound()">🔊 Cek Sound</button>
-        <button class="btn-setting" onclick="openSettingModal()">⚙️ Setting</button>
-    </div>
+<body class="mode-portrait">
 
-    <!-- GRID MEJA BILIAR -->
-    <div class="grid-container" id="tablesGrid"></div>
+    <!-- HEADER & LOGO USAHA -->
+    <header>
+        <h1 class="brand-title" id="displayBrandName">R21 POOL & CAFE</h1>
+        
+        <div class="header-status">
+            <div id="statusBadge" class="badge-status">Cloud: Connecting...</div>
+            <div id="relayStatusBadge" class="badge-status">Relay IP: 192.168.1.20</div>
+        </div>
 
-    <!-- MODAL POP-UP PILIH DURASI MEJA -->
+        <!-- NAVIGASI MENGUBAH 3 MODE TAMPILAN -->
+        <div class="mode-nav">
+            <button id="btn-mode-portrait" onclick="setMode('portrait')">📱 Mode HP Kasir</button>
+            <button id="btn-mode-landscape" onclick="setMode('landscape')">💻 Mode Landscape Kasir</button>
+            <button id="btn-mode-tv" onclick="setMode('tv')">📺 Mode TV Display</button>
+            <button style="background: var(--accent-green); color: #000;" onclick="testSound()">🔊 Cek Suara</button>
+            <button class="btn-cfg" onclick="openSettingModal()">⚙️ Setting</button>
+        </div>
+    </header>
+
+    <!-- CONTAINER GRID MEJA BILIAR (MEJA 1 - 6 GENERATE OTOMATIS) -->
+    <main class="grid-container" id="tablesGrid"></main>
+
+    <!-- AREA CETAK STRUK (HIDDEN HINGGA PRINT) -->
+    <div id="receiptPrintArea">
+        <div class="receipt-header">
+            <div style="font-weight:bold; font-size:14px;" id="printBizName">R21 POOL & CAFE</div>
+            <div id="printBizAddress">Jl. Biliar No. 21</div>
+            <div id="printBizPhone">Telp: 0811-4989-333</div>
+        </div>
+        <div class="receipt-line"><span>Tanggal:</span><span id="recDate">-</span></div>
+        <div class="receipt-line"><span>Pelanggan:</span><span id="recCustomer" style="text-transform:uppercase;">-</span></div>
+        <div style="border-bottom: 1px dashed black; margin: 5px 0;"></div>
+        <div class="receipt-line"><span id="recTable">Sewa Meja</span><span id="recDuration">-</span></div>
+        <div class="receipt-line"><span>Biaya Meja:</span><span id="recTablePrice">Rp 0</span></div>
+        <div style="border-bottom: 1px dashed black; margin: 5px 0;"></div>
+        <div id="recFnbList"></div>
+        <div style="border-bottom: 1px dashed black; margin: 5px 0;"></div>
+        <div class="receipt-line" style="font-weight: bold; font-size: 13px;"><span>TOTAL BAYAR:</span><span id="recTotal">Rp 0</span></div>
+        <div class="receipt-line"><span>Metode Bayar:</span><span id="recMethod">Tunai</span></div>
+        <div style="text-align:center; margin-top:8px; font-size:10px;">
+            <p>Terima kasih atas kunjungan Anda!</p>
+        </div>
+    </div>
+        <!-- MODAL POP-UP ATUR DURASI & PROMO 4+1 JAM -->
     <div class="modal-overlay" id="durationModal">
-        <div class="modal-content" style="max-width:360px;">
+        <div class="modal-content" style="max-width:380px;">
             <div class="modal-title" id="durationModalTitle">Mulai Meja X</div>
             <div class="form-group">
                 <label>Nama Pelanggan (Wajib):</label>
                 <input type="text" id="durationCustName" placeholder="Masukkan nama..." style="text-transform:uppercase;">
             </div>
-            <div style="font-size:0.8rem; font-weight:bold; color:#cbd5e1; margin-bottom:6px;">Pilih / Tambah Durasi:</div>
+            <div style="font-size:0.8rem; font-weight:bold; color:var(--text-muted); margin-bottom:6px;">Pilih Preset Durasi:</div>
             <div class="duration-preset-grid">
-                <button onclick="addPresetMinutes(30)">+30 Min</button>
                 <button onclick="addPresetMinutes(60)">+1 Jam</button>
                 <button onclick="addPresetMinutes(120)">+2 Jam</button>
+                <button onclick="addPresetMinutes(240)" style="border-color:var(--accent-purple); color:var(--accent-purple);">+4 Jam (Promo)</button>
             </div>
             <div class="form-group">
-                <label>Total Durasi Dipilih (Menit):</label>
+                <label>Total Durasi Bermain (Menit):</label>
                 <input type="number" id="customMinutesInput" value="60" min="1" oninput="updateDurationPreview()">
             </div>
-            <div style="background:#0f172a; padding:10px; border-radius:6px; text-align:center; font-weight:bold; color:var(--price-color); margin-bottom:12px;" id="durationPreviewTxt">
+            <div style="background:var(--bg-dark); padding:10px; border-radius:6px; text-align:center; font-weight:bold; color:var(--accent-blue); margin-bottom:12px;" id="durationPreviewTxt">
                 Total: 1 Jam (Rp 40.000)
             </div>
             <div class="modal-footer">
-                <button style="background:#ef4444; color:white;" onclick="closeDurationModal()">❌ Batal</button>
-                <button style="background:#22c55e; color:white;" onclick="confirmStartDuration()">▶️ START & NYALAKAN</button>
+                <button style="background:var(--danger-red); color:white;" onclick="closeDurationModal()">❌ Batal</button>
+                <button style="background:var(--accent-green); color:white;" onclick="confirmStartDuration()">▶️ START & NYALAKAN</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL ⚙️ SETTING PUSAT -->
+    <!-- MODAL PEMBAYARAN KASIR -->
+    <div class="modal-overlay" id="payModal">
+        <div class="modal-content" style="max-width:400px;">
+            <div class="modal-title" id="payModalTitle">Rincian Pembayaran Meja X</div>
+            <div style="font-size:0.9rem; line-height:1.6; margin-bottom:15px; border-bottom:1px dashed var(--card-border); padding-bottom:10px;">
+                <div>Pelanggan: <b id="payCustomerName" style="color:var(--gold-cust); text-transform:uppercase;">-</b></div>
+                <div>Durasi Main: <b id="payDuration">0 Min</b> (<span id="payTablePrice">Rp 0</span>)</div>
+                <div id="payFnbSummaryList" style="margin-top:5px; color:var(--text-muted); font-size:0.85rem;"></div>
+            </div>
+            <div style="font-size:1.2rem; font-weight:bold; color:var(--accent-blue); text-align:center; margin-bottom:15px;">
+                Total Bayar: <span id="payGrandTotal">Rp 0</span>
+            </div>
+            <div class="form-group">
+                <label>Metode Pembayaran:</label>
+                <select id="payMethodSelect" onchange="toggleSplitBillInput()">
+                    <option value="Tunai">💵 Tunai (Cash)</option>
+                    <option value="QRIS">📱 QRIS</option>
+                    <option value="Split">🔀 Split Bill (Tunai + QRIS)</option>
+                </select>
+            </div>
+            <div id="splitBillInputs" style="display:none;" class="form-group">
+                <label>Nominal Tunai (Cash):</label>
+                <input type="number" id="splitCashInput" placeholder="0" oninput="calcSplitBillSisa()">
+                <label>Nominal QRIS (Otomatis Sisa):</label>
+                <input type="number" id="splitQrisInput" placeholder="0" readonly style="background:var(--bg-dark); color:var(--accent-blue);">
+            </div>
+            <div class="modal-footer">
+                <button style="background:var(--danger-red); color:white;" onclick="closePayModal()">Batal</button>
+                <button style="background:var(--accent-green); color:white;" onclick="confirmPayAndFinish()">LUNAS & SIMPAN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDIT METODE PEMBAYARAN (KOREKSI TRANSAKSI) -->
+    <div class="modal-overlay" id="editPayMethodModal">
+        <div class="modal-content" style="max-width:360px;">
+            <div class="modal-title">✏️ EDIT METODE PEMBAYARAN</div>
+            <input type="hidden" id="editTrxKey">
+            <div class="form-group">
+                <label>Pilih Metode Pembayaran Baru:</label>
+                <select id="editPayMethodSelect">
+                    <option value="Tunai">💵 Tunai (Cash)</option>
+                    <option value="QRIS">📱 QRIS</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button style="background:#64748b; color:white;" onclick="closeEditPayMethodModal()">Batal</button>
+                <button style="background:var(--accent-green); color:white;" onclick="saveEditPayMethod()">Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TRANSAKSI CAFE (NON-BILIAR) -->
+    <div class="modal-overlay" id="posCafeModal">
+        <div class="modal-content" style="max-width:400px;">
+            <div class="modal-title">TRANSAKSI CAFE (NON-BILIAR)</div>
+            <div class="form-group">
+                <input type="text" id="posCustName" placeholder="Nama Pembeli" style="text-transform:uppercase;">
+                <select id="posItemSelect"><option value="">-- Pilih Barang dari Stok --</option></select>
+                <input type="number" id="posItemQty" placeholder="Jumlah (Pcs)" value="1" min="1">
+                <button class="btn-action" style="background:#3b82f6; padding:8px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="addPosCafeItem()">+ Tambahkan Ke Keranjang</button>
+            </div>
+            <div style="font-weight:bold; font-size:0.85rem; margin-top:10px;">Keranjang Pesanan:</div>
+            <div class="fnb-added-list" id="posCartList"></div>
+            <div style="font-size:1.1rem; font-weight:bold; color:var(--accent-blue); text-align:right; margin-top:10px;">
+                Total: <span id="posCartTotal">Rp 0</span>
+            </div>
+            <div class="form-group" style="margin-top:10px;">
+                <label>Metode Pembayaran:</label>
+                <select id="posPayMethod">
+                    <option value="Tunai">💵 Tunai (Cash)</option>
+                    <option value="QRIS">📱 QRIS</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button style="background:var(--danger-red); color:white;" onclick="closePosCafeModal()">Batal</button>
+                <button style="background:var(--accent-green); color:white;" onclick="processPosCafePayment()">BAYAR & SIMPAN</button>
+            </div>
+        </div>
+    </div>
+        <!-- MODAL ⚙️ SETTING PUSAT -->
     <div class="modal-overlay" id="settingModal">
         <div class="modal-content" style="max-width:480px;">
             <div class="modal-title">⚙️ PENGATURAN SIKASIR R21</div>
             
             <!-- LIST 1: PROFIL USAHA -->
-            <div style="background:#0f172a; padding:12px; border-radius:8px; border:1px solid #334155; margin-bottom:10px;">
-                <div style="font-size:0.85rem; font-weight:bold; color:var(--price-color); margin-bottom:8px;">🏢 PROFIL USAHA</div>
+            <div style="background:var(--bg-dark); padding:12px; border-radius:8px; border:1px solid var(--card-border); margin-bottom:10px;">
+                <div style="font-size:0.85rem; font-weight:bold; color:var(--accent-blue); margin-bottom:8px;">🏢 PROFIL USAHA</div>
                 <div class="form-group" style="margin-bottom:6px;">
                     <input type="text" id="cfgBizName" placeholder="Nama Usaha (misal: R21 POOL & CAFE)">
                 </div>
@@ -344,17 +600,17 @@
                 <div class="form-group" style="margin-bottom:8px;">
                     <input type="text" id="cfgBizPhone" placeholder="No. Telepon / WA Usaha">
                 </div>
-                <button class="btn-action" style="background:#2563eb; width:100%; padding:8px;" onclick="saveBizProfile()">Simpan Profil Usaha</button>
+                <button class="btn-action" style="background:#2563eb; width:100%; padding:8px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="saveBizProfile()">Simpan Profil Usaha</button>
             </div>
 
             <!-- LIST 2: IP RELAY & TARIF -->
-            <div style="background:#0f172a; padding:12px; border-radius:8px; border:1px solid #334155; margin-bottom:10px;">
-                <div style="font-size:0.85rem; font-weight:bold; color:var(--price-color); margin-bottom:8px;">🔌 KONEKSI & TARIF</div>
+            <div style="background:var(--bg-dark); padding:12px; border-radius:8px; border:1px solid var(--card-border); margin-bottom:10px;">
+                <div style="font-size:0.85rem; font-weight:bold; color:var(--accent-blue); margin-bottom:8px;">🔌 KONEKSI & TARIF</div>
                 <div class="form-group" style="margin-bottom:6px;">
                     <label>IP Modul Relay Lokal:</label>
                     <div style="display:flex; gap:6px;">
                         <input type="text" id="cfgRelayIp" placeholder="192.168.1.20" style="flex:1;">
-                        <button style="background:#16a34a; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="saveRelayIp()">Simpan IP</button>
+                        <button style="background:var(--accent-green); color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="saveRelayIp()">Simpan IP</button>
                     </div>
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
@@ -364,17 +620,17 @@
             </div>
 
             <!-- LIST 3: MANAJEMEN OPERASIONAL -->
-            <div style="background:#0f172a; padding:12px; border-radius:8px; border:1px solid #334155; margin-bottom:10px;">
-                <div style="font-size:0.85rem; font-weight:bold; color:var(--price-color); margin-bottom:8px;">☕ MANAJEMEN & LAPORAN</div>
+            <div style="background:var(--bg-dark); padding:12px; border-radius:8px; border:1px solid var(--card-border); margin-bottom:10px;">
+                <div style="font-size:0.85rem; font-weight:bold; color:var(--accent-blue); margin-bottom:8px;">☕ MANAJEMEN & LAPORAN</div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                    <button class="btn-action" style="background:#0d9488; padding:8px;" onclick="openPosCafeModal()">🛒 Transaksi Cafe</button>
-                    <button class="btn-action" style="background:#d97706; padding:8px;" onclick="openInventoryModal()">📦 Stok Cafe</button>
-                    <button class="btn-action" style="background:#8b5cf6; padding:8px;" onclick="openHistoryModal()">📜 Riwayat Transaksi</button>
-                    <button class="btn-action" style="background:#16a34a; padding:8px;" onclick="sendWaReport()">📱 Kirim WA Shift</button>
+                    <button class="btn-action" style="background:#0d9488; padding:8px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="openPosCafeModal()">🛒 Transaksi Cafe</button>
+                    <button class="btn-action" style="background:#d97706; padding:8px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="openInventoryModal()">📦 Stok Cafe</button>
+                    <button class="btn-action" style="background:var(--accent-purple); padding:8px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="openHistoryModal()">📜 Riwayat Transaksi</button>
+                    <button class="btn-action" style="background:var(--accent-green); padding:8px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="sendWaReport()">📱 Kirim WA Shift</button>
                 </div>
                 <div class="btn-owner-only" style="margin-top:8px; display:flex; gap:8px;">
-                    <button class="btn-action" style="background:#0284c7; flex:1; padding:8px;" onclick="openStaffManagerModal()">👥 Kelola Karyawan</button>
-                    <button class="btn-action" style="background:#ef4444; flex:1; padding:8px;" onclick="logout()">🔒 Logout (<span id="userRoleBadge">-</span>)</button>
+                    <button class="btn-action" style="background:#0284c7; flex:1; padding:8px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="openStaffManagerModal()">👥 Kelola Karyawan</button>
+                    <button class="btn-action" style="background:var(--danger-red); flex:1; padding:8px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="logout()">🔒 Logout (<span id="userRoleBadge">-</span>)</button>
                 </div>
             </div>
 
@@ -392,9 +648,10 @@
                 <input type="text" id="loginUsername" placeholder="Username">
                 <input type="password" id="loginPassword" placeholder="Password">
             </div>
-            <button class="btn-action" style="width:100%; padding:10px; margin-top:5px; background:#22c55e;" onclick="processLogin()">Masuk</button>
+            <button class="btn-action" style="width:100%; padding:10px; margin-top:5px; background:var(--accent-green); border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="processLogin()">Masuk</button>
         </div>
     </div>
+
     <!-- MODAL PINDAH MEJA -->
     <div class="modal-overlay" id="moveTableModal">
         <div class="modal-content" style="max-width:350px;">
@@ -404,70 +661,8 @@
                 <select id="targetTableSelect"></select>
             </div>
             <div class="modal-footer">
-                <button style="background:#ef4444; color:white;" onclick="closeMoveTableModal()">Batal</button>
-                <button style="background:#8b5cf6; color:white;" onclick="confirmMoveTable()">Konfirmasi Pindah</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL BAYAR -->
-    <div class="modal-overlay" id="payModal">
-        <div class="modal-content" style="max-width:400px;">
-            <div class="modal-title" id="payModalTitle">Rincian Pembayaran Meja X</div>
-            <div style="font-size:0.9rem; line-height:1.6; margin-bottom:15px; border-bottom:1px dashed #334155; padding-bottom:10px;">
-                <div>Pelanggan: <b id="payCustomerName" style="color:var(--cust-color); text-transform:uppercase;">-</b></div>
-                <div>Durasi Main: <b id="payDuration">0 Min</b> (<span id="payTablePrice">Rp 0</span>)</div>
-                <div id="payFnbSummaryList" style="margin-top:5px; color:#cbd5e1; font-size:0.85rem;"></div>
-            </div>
-            <div style="font-size:1.2rem; font-weight:bold; color:var(--price-color); text-align:center; margin-bottom:15px;">
-                Total Bayar: <span id="payGrandTotal">Rp 0</span>
-            </div>
-            <div class="form-group">
-                <label>Metode Pembayaran:</label>
-                <select id="payMethodSelect" onchange="toggleSplitBillInput()">
-                    <option value="Tunai">💵 Tunai (Cash)</option>
-                    <option value="QRIS">📱 QRIS</option>
-                    <option value="Split">🔀 Split Bill (Tunai + QRIS)</option>
-                </select>
-            </div>
-            <div id="splitBillInputs" style="display:none;" class="form-group">
-                <label>Nominal Tunai (Cash):</label>
-                <input type="number" id="splitCashInput" placeholder="0" oninput="calcSplitBillSisa()">
-                <label>Nominal QRIS (Otomatis Sisa):</label>
-                <input type="number" id="splitQrisInput" placeholder="0" readonly style="background:#1e293b; color:#38bdf8;">
-            </div>
-            <div class="modal-footer">
-                <button style="background:#ef4444; color:white;" onclick="closePayModal()">Batal</button>
-                <button style="background:#22c55e; color:white;" onclick="confirmPayAndFinish()">LUNAS & SIMPAN</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL TRANSAKSI CAFE -->
-    <div class="modal-overlay" id="posCafeModal">
-        <div class="modal-content" style="max-width:400px;">
-            <div class="modal-title">TRANSAKSI CAFE (NON-BILIAR)</div>
-            <div class="form-group">
-                <input type="text" id="posCustName" placeholder="Nama Pembeli" style="text-transform:uppercase;">
-                <select id="posItemSelect"><option value="">-- Pilih Barang dari Stok --</option></select>
-                <input type="number" id="posItemQty" placeholder="Jumlah (Pcs)" value="1" min="1">
-                <button class="btn-action" style="background:#3b82f6;" onclick="addPosCafeItem()">+ Tambahkan Ke Keranjang</button>
-            </div>
-            <div style="font-weight:bold; font-size:0.85rem; margin-top:10px;">Keranjang Pesanan:</div>
-            <div class="fnb-added-list" id="posCartList"></div>
-            <div style="font-size:1.1rem; font-weight:bold; color:var(--price-color); text-align:right; margin-top:10px;">
-                Total: <span id="posCartTotal">Rp 0</span>
-            </div>
-            <div class="form-group" style="margin-top:10px;">
-                <label>Metode Pembayaran:</label>
-                <select id="posPayMethod">
-                    <option value="Tunai">💵 Tunai (Cash)</option>
-                    <option value="QRIS">📱 QRIS</option>
-                </select>
-            </div>
-            <div class="modal-footer">
-                <button style="background:#ef4444; color:white;" onclick="closePosCafeModal()">Batal</button>
-                <button style="background:#22c55e; color:white;" onclick="processPosCafePayment()">BAYAR & SIMPAN</button>
+                <button style="background:var(--danger-red); color:white;" onclick="closeMoveTableModal()">Batal</button>
+                <button style="background:var(--accent-purple); color:white;" onclick="confirmMoveTable()">Konfirmasi Pindah</button>
             </div>
         </div>
     </div>
@@ -480,7 +675,7 @@
                 <input type="text" id="invItemName" placeholder="Nama Barang (misal: Es Teh / Kopi)">
                 <input type="number" id="invItemPrice" placeholder="Harga Jual (Rp)">
                 <input type="number" id="invItemStock" placeholder="Stok Awal (Jumlah)">
-                <button class="btn-action" style="background:#22c55e;" onclick="saveInventoryItem()">+ Simpan Barang Baru</button>
+                <button class="btn-action" style="background:var(--accent-green); padding:8px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="saveInventoryItem()">+ Simpan Barang Baru</button>
             </div>
             <div style="font-weight:bold; font-size:0.85rem; margin-top:10px;">Daftar Stok Saat Ini:</div>
             <div class="fnb-added-list" id="inventoryListContainer"></div>
@@ -497,7 +692,7 @@
             <div class="form-group">
                 <input type="text" id="newStaffUsername" placeholder="Username Karyawan Baru">
                 <input type="password" id="newStaffPassword" placeholder="Password Karyawan Baru">
-                <button class="btn-action" style="background:#22c55e;" onclick="addStaffAccount()">+ Buat Akun Karyawan</button>
+                <button class="btn-action" style="background:var(--accent-green); padding:8px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="addStaffAccount()">+ Buat Akun Karyawan</button>
             </div>
             <div style="font-weight:bold; font-size:0.85rem; margin-top:15px;">Daftar Akun Karyawan:</div>
             <div class="fnb-added-list" id="staffListContainer"></div>
@@ -507,33 +702,13 @@
         </div>
     </div>
 
-    <!-- MODAL PESANAN MEJA CAFE -->
-    <div class="modal-overlay" id="fnbModal">
-        <div class="modal-content">
-            <div class="modal-title" id="modalTableTitle">Tambah Pesanan Cafe</div>
-            <div class="form-group">
-                <label>Pilih Dari Stok Barang:</label>
-                <select id="tableFnbStockSelect" onchange="autoFillTableFnbPrice()"><option value="">-- Pilih Barang --</option></select>
-                <input type="text" id="manualFnbName" placeholder="Nama Makanan/Minuman">
-                <input type="number" id="manualFnbPrice" placeholder="Harga (Rp)">
-                <button class="btn-action" style="background:#3b82f6;" onclick="addManualFnbItem()">+ Tambahkan Pesanan</button>
-            </div>
-            <div style="font-weight:bold; font-size:0.85rem; margin-top:10px;">Daftar Pesanan Meja Ini:</div>
-            <div class="fnb-added-list" id="fnbAddedList"></div>
-            <div class="modal-footer">
-                <button style="background:#ef4444; color:white;" onclick="closeFnbModal()">Batal</button>
-                <button style="background:#22c55e; color:white;" onclick="saveFnbModal()">Simpan Ke Meja</button>
-            </div>
-        </div>
-    </div>
-
     <!-- MODAL RIWAYAT TRANSAKSI -->
     <div class="modal-overlay" id="historyModal">
-        <div class="modal-content" style="max-width:650px;">
+        <div class="modal-content" style="max-width:680px;">
             <div class="modal-title">RIWAYAT TRANSAKSI OPERASIONAL</div>
             <div style="margin-bottom:10px; display:flex; align-items:center; gap:10px;">
                 <label>Filter Tanggal:</label>
-                <input type="date" id="historyDateFilter" style="padding:5px; border-radius:4px; border:1px solid #475569; background:#0f172a; color:white;" onchange="renderHistoryTable()">
+                <input type="date" id="historyDateFilter" style="padding:5px; border-radius:4px; border:1px solid var(--card-border); background:var(--bg-dark); color:white;" onchange="renderHistoryTable()">
             </div>
             <div style="overflow-x:auto;">
                 <table class="history-table">
@@ -551,13 +726,13 @@
                 </table>
             </div>
 
-            <!-- RINGKASAN TOTAL UANG & TOMBOL WA WA SHIFT -->
+            <!-- RINGKASAN TOTAL UANG & TOMBOL WA SHIFT -->
             <div class="history-summary-box">
                 <div>
                     Total Transaksi: <span id="historyTotalCount" style="font-weight:bold; color:white;">0</span> | 
-                    Total Uang: <span id="historyTotalAmount" class="history-summary-total">Rp 0</span>
+                    Total Uang: <span id="historyTotalAmount" style="font-weight:bold; color:var(--accent-green);">Rp 0</span>
                 </div>
-                <button style="background:#16a34a; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="sendWaReport()">📱 Kirim WA Shift</button>
+                <button style="background:var(--accent-green); color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="sendWaReport()">📱 Kirim WA Shift</button>
             </div>
 
             <div class="modal-footer" style="margin-top:15px;">
@@ -565,31 +740,8 @@
             </div>
         </div>
     </div>
-
-    <!-- AREA CETAK STRUK -->
-    <div id="receiptPrintArea">
-        <div class="receipt-header">
-            <div class="receipt-title" id="printBizName">R21 POOL & CAFE</div>
-            <div id="printBizAddress">Jl. Biliar No. 21</div>
-            <div id="printBizPhone">Telp: 0811-4989-333</div>
-        </div>
-        <div class="receipt-line"><span>Tanggal:</span><span id="recDate">-</span></div>
-        <div class="receipt-line"><span>No. Struk:</span><span id="recId">-</span></div>
-        <div class="receipt-line"><span>Pelanggan:</span><span id="recCustomer" style="text-transform:uppercase;">-</span></div>
-        <div style="border-bottom: 1px dashed black; margin: 5px 0;"></div>
-        <div class="receipt-line"><span id="recTable">Sewa Meja</span><span id="recDuration">-</span></div>
-        <div class="receipt-line"><span>Biaya Meja:</span><span id="recTablePrice">Rp 0</span></div>
-        <div style="border-bottom: 1px dashed black; margin: 5px 0;"></div>
-        <div id="recFnbList"></div>
-        <div style="border-bottom: 1px dashed black; margin: 5px 0;"></div>
-        <div class="receipt-line" style="font-weight: bold; font-size: 13px;"><span>TOTAL BAYAR:</span><span id="recTotal">Rp 0</span></div>
-        <div class="receipt-line"><span>Metode Bayar:</span><span id="recMethod">Tunai</span></div>
-        <div class="receipt-footer">
-            <p>Terima kasih atas kunjungan Anda!</p>
-            <p>-- <span id="printFooterBizName">R21 Pool & Cafe</span> --</p>
-        </div>
-    </div>
         <script>
+        // FIREBASE CONFIGURATION
         var firebaseConfig = {
             databaseURL: "https://billiard-21-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
@@ -600,7 +752,7 @@
         var TOTAL_TABLES = 6;
         var hourlyRate = 40000;
 
-        // BIZ PROFILE DINAMIS (LOCALSTORAGE)
+        // PROFIL USAHA (LOCALSTORAGE)
         var bizProfile = JSON.parse(localStorage.getItem('R21_BIZ_PROFILE')) || {
             name: "R21 POOL & CAFE",
             address: "Jl. Biliar No. 21",
@@ -627,9 +779,9 @@
         var pendingStartTableIndex = null;
         var activeMoveSourceIndex = null;
 
-        var currentMode = localStorage.getItem('biliard_mode') || 'controller';
+        var currentMode = localStorage.getItem('biliard_mode') || 'portrait';
 
-        // SYNC DATA FIREBASE
+        // REAL-TIME SYNC FIREBASE
         db.ref('staffs').on('value', function(snapshot) {
             staffAccounts = snapshot.val() || {};
             renderStaffList();
@@ -670,27 +822,13 @@
             renderHistoryTable();
         });
 
-        // CEK SOUND & SUARA PERINGATAN
-        db.ref('audioTrigger').on('value', function(snap) {
-            var val = snap.val();
-            if (val && currentMode === 'tv') { playTvChimeSound(); }
-        });
-
+        // SUARA SYSTEM
         function testSound() {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 var pesan = new SpeechSynthesisUtterance("Pemberitahuan. Suara sistem R21 Pool and Cafe terhubung dengan baik.");
                 pesan.lang = 'id-ID'; pesan.rate = 0.9;
                 window.speechSynthesis.speak(pesan);
-            }
-            db.ref('audioTrigger').set(Date.now());
-        }
-
-        function playTvChimeSound() {
-            if ('speechSynthesis' in window) {
-                var speech = new SpeechSynthesisUtterance("Tes suara dari HP Kasir diterima.");
-                speech.lang = 'id-ID';
-                window.speechSynthesis.speak(speech);
             }
         }
 
@@ -704,27 +842,19 @@
             }
         }
 
-        // CONTROL SAKELAR LAMPU RELAY (MAPPING HARDWARE BARU)
+        // SAKELAR LAMPU RELAY (Channel 1-6 Berurutan)
         function sakelarLampu(nomorMeja, status) {
             var mejaInt = parseInt(nomorMeja);
-            var channelRelay = mejaInt;
-
-                  // Mapping Channel Baru Fix: Meja 1 -> CH 7, Meja 4 -> CH 8
-        if (mejaInt === 1) {
-            channelRelay = 7;
-        } else if (mejaInt === 4) {
-            channelRelay = 8;
-        }
-
+            var channelRelay = mejaInt; // Meja 1->CH 1, Meja 2->CH 2, dst.
 
             var state = status ? "1" : "0"; 
 
-            // 1. Kirim Sinyal HTTP Lokal via Image Object
+            // HTTP Local Request to ESP/NodeMCU
             var targetUrl = "http://" + currentIpRelay + "/" + channelRelay + "/" + state;
             var imgPing = new Image();
             imgPing.src = targetUrl + "?t=" + new Date().getTime();
 
-            // 2. Sync Sinyal ke Firebase Cloud
+            // Firebase Cloud Sync
             var secret = "TGOVnUocfqgdoULy9ZxgGx0Y4gammmu9ttr45HI4";
             var isPowered = status ? true : false;
             var urlCloud = "https://billing0015-32812-default-rtdb.firebaseio.com/vTfGwLoX/relays/billing" + channelRelay + ".json?auth=" + secret;
@@ -735,59 +865,166 @@
                 headers: { 'Content-Type': 'application/json' }
             }).catch(function(e) { console.log("Cloud sync error", e); });
         }
-                // PENGATURAN MODAL SETTING & PROFIL USAHA
-        function openSettingModal() {
-            document.getElementById('cfgBizName').value = bizProfile.name;
-            document.getElementById('cfgBizAddress').value = bizProfile.address;
-            document.getElementById('cfgBizPhone').value = bizProfile.phone;
-            document.getElementById('cfgRelayIp').value = currentIpRelay;
-            document.getElementById('settingModal').style.display = 'flex';
-        }
+               // LOGIKA PROMO AKUMULASI: TIAP TOTAL BELI 4 JAM (240 MIN), AUTOMATIS GRATIS 1 JAM
+function calculateBillingLogic(totalBookedMinutes) {
+    var promoCycles = Math.floor(totalBookedMinutes / 240); 
+    var bonusMinutes = promoCycles * 60;
 
-        function closeSettingModal() {
-            document.getElementById('settingModal').style.display = 'none';
-        }
+    var billableHours = totalBookedMinutes / 60;
+    var tablePrice = billableHours * hourlyRate;
 
-        function saveBizProfile() {
-            var n = document.getElementById('cfgBizName').value.trim();
-            var a = document.getElementById('cfgBizAddress').value.trim();
-            var p = document.getElementById('cfgBizPhone').value.trim();
-            if (!n) { alert("Nama usaha wajib diisi!"); return; }
-            
-            bizProfile = { name: n, address: a, phone: p };
-            localStorage.setItem('R21_BIZ_PROFILE', JSON.stringify(bizProfile));
-            applyBizProfileUI();
-            alert("✅ Profil usaha berhasil diperbarui!");
-        }
+    return {
+        bonusHours: promoCycles,
+        bonusMinutes: bonusMinutes,
+        billableHours: billableHours,
+        tablePrice: tablePrice
+    };
+}
 
-        function saveRelayIp() {
-            var ip = document.getElementById('cfgRelayIp').value.trim();
-            if (ip) {
-                currentIpRelay = ip;
-                localStorage.setItem('IP_RELAY_BILIAR', ip);
-                updateRelayBadge();
-                alert("✅ IP Relay berhasil diperbarui: " + ip);
+
+        // SET MODE TAMPILAN (HP PORTRAIT, LANDSCAPE KASIR, TV DISPLAY)
+        function setMode(mode) {
+            currentMode = mode;
+            localStorage.setItem('biliard_mode', mode);
+
+            document.body.classList.remove('mode-portrait', 'mode-landscape', 'mode-tv-display');
+            document.getElementById('btn-mode-portrait').classList.remove('active');
+            document.getElementById('btn-mode-landscape').classList.remove('active');
+            document.getElementById('btn-mode-tv').classList.remove('active');
+
+            if (mode === 'portrait') {
+                document.body.classList.add('mode-portrait');
+                document.getElementById('btn-mode-portrait').classList.add('active');
+            } else if (mode === 'landscape') {
+                document.body.classList.add('mode-landscape');
+                document.getElementById('btn-mode-landscape').classList.add('active');
+            } else if (mode === 'tv') {
+                document.body.classList.add('mode-tv-display');
+                document.getElementById('btn-mode-tv').classList.add('active');
             }
         }
 
-        function updateRelayBadge() {
-            var b = document.getElementById('relayStatusBadge');
-            if(b) b.innerText = "Relay IP: " + currentIpRelay;
+        // RENDER GRID MEJA 1-6
+        function renderTables() {
+            var grid = document.getElementById('tablesGrid');
+            grid.innerHTML = '';
+            for (var i = 0; i < TOTAL_TABLES; i++) {
+                var card = document.createElement('div');
+                card.className = 'table-card'; 
+                card.id = 'card-' + i;
+                card.innerHTML = 
+                    '<div class="card-header-row">' +
+                        '<div class="table-title">MEJA 0' + (i + 1) + '</div>' +
+                        '<div class="customer-tv-display" id="cust-tv-' + i + '">-</div>' +
+                    '</div>' +
+
+                    '<div class="card-body-split">' +
+                        '<div style="text-align:center; width:100%;">' +
+                            '<div class="timer-display" id="timer-' + i + '">00:00:00</div>' +
+                            '<div class="promo-badge" id="promo-badge-' + i + '">🎁 BONUS PROMO +1 JAM</div>' +
+                            '<div class="price-display"><span id="price-' + i + '">Rp 0</span></div>' +
+                        '</div>' +
+                    '</div>' +
+                    
+                    '<div class="controls" id="controls-normal-' + i + '">' +
+                        '<div class="btn-row">' +
+                            '<button class="btn-start" onclick="openDurationModal(' + i + ')">⏱️ Main / Tambah</button>' +
+                            '<button class="btn-pay" onclick="openPayModal(' + i + ')">💳 Bayar</button>' +
+                        '</div>' +
+                        '<div class="btn-row">' +
+                            '<button class="btn-move" onclick="openMoveTableModal(' + i + ')">🔀 Pindah</button>' +
+                            '<button class="btn-stop" onclick="resetTimerOnly(' + i + ')">Reset</button>' +
+                        '</div>' +
+                        '<div class="btn-row" style="margin-top:2px;">' +
+                            '<button style="background:#16a34a; color:white; padding:4px;" onclick="sakelarLampu(' + (i + 1) + ', true)">💡 ON</button>' +
+                            '<button style="background:#dc2626; color:white; padding:4px;" onclick="sakelarLampu(' + (i + 1) + ', false)">💡 OFF</button>' +
+                        '</div>' +
+                    '</div>';
+                grid.appendChild(card);
+            }
+            updateTimers();
         }
 
-        function applyBizProfileUI() {
-            document.getElementById('displayBrandName').innerText = bizProfile.name;
-            document.getElementById('printBizName').innerText = bizProfile.name;
-            document.getElementById('printBizAddress').innerText = bizProfile.address;
-            document.getElementById('printBizPhone').innerText = "Telp: " + bizProfile.phone;
-            document.getElementById('printFooterBizName').innerText = bizProfile.name;
-        }
+        // UPDATE TIMER REALTIME & ENGINE BILLING
+        function updateTimers() {
+            var now = Date.now();
+            for (var i = 0; i < TOTAL_TABLES; i++) {
+                var table = tablesData[i] || { endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, warned: false, expiredWarned: false, customerName: "", fnbList: [] };
+                var timerEl = document.getElementById('timer-' + i);
+                var priceEl = document.getElementById('price-' + i);
+                var cardEl = document.getElementById('card-' + i);
+                var custTvEl = document.getElementById('cust-tv-' + i);
+                var promoBadgeEl = document.getElementById('promo-badge-' + i);
 
-        // LOGIKA MODAL POP-UP DURASI
+                if (!timerEl) continue;
+
+                if (custTvEl) { custTvEl.innerText = table.customerName ? table.customerName.toUpperCase() : "-"; }
+
+                var bookedMinutes = table.bookedMinutes || 0;
+                var billing = calculateBillingLogic(bookedMinutes);
+                var fnbTotal = calculateFnbTotal(table.fnbList);
+                var grandTotal = billing.tablePrice + fnbTotal;
+
+                if (promoBadgeEl) {
+                    if (billing.bonusHours > 0) {
+                        promoBadgeEl.innerText = '🎁 BONUS PROMO +' + billing.bonusHours + ' JAM';
+                        promoBadgeEl.classList.add('show');
+                    } else {
+                        promoBadgeEl.classList.remove('show');
+                    }
+                }
+
+                if (!table.isRunning || table.endTime <= now) {
+                    timerEl.innerText = "00:00:00";
+                    if (table.isRunning && table.endTime <= now) {
+                        cardEl.classList.remove('active', 'warning');
+                        cardEl.classList.add('expired');
+                        priceEl.innerText = formatRupiah(grandTotal);
+
+                        if (!table.expiredWarned) {
+                            table.expiredWarned = true;
+                            sakelarLampu(i + 1, false);
+                            if (currentMode === 'tv') {
+                                speakWarning('Perhatian, waktu bermain Meja ' + (i + 1) + ' telah habis.');
+                            }
+                        }
+                    } else {
+                        cardEl.classList.remove('active', 'warning', 'expired');
+                        priceEl.innerText = formatRupiah(grandTotal);
+                    }
+                } else {
+                    cardEl.classList.add('active'); cardEl.classList.remove('expired');
+                    var diff = table.endTime - now;
+                    var totalSeconds = Math.floor(diff / 1000);
+                    priceEl.innerText = formatRupiah(grandTotal);
+
+                    // Sinyal kedip detik ke-30
+                    if (totalSeconds === 30) {
+                        sakelarLampu(i + 1, false);
+                    } else if (totalSeconds < 30 && totalSeconds > 0) {
+                        sakelarLampu(i + 1, true);
+                    }
+
+                    if (totalSeconds <= 300 && !table.warned) {
+                        table.warned = true;
+                        if (currentMode === 'tv') {
+                            speakWarning('Perhatian, waktu bermain Meja ' + (i + 1) + ' tersisa lima menit lagi.');
+                        }
+                        cardEl.classList.add('warning');
+                    }
+
+                    var hours = String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, '0');
+                    var minutes = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
+                    var seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
+                    timerEl.innerText = hours + ':' + minutes + ':' + seconds;
+                }
+            }
+        }
+        // LOGIKA MODAL DURASI & PROMO 4+1 JAM
         function openDurationModal(index) {
             pendingStartTableIndex = index;
             var t = tablesData[index];
-            document.getElementById('durationModalTitle').innerText = "Atur Main Meja " + (index + 1);
+            document.getElementById('durationModalTitle').innerText = "Atur Main Meja 0" + (index + 1);
             document.getElementById('durationCustName').value = t.customerName || "";
             document.getElementById('customMinutesInput').value = "60";
             updateDurationPreview();
@@ -808,394 +1045,92 @@
 
         function updateDurationPreview() {
             var mnt = parseInt(document.getElementById('customMinutesInput').value) || 0;
+            var billing = calculateBillingLogic(mnt);
+            
             var jam = Math.floor(mnt / 60);
             var sisa = mnt % 60;
             var txtDurasi = "";
             if (jam > 0) txtDurasi += jam + " Jam ";
             if (sisa > 0) txtDurasi += sisa + " Min";
-            if (!txtDurasi) txtDurasi = "0 Min";
 
-            var estHarga = (mnt / 60) * hourlyRate;
-            document.getElementById('durationPreviewTxt').innerText = "Total: " + txtDurasi.trim() + " (" + formatRupiah(estHarga) + ")";
+            var txtBonus = billing.bonusHours > 0 ? " (Bonus +" + billing.bonusHours + " Jam)" : "";
+            document.getElementById('durationPreviewTxt').innerText = "Total: " + txtDurasi.trim() + txtBonus + " (" + formatRupiah(billing.tablePrice) + ")";
         }
 
         function confirmStartDuration() {
-            var name = document.getElementById('durationCustName').value.trim();
-            var minutes = parseInt(document.getElementById('customMinutesInput').value) || 0;
+    var name = document.getElementById('durationCustName').value.trim();
+    var addedMinutes = parseInt(document.getElementById('customMinutesInput').value) || 0;
 
-            if (!name) { alert("Nama pelanggan wajib diisi!"); return; }
-            if (minutes <= 0) { alert("Durasi menit harus lebih dari 0!"); return; }
+    if (!name) { alert("Nama pelanggan wajib diisi!"); return; }
+    if (addedMinutes <= 0) { alert("Durasi menit harus lebih dari 0!"); return; }
 
-            if (pendingStartTableIndex !== null) {
-                executeAddTime(pendingStartTableIndex, minutes, name.toUpperCase());
-                closeDurationModal();
-            }
-        }
-
-        function executeAddTime(index, minutes, customerName) {
-            sakelarLampu(index + 1, true);
+    if (pendingStartTableIndex !== null) {
+        var idx = pendingStartTableIndex;
+        var currentTable = tablesData[idx] || {};
         
-            var now = Date.now();
-            var currentTable = tablesData[index] || { endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, warned: false, expiredWarned: false, customerName: "", fnbList: [] };
-            var baseTime = (currentTable.isRunning && currentTable.endTime > now) ? currentTable.endTime : now;
-            var currentBooked = (currentTable.isRunning || currentTable.customerName !== "") ? (currentTable.bookedMinutes || 0) : 0;
-            var startTs = (currentTable.isRunning && currentTable.endTime > now) ? currentTable.startTime : now;
+        // Ambil akumulasi menit yang sudah dibeli sebelumnya
+        var previousBooked = (currentTable.isRunning || currentTable.customerName !== "") ? (currentTable.bookedMinutes || 0) : 0;
+        
+        // Total akumulasi menit baru
+        var newTotalBooked = previousBooked + addedMinutes;
 
-            tablesData[index].endTime = baseTime + (minutes * 60 * 1000);
-            tablesData[index].bookedMinutes = currentBooked + minutes;
-            tablesData[index].startTime = startTs;
-            tablesData[index].isRunning = true;
-            tablesData[index].warned = false;
-            tablesData[index].expiredWarned = false;
-            tablesData[index].customerName = customerName;
-            db.ref('tables').set(tablesData);
+        // Cek promo akumulasi baru
+        var prevBilling = calculateBillingLogic(previousBooked);
+        var newBilling = calculateBillingLogic(newTotalBooked);
+
+        // Hitung bonus tambahan jika mencapai kelipatan 4 jam
+        var extraBonusMinutes = newBilling.bonusMinutes - prevBilling.bonusMinutes;
+        var totalMinutesToAdd = addedMinutes + extraBonusMinutes;
+
+        if (extraBonusMinutes > 0) {
+            alert("🎉 Selamat! Akumulasi main mencapai " + (newTotalBooked / 60) + " jam. Pelanggan mendapatkan BONUS GRATIS " + (extraBonusMinutes / 60) + " JAM!");
         }
 
-        // RENDER KARTU MEJA
-        function renderTables() {
-            var grid = document.getElementById('tablesGrid');
-            grid.innerHTML = '';
-            for (var i = 0; i < TOTAL_TABLES; i++) {
-                var card = document.createElement('div');
-                card.className = 'table-card'; card.id = 'card-' + i;
-                card.innerHTML = 
-                    '<div class="card-header-row">' +
-                        '<div class="table-title">MEJA ' + (i + 1) + '</div>' +
-                        '<div class="customer-tv-display" id="cust-tv-' + i + '">-</div>' +
-                    '</div>' +
+        executeAddTime(idx, addedMinutes, totalMinutesToAdd, name.toUpperCase());
+        closeDurationModal();
+    }
+}
 
-                    '<div class="card-body-split">' +
-                        '<div class="card-left-detail">' +
-                            '<div class="detail-items-list" id="detail-list-' + i + '"></div>' +
-                        '</div>' +
+function executeAddTime(index, bookedMinutesToAdd, actualMinutesToAdd, customerName) {
+    sakelarLampu(index + 1, true);
 
-                        '<div class="card-right-timer">' +
-                            '<div class="timer-display" id="timer-' + i + '">00:00:00</div>' +
-                            '<div class="selesai-display" id="jam-mulai-selesai-' + i + '">🕒 Jam: -</div>' +
-                            '<div class="price-display"><span id="price-' + i + '">Rp 0</span></div>' +
-                        '</div>' +
-                    '</div>' +
-                    
-                    '<div class="controls" id="controls-normal-' + i + '">' +
-                        '<div class="btn-row">' +
-                            '<button class="btn-start" onclick="openDurationModal(' + i + ')">⏱️ Main / Tambah</button>' +
-                            '<button class="btn-fnb" onclick="openFnbModal(' + i + ')">☕ Cafe</button>' +
-                        '</div>' +
-                        '<div class="btn-row">' +
-                            '<button class="btn-move" onclick="openMoveTableModal(' + i + ')">🔀 Pindah</button>' +
-                            '<button class="btn-pay" onclick="openPayModal(' + i + ')">💳 Bayar</button>' +
-                            '<button class="btn-stop" id="btn-reset-' + i + '" onclick="resetTimerOnly(' + i + ')">Reset</button>' +
-                        '</div>' +
-                        '<div class="btn-row" style="margin-top:4px;">' +
-                            '<button style="background:#16a34a; color:white; padding:5px;" onclick="sakelarLampu(' + (i + 1) + ', true)">💡 ON</button>' +
-                            '<button style="background:#dc2626; color:white; padding:5px;" onclick="sakelarLampu(' + (i + 1) + ', false)">💡 OFF</button>' +
-                        '</div>' +
-                    '</div>' +
+    var now = Date.now();
+    var currentTable = tablesData[index] || { endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, warned: false, expiredWarned: false, customerName: "", fnbList: [] };
+    var baseTime = (currentTable.isRunning && currentTable.endTime > now) ? currentTable.endTime : now;
+    var currentBooked = (currentTable.isRunning || currentTable.customerName !== "") ? (currentTable.bookedMinutes || 0) : 0;
+    var startTs = (currentTable.isRunning && currentTable.endTime > now) ? currentTable.startTime : now;
 
-                    '<div class="controls" id="controls-expired-' + i + '" style="display:none;">' +
-                        '<div class="btn-row">' +
-                            '<button class="btn-start" onclick="openDurationModal(' + i + ')">+ Tambah Waktu</button>' +
-                        '</div>' +
-                        '<div class="btn-row" style="margin-top:4px;">' +
-                            '<button class="btn-pay" style="padding:10px;" onclick="openPayModal(' + i + ')">💳 LANJUT PEMBAYARAN</button>' +
-                        '</div>' +
-                    '</div>';
-                grid.appendChild(card);
-            }
-            updateTimers();
-        }
-
-        // UPDATE TIMER & KEDIP RELAY 30 DETIK TERAKHIR
-        function updateTimers() {
-            var now = Date.now();
-            for (var i = 0; i < TOTAL_TABLES; i++) {
-                var table = tablesData[i] || { endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, warned: false, expiredWarned: false, customerName: "", fnbList: [] };
-                var timerEl = document.getElementById('timer-' + i);
-                var jamMulaiSelesaiEl = document.getElementById('jam-mulai-selesai-' + i);
-                var priceEl = document.getElementById('price-' + i);
-                var cardEl = document.getElementById('card-' + i);
-                var custTvEl = document.getElementById('cust-tv-' + i);
-                var detailListEl = document.getElementById('detail-list-' + i);
-                
-                var normalControls = document.getElementById('controls-normal-' + i);
-                var expiredControls = document.getElementById('controls-expired-' + i);
-                var btnResetEl = document.getElementById('btn-reset-' + i);
-
-                if (!timerEl) continue;
-
-                if (custTvEl) { custTvEl.innerText = table.customerName ? table.customerName.toUpperCase() : "-"; }
-
-                var bookedMinutes = table.bookedMinutes || 0;
-                var tablePrice = (bookedMinutes / 60) * hourlyRate;
-                var fnbTotal = calculateFnbTotal(table.fnbList);
-                var grandTotal = tablePrice + fnbTotal;
-
-                // RENDER DETAIL MEJA MODE TV (TANPA TULISAN "RINCIAN MEJA", BERSIH JIKA KOSONG)
-                if (detailListEl) {
-                    detailListEl.innerHTML = '';
-                    if (bookedMinutes > 0) {
-                        var jamTxt = (bookedMinutes / 60) + " Jam";
-                        detailListEl.innerHTML += '<div class="detail-item-row"><span class="detail-item-name">🎱 Biliar (' + jamTxt + ')</span><span>' + formatRupiah(tablePrice) + '</span></div>';
-                    }
-                    if (table.fnbList && table.fnbList.length > 0) {
-                        table.fnbList.forEach(function(item) {
-                            detailListEl.innerHTML += '<div class="detail-item-row"><span class="detail-item-name">☕ ' + item.name + '</span><span>' + formatRupiah(item.price) + '</span></div>';
-                        });
-                    }
-                }
-
-                if (btnResetEl) {
-                    var elapsedSec = (now - (table.startTime || 0)) / 1000;
-                    if (table.isRunning && elapsedSec > 30) { btnResetEl.style.display = 'none'; } 
-                    else { btnResetEl.style.display = 'block'; }
-                }
-
-                // WAKTU HABIS ATAU MEJA IDLE
-                if (!table.isRunning || table.endTime <= now) {
-                    timerEl.innerText = "00:00:00";
-                    if(jamMulaiSelesaiEl) jamMulaiSelesaiEl.innerText = "🕒 Jam: -";
-
-                    if (table.isRunning && table.endTime <= now) {
-                        cardEl.classList.remove('active', 'warning');
-                        cardEl.classList.add('expired');
-                        priceEl.innerText = formatRupiah(grandTotal);
-
-                        if (!table.expiredWarned) {
-                            table.expiredWarned = true;
-                            // OTOMATIS MATIKAN RELAY / LAMPU SAAT 00:00
-                            sakelarLampu(i + 1, false);
-                            if (currentMode === 'tv') {
-                                speakWarning('Perhatian, waktu bermain Meja ' + (i + 1) + ' telah habis.');
-                            }
-                        }
-
-                        if (normalControls && expiredControls) {
-                            normalControls.style.display = 'none'; expiredControls.style.display = 'flex';
-                        }
-                    } else {
-                        cardEl.classList.remove('active', 'warning', 'expired');
-                        priceEl.innerText = formatRupiah(grandTotal);
-
-                        if (normalControls && expiredControls) {
-                            normalControls.style.display = 'flex'; expiredControls.style.display = 'none';
-                        }
-                    }
-                } else {
-                    cardEl.classList.add('active'); cardEl.classList.remove('expired');
-                    
-                    if(jamMulaiSelesaiEl) {
-                        jamMulaiSelesaiEl.innerText = "🕒 " + formatJam(table.startTime) + " - " + formatJam(table.endTime);
-                    }
-
-                    var diff = table.endTime - now;
-                    var totalSeconds = Math.floor(diff / 1000);
-                    priceEl.innerText = formatRupiah(grandTotal);
-
-                    if (normalControls && expiredControls) {
-                        normalControls.style.display = 'flex'; expiredControls.style.display = 'none';
-                    }
-
-                                        // SINYAL PERINGATAN 30 DETIK: MATI SEBENTAR PAS DETIK KE-30 SAJA
-                    if (totalSeconds === 30) {
-                        sakelarLampu(i + 1, false); // Matikan sebentar pas detik ke-30
-                    } else if (totalSeconds < 30 && totalSeconds > 0) {
-                        sakelarLampu(i + 1, true);  // Detik 29 sampai 1 balik nyala normal
-                    }
+    tablesData[index].endTime = baseTime + (actualMinutesToAdd * 60 * 1000);
+    tablesData[index].bookedMinutes = currentBooked + bookedMinutesToAdd;
+    tablesData[index].startTime = startTs;
+    tablesData[index].isRunning = true;
+    tablesData[index].warned = false;
+    tablesData[index].expiredWarned = false;
+    tablesData[index].customerName = customerName;
+    
+    db.ref('tables').set(tablesData);
+}
 
 
-                    if (totalSeconds <= 300 && !table.warned) {
-                        table.warned = true;
-                        if (currentMode === 'tv') {
-                            speakWarning('Perhatian, waktu bermain Meja ' + (i + 1) + ' tersisa lima menit lagi.');
-                        }
-                        cardEl.classList.add('warning');
-                    }
-
-                    var hours = String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, '0');
-                    var minutes = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
-                    var seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
-                    timerEl.innerText = hours + ':' + minutes + ':' + seconds;
-                }
-            }
-        }
-        // KONTROL UMUM & AUTH
-        function processLogin() {
-            var rawUser = document.getElementById('loginUsername').value.trim();
-            var rawPass = document.getElementById('loginPassword').value.trim();
-
-            if (!rawUser || !rawPass) { alert("Masukkan Username dan Password!"); return; }
-
-            var userLower = rawUser.toLowerCase();
-            var passLower = rawPass.toLowerCase();
-
-            if (userLower === 'owner' && passLower === '9999') {
-                currentUserRole = 'owner'; currentUsername = 'Pemilik';
-            } else {
-                var foundStaffKey = null;
-                var keys = Object.keys(staffAccounts);
-                for (var i = 0; i < keys.length; i++) {
-                    var k = keys[i];
-                    if (k.toLowerCase() === userLower && staffAccounts[k].password.toLowerCase() === passLower) {
-                        foundStaffKey = k; break;
-                    }
-                }
-                if (foundStaffKey) { currentUserRole = 'karyawan'; currentUsername = foundStaffKey; } 
-                else { alert("Username atau Password Salah!"); return; }
-            }
-
-            localStorage.setItem('r21_user_role', currentUserRole);
-            localStorage.setItem('r21_username', currentUsername);
-            document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('loginUsername').value = '';
-            document.getElementById('loginPassword').value = '';
-            applyUserRolePermissions();
-        }
-
-        function logout() {
-            currentUserRole = null; currentUsername = '';
-            localStorage.removeItem('r21_user_role');
-            localStorage.removeItem('r21_username');
-            document.body.classList.remove('owner-mode');
-            if (currentMode !== 'tv') { document.getElementById('loginModal').style.display = 'flex'; }
-            closeSettingModal();
-        }
-
-        function applyUserRolePermissions() {
-            var ownerElements = document.querySelectorAll('.btn-owner-only');
-            var roleBadge = document.getElementById('userRoleBadge');
-            
-            if (currentUserRole === 'owner') {
-                ownerElements.forEach(function(el) { el.style.display = 'flex'; });
-                if(roleBadge) roleBadge.innerText = currentUsername + " (Owner)";
-                document.body.classList.add('owner-mode');
-            } else {
-                ownerElements.forEach(function(el) { el.style.display = 'none'; });
-                if(roleBadge) roleBadge.innerText = currentUsername || 'Karyawan';
-                document.body.classList.remove('owner-mode');
-            }
-        }
-
-        function formatJam(timestamp) {
-            if (!timestamp || timestamp <= 0) return "-";
-            var date = new Date(timestamp);
-            return String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0');
-        }
-
-        function formatRupiah(number) {
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
-        }
-
-        function calculateFnbTotal(fnbArray) {
-            var total = 0;
-            if (!fnbArray || !Array.isArray(fnbArray)) return 0;
-            fnbArray.forEach(function(item) { total += parseInt(item.price) || 0; });
-            return total;
-        }
-
-        function setMode(mode, save) {
-            if (save !== false) save = true;
-            currentMode = mode;
-            if (save) localStorage.setItem('biliard_mode', mode);
-            
-            if (mode === 'tv') {
-                document.body.classList.add('tv-mode');
-                document.getElementById('loginModal').style.display = 'none';
-                document.getElementById('btn-mode-tv').classList.add('active');
-                document.getElementById('btn-mode-controller').classList.remove('active');
-            } else {
-                document.body.classList.remove('tv-mode');
-                document.getElementById('btn-mode-controller').classList.add('active');
-                document.getElementById('btn-mode-tv').classList.remove('active');
-                if (!currentUserRole) { document.getElementById('loginModal').style.display = 'flex'; }
-            }
-        }
-
-        function updateHourlyRate(val) { db.ref('rate').set(parseInt(val) || 0); }
-
-        // PINDAH MEJA & RESET
-        function openMoveTableModal(sourceIndex) {
-            var currentTable = tablesData[sourceIndex];
-            if (!currentTable || !currentTable.isRunning || currentTable.endTime <= Date.now()) {
-                alert("Meja ini sedang tidak aktif!"); return;
-            }
-            activeMoveSourceIndex = sourceIndex;
-            var selectEl = document.getElementById('targetTableSelect');
-            selectEl.innerHTML = ''; var emptyCount = 0;
-
-            for (var i = 0; i < TOTAL_TABLES; i++) {
-                if (i !== sourceIndex) {
-                    var t = tablesData[i];
-                    if (!t || (!t.isRunning && (!t.customerName || t.customerName === ""))) {
-                        selectEl.innerHTML += '<option value="' + i + '">Meja ' + (i + 1) + '</option>';
-                        emptyCount++;
-                    }
-                }
-            }
-            if (emptyCount === 0) { alert("Tidak ada meja kosong tersedia!"); return; }
-            document.getElementById('moveTableModalTitle').innerText = "Pindah Dari Meja " + (sourceIndex + 1);
-            document.getElementById('moveTableModal').style.display = 'flex';
-        }
-
-        function closeMoveTableModal() {
-            document.getElementById('moveTableModal').style.display = 'none'; activeMoveSourceIndex = null;
-        }
-
-        function confirmMoveTable() {
-            if (activeMoveSourceIndex === null) return;
-            var targetIndex = parseInt(document.getElementById('targetTableSelect').value);
-            if (isNaN(targetIndex)) return;
-
-            sakelarLampu(activeMoveSourceIndex + 1, false); 
-            sakelarLampu(targetIndex + 1, true);         
-
-            tablesData[targetIndex] = JSON.parse(JSON.stringify(tablesData[activeMoveSourceIndex]));
-            clearTableDataLocal(activeMoveSourceIndex);
-
-            db.ref('tables').set(tablesData, function(err) {
-                if (!err) { closeMoveTableModal(); alert("Berhasil pindah ke Meja " + (targetIndex + 1) + "!"); }
-            });
-        }
-
-        function clearTableDataLocal(index) {
-            tablesData[index].endTime = 0; tablesData[index].bookedMinutes = 0;
-            tablesData[index].startTime = 0; tablesData[index].isRunning = false;
-            tablesData[index].warned = false; tablesData[index].expiredWarned = false;
-            tablesData[index].customerName = ""; tablesData[index].fnbList = [];
-        }
-
-        function resetTimerOnly(index) {
-            sakelarLampu(index + 1, false);
-            if (confirm("Reset Meja " + (index + 1) + " tanpa simpan omset?")) {
-                clearTableDataLocal(index); db.ref('tables').set(tablesData);
-            }
-        }
-
-        // KONTROL PEMBAYARAN & SPLIT BILL
+        // KONTROL PEMBAYARAN
         function openPayModal(index) {
             sakelarLampu(parseInt(index) + 1, false);
             var table = tablesData[index];
             var bookedMinutes = table.bookedMinutes || 0;
-            var tablePrice = (bookedMinutes / 60) * hourlyRate;
+            var billing = calculateBillingLogic(bookedMinutes);
             var fnbTotal = calculateFnbTotal(table.fnbList);
-            var grandTotal = tablePrice + fnbTotal;
+            var grandTotal = billing.tablePrice + fnbTotal;
 
-            if (grandTotal === 0) { alert("Meja ini belum memiliki transaksi."); return; }
+            if (grandTotal === 0 && bookedMinutes === 0) { alert("Meja ini belum memiliki transaksi."); return; }
 
             activePayTableIndex = index;
-            document.getElementById('payModalTitle').innerText = "Rincian Pembayaran Meja " + (index + 1);
+            document.getElementById('payModalTitle').innerText = "Rincian Pembayaran Meja 0" + (index + 1);
             document.getElementById('payCustomerName').innerText = (table.customerName || "PELANGGAN").toUpperCase();
-            document.getElementById('payDuration').innerText = bookedMinutes + " Min";
-            document.getElementById('payTablePrice').innerText = formatRupiah(tablePrice);
+            
+            var bonusTxt = billing.bonusHours > 0 ? " (Inc. Gratis " + billing.bonusHours + " Jam)" : "";
+            document.getElementById('payDuration').innerText = bookedMinutes + " Min" + bonusTxt;
+            document.getElementById('payTablePrice').innerText = formatRupiah(billing.tablePrice);
             document.getElementById('payGrandTotal').innerText = formatRupiah(grandTotal);
-
-            var fnbContainer = document.getElementById('payFnbSummaryList');
-            fnbContainer.innerHTML = '';
-            if (table.fnbList && table.fnbList.length > 0) {
-                fnbContainer.innerHTML = '<b>Pesanan Cafe:</b>';
-                table.fnbList.forEach(function(item) {
-                    fnbContainer.innerHTML += '<div>- ' + item.name + ' (' + formatRupiah(item.price) + ')</div>';
-                });
-            }
 
             document.getElementById('payMethodSelect').value = "Tunai";
             toggleSplitBillInput();
@@ -1216,7 +1151,8 @@
             if (activePayTableIndex === null) return;
             var table = tablesData[activePayTableIndex];
             var bookedMinutes = table.bookedMinutes || 0;
-            var grandTotal = ((bookedMinutes / 60) * hourlyRate) + calculateFnbTotal(table.fnbList);
+            var billing = calculateBillingLogic(bookedMinutes);
+            var grandTotal = billing.tablePrice + calculateFnbTotal(table.fnbList);
             var cashVal = parseInt(document.getElementById('splitCashInput').value) || 0;
             var qrisVal = grandTotal - cashVal;
             document.getElementById('splitQrisInput').value = qrisVal > 0 ? qrisVal : 0;
@@ -1229,9 +1165,9 @@
             var index = activePayTableIndex;
             var table = tablesData[index];
             var bookedMinutes = table.bookedMinutes || 0;
-            var tablePrice = (bookedMinutes / 60) * hourlyRate;
+            var billing = calculateBillingLogic(bookedMinutes);
             var fnbTotal = calculateFnbTotal(table.fnbList);
-            var grandTotal = tablePrice + fnbTotal;
+            var grandTotal = billing.tablePrice + fnbTotal;
             var method = document.getElementById('payMethodSelect').value;
 
             var cashPaid = grandTotal; var qrisPaid = 0;
@@ -1251,7 +1187,7 @@
                 table: index + 1,
                 customer: (table.customerName || "PELANGGAN").toUpperCase(),
                 duration: bookedMinutes,
-                tablePrice: tablePrice,
+                tablePrice: billing.tablePrice,
                 fnbPrice: fnbTotal,
                 total: grandTotal,
                 method: method,
@@ -1262,241 +1198,51 @@
 
             db.ref('history').push(historyItem, function(err) {
                 if (!err) {
-                    // FITUR AUTO-CETAK STRUK DIHILANGKAN Sesuai Permintaan
                     clearTableDataLocal(index);
                     db.ref('tables').set(tablesData);
                     closePayModal();
-                    alert("✅ Pembayaran Meja " + (index + 1) + " Berhasil Disimpan!");
+                    alert("✅ Pembayaran Meja 0" + (index + 1) + " Berhasil Disimpan!");
                 }
             });
         }
-
-        // MANAJEMEN STOK & POS CAFE (NON-BILIAR)
-        function openInventoryModal() { renderInventoryList(); document.getElementById('inventoryModal').style.display = 'flex'; }
-        function closeInventoryModal() { document.getElementById('inventoryModal').style.display = 'none'; }
-
-        function saveInventoryItem() {
-            var name = document.getElementById('invItemName').value.trim();
-            var price = parseInt(document.getElementById('invItemPrice').value) || 0;
-            var stock = parseInt(document.getElementById('invItemStock').value) || 0;
-            if (!name || price <= 0) { alert("Isi nama dan harga!"); return; }
-
-            db.ref('inventory/' + name).set({ price: price, stock: stock }, function(err) {
-                if (!err) {
-                    alert("Barang '" + name + "' tersimpan!");
-                    document.getElementById('invItemName').value = '';
-                    document.getElementById('invItemPrice').value = '';
-                    document.getElementById('invItemStock').value = '';
-                }
-            });
-        }
-
-        function renderInventoryList() {
-            var container = document.getElementById('inventoryListContainer');
-            if (!container) return; container.innerHTML = '';
-            var keys = Object.keys(inventoryData);
-            if (keys.length === 0) {
-                container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:10px;">Belum ada stok</div>'; return;
-            }
-            keys.forEach(function(key) {
-                var item = inventoryData[key];
-                var row = document.createElement('div'); row.className = 'fnb-added-item';
-                row.innerHTML = '<div><b>' + key + '</b> - ' + formatRupiah(item.price) + ' (Stok: ' + (item.stock || 0) + ')</div>' +
-                    '<button class="btn-del-item" onclick="deleteInventoryItem(\'' + key + '\')">Hapus</button>';
-                container.appendChild(row);
-            });
-        }
-
-        function deleteInventoryItem(key) {
-            if (confirm("Hapus '" + key + "'?")) { db.ref('inventory/' + key).remove(); }
-        }
-
-        function populateStockDropdowns() {
-            var sel1 = document.getElementById('posItemSelect');
-            var sel2 = document.getElementById('tableFnbStockSelect');
-            if (sel1) sel1.innerHTML = '<option value="">-- Pilih Barang stok --</option>';
-            if (sel2) sel2.innerHTML = '<option value="">-- Pilih Barang --</option>';
-
-            Object.keys(inventoryData).forEach(function(k) {
-                var item = inventoryData[k];
-                var opt = '<option value="' + k + '">' + k + ' - ' + formatRupiah(item.price) + ' (Stok: ' + (item.stock || 0) + ')</option>';
-                if (sel1) sel1.innerHTML += opt;
-                if (sel2) sel2.innerHTML += opt;
-            });
-        }
-
-        function autoFillTableFnbPrice() {
-            var selectedName = document.getElementById('tableFnbStockSelect').value;
-            if (selectedName && inventoryData[selectedName]) {
-                document.getElementById('manualFnbName').value = selectedName;
-                document.getElementById('manualFnbPrice').value = inventoryData[selectedName].price;
+                // FITUR KOREKSI TRANSAKSI (EDIT PEMBAYARAN TUNAI <-> QRIS)
+        function openEditPayMethodModal(key) {
+            document.getElementById('editTrxKey').value = key;
+            var item = dailyHistoryRaw[key];
+            if (item) {
+                document.getElementById('editPayMethodSelect').value = item.method === 'QRIS' ? 'QRIS' : 'Tunai';
+                document.getElementById('editPayMethodModal').style.display = 'flex';
             }
         }
-        // TRANSAKSI CAFE (NON-BILIAR) & PESANAN MEJA
-        function openPosCafeModal() {
-            posCartList = []; document.getElementById('posCustName').value = ''; renderPosCart();
-            document.getElementById('posCafeModal').style.display = 'flex';
-        }
-        function closePosCafeModal() { document.getElementById('posCafeModal').style.display = 'none'; }
 
-        function addPosCafeItem() {
-            var nameSelect = document.getElementById('posItemSelect').value;
-            var qty = parseInt(document.getElementById('posItemQty').value) || 1;
-            if (!nameSelect || !inventoryData[nameSelect]) { alert("Pilih barang dari stok!"); return; }
-            var item = inventoryData[nameSelect];
-            if ((item.stock || 0) < qty) { alert("Stok tidak mencukupi!"); return; }
-
-            posCartList.push({ name: nameSelect, price: item.price * qty, qty: qty, unitPrice: item.price });
-            renderPosCart();
+        function closeEditPayMethodModal() {
+            document.getElementById('editPayMethodModal').style.display = 'none';
         }
 
-        function deletePosCartItem(idx) { posCartList.splice(idx, 1); renderPosCart(); }
+        function saveEditPayMethod() {
+            var key = document.getElementById('editTrxKey').value;
+            var newMethod = document.getElementById('editPayMethodSelect').value;
+            if (!key || !dailyHistoryRaw[key]) return;
 
-        function renderPosCart() {
-            var container = document.getElementById('posCartList'); container.innerHTML = '';
-            var total = 0;
-            posCartList.forEach(function(item, idx) {
-                total += item.price;
-                var row = document.createElement('div'); row.className = 'fnb-added-item';
-                row.innerHTML = '<div><b>' + item.name + '</b> (' + item.qty + 'x) - ' + formatRupiah(item.price) + '</div>' +
-                    '<button class="btn-del-item" onclick="deletePosCartItem(' + idx + ')">Hapus</button>';
-                container.appendChild(row);
-            });
-            document.getElementById('posCartTotal').innerText = formatRupiah(total);
-        }
+            var item = dailyHistoryRaw[key];
+            var total = item.total || 0;
 
-        function processPosCafePayment() {
-            var cust = document.getElementById('posCustName').value.trim() || 'PEMBELI CAFE';
-            var method = document.getElementById('posPayMethod').value;
-            var total = 0; posCartList.forEach(function(i) { total += i.price; });
-            if (posCartList.length === 0 || total === 0) { alert("Keranjang kosong!"); return; }
-
-            var now = new Date();
-            var historyItem = {
-                time: now.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}),
-                date: now.toLocaleDateString('id-ID'),
-                opDate: getOperationalDate(now),
-                table: 'CAFE', customer: cust.toUpperCase(),
-                duration: 0, tablePrice: 0, fnbPrice: total, total: total,
-                method: method, cashPaid: method === 'Tunai' ? total : 0,
-                qrisPaid: method === 'QRIS' ? total : 0, fnbList: posCartList
+            var updateData = {
+                method: newMethod,
+                cashPaid: newMethod === 'Tunai' ? total : 0,
+                qrisPaid: newMethod === 'QRIS' ? total : 0
             };
 
-            posCartList.forEach(function(i) {
-                if (inventoryData[i.name]) {
-                    var newStock = (inventoryData[i.name].stock || 0) - i.qty;
-                    db.ref('inventory/' + i.name + '/stock').set(newStock < 0 ? 0 : newStock);
-                }
-            });
-
-            db.ref('history').push(historyItem, function(err) {
+            db.ref('history/' + key).update(updateData, function(err) {
                 if (!err) {
-                    closePosCafeModal();
-                    alert("✅ Transaksi Cafe Berhasil Disimpan!");
+                    closeEditPayMethodModal();
+                    renderHistoryTable();
+                    alert("✅ Metode pembayaran berhasil diperbarui ke " + newMethod + "!");
                 }
             });
         }
 
-        function openFnbModal(index) {
-            activeFnbTableIndex = index;
-            tempFnbList = JSON.parse(JSON.stringify(tablesData[index].fnbList || []));
-            document.getElementById('modalTableTitle').innerText = "Pesanan Cafe - Meja " + (index + 1);
-            document.getElementById('manualFnbName').value = ""; document.getElementById('manualFnbPrice').value = "";
-            renderTempFnbList();
-            document.getElementById('fnbModal').style.display = 'flex';
-        }
-
-        function addManualFnbItem() {
-            var name = document.getElementById('manualFnbName').value.trim();
-            var price = parseInt(document.getElementById('manualFnbPrice').value) || 0;
-            if (!name || price <= 0) { alert("Isi pesanan!"); return; }
-            
-            if (inventoryData[name]) {
-                var currentStock = inventoryData[name].stock || 0;
-                if (currentStock > 0) { db.ref('inventory/' + name + '/stock').set(currentStock - 1); }
-            }
-
-            tempFnbList.push({ name: name, price: price });
-            document.getElementById('manualFnbName').value = ""; document.getElementById('manualFnbPrice').value = "";
-            renderTempFnbList();
-        }
-
-        function deleteTempFnbItem(idx) { tempFnbList.splice(idx, 1); renderTempFnbList(); }
-
-        function renderTempFnbList() {
-            var container = document.getElementById('fnbAddedList'); container.innerHTML = '';
-            if (tempFnbList.length === 0) {
-                container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:10px;">Belum ada pesanan</div>'; return;
-            }
-            tempFnbList.forEach(function(item, idx) {
-                var row = document.createElement('div'); row.className = 'fnb-added-item';
-                row.innerHTML = '<div><b>' + item.name + '</b> - ' + formatRupiah(item.price) + '</div><button class="btn-del-item" onclick="deleteTempFnbItem(' + idx + ')">Hapus</button>';
-                container.appendChild(row);
-            });
-        }
-
-        function closeFnbModal() { document.getElementById('fnbModal').style.display = 'none'; }
-        function saveFnbModal() {
-            if (activeFnbTableIndex !== null) { 
-                tablesData[activeFnbTableIndex].fnbList = tempFnbList; 
-                db.ref('tables').set(tablesData); 
-            }
-            closeFnbModal();
-        }
-
-        // KELOLA AKUN KARYAWAN
-        function openStaffManagerModal() { renderStaffList(); document.getElementById('staffManagerModal').style.display = 'flex'; }
-        function closeStaffManagerModal() { document.getElementById('staffManagerModal').style.display = 'none'; }
-
-        function addStaffAccount() {
-            var uInput = document.getElementById('newStaffUsername');
-            var pInput = document.getElementById('newStaffPassword');
-            var u = uInput.value.trim(); var p = pInput.value.trim();
-            if (!u || !p) { alert("Isi Username dan Password!"); return; }
-            if (u.toLowerCase() === 'owner') { alert("Username 'owner' dilarang!"); return; }
-
-            db.ref('staffs/' + u).set({ password: p }, function(err) {
-                if (!err) { alert("Akun '" + u + "' dibuat!"); uInput.value = ''; pInput.value = ''; }
-            });
-        }
-
-        function deleteStaffAccount(u) {
-            if (confirm("Hapus akun '" + u + "'?")) { db.ref('staffs/' + u).remove(); }
-        }
-
-        function renderStaffList() {
-            var container = document.getElementById('staffListContainer');
-            if (!container) return; container.innerHTML = '';
-            var keys = Object.keys(staffAccounts);
-            if (keys.length === 0) {
-                container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:10px;">Belum ada akun karyawan</div>'; return;
-            }
-            keys.forEach(function(key) {
-                var row = document.createElement('div'); row.className = 'fnb-added-item';
-                row.innerHTML = '<div><b>' + key + '</b> (Pass: ' + staffAccounts[key].password + ')</div>' +
-                    '<button class="btn-del-item" onclick="deleteStaffAccount(\'' + key + '\')">Hapus</button>';
-                container.appendChild(row);
-            });
-        }
-
-        // RIWAYAT TRANSAKSI OPERASIONAL & PENJUMLAHAN TOTAL UANG
-        function getOperationalDate(dateObj) {
-            var d = new Date(dateObj);
-            if (d.getHours() < 8) { d.setDate(d.getDate() - 1); }
-            return d.toLocaleDateString('id-ID');
-        }
-
-        function openHistoryModal() {
-            var filterInput = document.getElementById('historyDateFilter');
-            if (filterInput && !filterInput.value) {
-                var d = new Date();
-                if (d.getHours() < 8) d.setDate(d.getDate() - 1);
-                filterInput.value = d.toISOString().split('T')[0];
-            }
-            renderHistoryTable();
-            document.getElementById('historyModal').style.display = 'flex';
-        }
-
+        // RIWAYAT TRANSAKSI
         function renderHistoryTable() {
             var tbody = document.getElementById('historyTableBody'); 
             if (!tbody) return;
@@ -1517,72 +1263,168 @@
                     grandTotalAmount += (item.total || 0);
 
                     var tr = document.createElement('tr');
-                    var deleteBtn = (currentUserRole === 'owner') ? '<button style="background:#ef4444; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" onclick="deleteHistoryItem(\'' + key + '\')">🗑️</button>' : '';
+                    var deleteBtn = (currentUserRole === 'owner') ? '<button style="background:var(--danger-red); color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" onclick="deleteHistoryItem(\'' + key + '\')">🗑️</button>' : '';
+                    var editMethodBtn = '<button style="background:var(--warning-amber); color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; margin-right:4px;" onclick="openEditPayMethodModal(\'' + key + '\')">✏️ Edit</button>';
+                    
                     var methodTxt = item.method;
                     if (item.method === 'Split') {
                         methodTxt = 'Split (T:' + formatRupiah(item.cashPaid || 0) + ' | Q:' + formatRupiah(item.qrisPaid || 0) + ')';
                     }
+
                     tr.innerHTML = 
                         '<td>' + (item.time || '-') + '</td>' +
                         '<td>' + (item.table === 'CAFE' ? '🛒 CAFE' : 'Meja ' + item.table) + '</td>' +
                         '<td>' + (item.customer || '-') + '</td>' +
                         '<td><b>' + methodTxt + '</b></td>' +
-                        '<td style="font-weight:bold; color:var(--price-color);">' + formatRupiah(item.total || 0) + '</td>' +
-                        '<td><button style="background:#8b5cf6; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; margin-right:4px;" onclick="reprintHistory(\'' + key + '\')">🖨️</button>' + deleteBtn + '</td>';
+                        '<td style="font-weight:bold; color:var(--accent-blue);">' + formatRupiah(item.total || 0) + '</td>' +
+                        '<td>' + editMethodBtn + deleteBtn + '</td>';
                     tbody.appendChild(tr);
                 }
             });
 
             if (count === 0) { 
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#94a3b8;">Tidak ada riwayat transaksi pada tanggal ini</td></tr>'; 
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Tidak ada riwayat transaksi pada tanggal ini</td></tr>'; 
             }
 
-            // Update Total Uang dan Jumlah Transaksi di Ringkasan Bawah Modal
             var totalCountEl = document.getElementById('historyTotalCount');
             var totalAmountEl = document.getElementById('historyTotalAmount');
             if (totalCountEl) totalCountEl.innerText = count;
             if (totalAmountEl) totalAmountEl.innerText = formatRupiah(grandTotalAmount);
         }
 
+        // FUNGSI PENDUKUNG & AUTH
+        function openSettingModal() {
+            document.getElementById('cfgBizName').value = bizProfile.name;
+            document.getElementById('cfgBizAddress').value = bizProfile.address;
+            document.getElementById('cfgBizPhone').value = bizProfile.phone;
+            document.getElementById('cfgRelayIp').value = currentIpRelay;
+            document.getElementById('settingModal').style.display = 'flex';
+        }
+        function closeSettingModal() { document.getElementById('settingModal').style.display = 'none'; }
+
+        function saveBizProfile() {
+            var n = document.getElementById('cfgBizName').value.trim();
+            var a = document.getElementById('cfgBizAddress').value.trim();
+            var p = document.getElementById('cfgBizPhone').value.trim();
+            if (!n) { alert("Nama usaha wajib diisi!"); return; }
+            bizProfile = { name: n, address: a, phone: p };
+            localStorage.setItem('R21_BIZ_PROFILE', JSON.stringify(bizProfile));
+            applyBizProfileUI();
+            alert("✅ Profil usaha berhasil diperbarui!");
+        }
+
+        function saveRelayIp() {
+            var ip = document.getElementById('cfgRelayIp').value.trim();
+            if (ip) {
+                currentIpRelay = ip;
+                localStorage.setItem('IP_RELAY_BILIAR', ip);
+                updateRelayBadge();
+                alert("✅ IP Relay diperbarui: " + ip);
+            }
+        }
+
+        function updateRelayBadge() {
+            var b = document.getElementById('relayStatusBadge');
+            if(b) b.innerText = "Relay IP: " + currentIpRelay;
+        }
+
+        function applyBizProfileUI() {
+            document.getElementById('displayBrandName').innerText = bizProfile.name;
+            document.getElementById('printBizName').innerText = bizProfile.name;
+            document.getElementById('printBizAddress').innerText = bizProfile.address;
+            document.getElementById('printBizPhone').innerText = "Telp: " + bizProfile.phone;
+        }
+
+        function processLogin() {
+            var rawUser = document.getElementById('loginUsername').value.trim();
+            var rawPass = document.getElementById('loginPassword').value.trim();
+
+            if (rawUser.toLowerCase() === 'owner' && rawPass === '9999') {
+                currentUserRole = 'owner'; currentUsername = 'Pemilik';
+            } else {
+                var foundStaffKey = null;
+                Object.keys(staffAccounts).forEach(function(k) {
+                    if (k.toLowerCase() === rawUser.toLowerCase() && staffAccounts[k].password === rawPass) {
+                        foundStaffKey = k;
+                    }
+                });
+                if (foundStaffKey) { currentUserRole = 'karyawan'; currentUsername = foundStaffKey; }
+                else { alert("Username atau Password Salah!"); return; }
+            }
+
+            localStorage.setItem('r21_user_role', currentUserRole);
+            localStorage.setItem('r21_username', currentUsername);
+            document.getElementById('loginModal').style.display = 'none';
+            applyUserRolePermissions();
+        }
+
+        function logout() {
+            currentUserRole = null; currentUsername = '';
+            localStorage.removeItem('r21_user_role');
+            localStorage.removeItem('r21_username');
+            if (currentMode !== 'tv') { document.getElementById('loginModal').style.display = 'flex'; }
+            closeSettingModal();
+        }
+
+        function applyUserRolePermissions() {
+            var ownerElements = document.querySelectorAll('.btn-owner-only');
+            var roleBadge = document.getElementById('userRoleBadge');
+            if (currentUserRole === 'owner') {
+                ownerElements.forEach(function(el) { el.style.display = 'flex'; });
+                if(roleBadge) roleBadge.innerText = currentUsername + " (Owner)";
+            } else {
+                ownerElements.forEach(function(el) { el.style.display = 'none'; });
+                if(roleBadge) roleBadge.innerText = currentUsername || 'Karyawan';
+            }
+        }
+
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
+        }
+
+        function calculateFnbTotal(fnbArray) {
+            var total = 0;
+            if (!fnbArray || !Array.isArray(fnbArray)) return 0;
+            fnbArray.forEach(function(item) { total += parseInt(item.price) || 0; });
+            return total;
+        }
+
+        function getOperationalDate(dateObj) {
+            var d = new Date(dateObj);
+            if (d.getHours() < 8) { d.setDate(d.getDate() - 1); }
+            return d.toLocaleDateString('id-ID');
+        }
+
+        function openHistoryModal() {
+            var filterInput = document.getElementById('historyDateFilter');
+            if (filterInput && !filterInput.value) {
+                var d = new Date();
+                if (d.getHours() < 8) d.setDate(d.getDate() - 1);
+                filterInput.value = d.toISOString().split('T')[0];
+            }
+            renderHistoryTable();
+            document.getElementById('historyModal').style.display = 'flex';
+        }
         function closeHistoryModal() { document.getElementById('historyModal').style.display = 'none'; }
 
         function deleteHistoryItem(key) {
             if (confirm("Hapus transaksi ini?")) { db.ref('history/' + key).remove(function() { renderHistoryTable(); }); }
         }
 
-        function reprintHistory(key) {
-            if (dailyHistoryRaw[key]) { printReceiptFromObj(dailyHistoryRaw[key]); }
-        }
-
-        // CETAK STRUK MANUAL VIA STRUKTUR DINAMIS
-        function printReceiptFromObj(item) {
-            applyBizProfileUI();
-            var dateStr = (item.date || '-') + ' ' + (item.time || '-');
-            document.getElementById('recDate').innerText = dateStr;
-            document.getElementById('recId').innerText = 'TRX-' + Math.floor(1000 + Math.random() * 9000);
-            document.getElementById('recCustomer').innerText = (item.customer || "PELANGGAN").toUpperCase();
-            document.getElementById('recTable').innerText = item.table === 'CAFE' ? "Pesanan Cafe" : "Sewa Meja " + item.table;
-            document.getElementById('recDuration').innerText = item.table === 'CAFE' ? "-" : (item.duration || 0) + " Min";
-            document.getElementById('recTablePrice').innerText = formatRupiah(item.tablePrice || 0);
-
-            var methodEl = document.getElementById('recMethod');
-            if (item.method === 'Split') {
-                methodEl.innerHTML = 'Split Bill<br><small style="font-size:10px;">(Tunai: ' + formatRupiah(item.cashPaid || 0) + ' | QRIS: ' + formatRupiah(item.qrisPaid || 0) + ')</small>';
-            } else { methodEl.innerText = item.method || "Tunai"; }
-
-            var recFnbListEl = document.getElementById('recFnbList'); recFnbListEl.innerHTML = '';
-            if (item.fnbList && Array.isArray(item.fnbList)) {
-                item.fnbList.forEach(function(f) {
-                    var line = document.createElement('div'); line.className = 'receipt-line';
-                    line.innerHTML = '<span>' + f.name + '</span><span>' + formatRupiah(f.price) + '</span>';
-                    recFnbListEl.appendChild(line);
-                });
+        function resetTimerOnly(index) {
+            sakelarLampu(index + 1, false);
+            if (confirm("Reset Meja 0" + (index + 1) + " tanpa simpan omset?")) {
+                clearTableDataLocal(index); db.ref('tables').set(tablesData);
             }
-            document.getElementById('recTotal').innerText = formatRupiah(item.total || 0);
-            window.print();
         }
 
-        // LAPORAN SHIFT WHATSAPP
+        function clearTableDataLocal(index) {
+            tablesData[index].endTime = 0; tablesData[index].bookedMinutes = 0;
+            tablesData[index].startTime = 0; tablesData[index].isRunning = false;
+            tablesData[index].warned = false; tablesData[index].expiredWarned = false;
+            tablesData[index].customerName = ""; tablesData[index].fnbList = [];
+        }
+
         function sendWaReport() {
             var filterVal = document.getElementById('historyDateFilter').value;
             var currentOpDate = filterVal ? new Date(filterVal).toLocaleDateString('id-ID') : getOperationalDate(new Date());
@@ -1620,12 +1462,205 @@
             if (cleanPhone.startsWith('0')) cleanPhone = '62' + cleanPhone.substring(1);
             window.open("https://wa.me/" + cleanPhone + "?text=" + encodeURIComponent(message), '_blank');
         }
+        // ==========================================
+        // FUNGSI RENDER STOK CAFE & KARYAWAN (FIX ERROR)
+        // ==========================================
+        function renderInventoryList() {
+            var container = document.getElementById('inventoryListContainer');
+            if (!container) return; 
+            container.innerHTML = '';
+            var keys = Object.keys(inventoryData);
+            if (keys.length === 0) {
+                container.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:10px;">Belum ada stok</div>'; 
+                return;
+            }
+            keys.forEach(function(key) {
+                var item = inventoryData[key];
+                var row = document.createElement('div'); 
+                row.className = 'fnb-added-item';
+                row.innerHTML = '<div><b>' + key + '</b> - ' + formatRupiah(item.price) + ' (Stok: ' + (item.stock || 0) + ')</div>' +
+                    '<button class="btn-del-item" onclick="deleteInventoryItem(\'' + key + '\')">Hapus</button>';
+                container.appendChild(row);
+            });
+        }
 
-        // INISIALISASI UTAMA
+        function renderStaffList() {
+            var container = document.getElementById('staffListContainer');
+            if (!container) return; 
+            container.innerHTML = '';
+            var keys = Object.keys(staffAccounts);
+            if (keys.length === 0) {
+                container.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:10px;">Belum ada akun karyawan</div>'; 
+                return;
+            }
+            keys.forEach(function(key) {
+                var row = document.createElement('div'); 
+                row.className = 'fnb-added-item';
+                row.innerHTML = '<div><b>' + key + '</b> (Pass: ' + staffAccounts[key].password + ')</div>' +
+                    '<button class="btn-del-item" onclick="deleteStaffAccount(\'' + key + '\')">Hapus</button>';
+                container.appendChild(row);
+            });
+        }
+
+        function populateStockDropdowns() {
+            var sel1 = document.getElementById('posItemSelect');
+            if (sel1) sel1.innerHTML = '<option value="">-- Pilih Barang dari Stok --</option>';
+
+            Object.keys(inventoryData).forEach(function(k) {
+                var item = inventoryData[k];
+                var opt = '<option value="' + k + '">' + k + ' - ' + formatRupiah(item.price) + ' (Stok: ' + (item.stock || 0) + ')</option>';
+                if (sel1) sel1.innerHTML += opt;
+            });
+        }
+
+        // ==========================================
+        // HANDLER STOK & CAFE POS
+        // ==========================================
+        function openInventoryModal() {
+            renderInventoryList();
+            document.getElementById('inventoryModal').style.display = 'flex';
+        }
+        function closeInventoryModal() { document.getElementById('inventoryModal').style.display = 'none'; }
+
+        function saveInventoryItem() {
+            var name = document.getElementById('invItemName').value.trim();
+            var price = parseInt(document.getElementById('invItemPrice').value) || 0;
+            var stock = parseInt(document.getElementById('invItemStock').value) || 0;
+
+            if (!name || price <= 0) { alert("Nama dan harga barang wajib diisi!"); return; }
+
+            db.ref('inventory/' + name).set({ price: price, stock: stock }, function(err) {
+                if (!err) {
+                    document.getElementById('invItemName').value = '';
+                    document.getElementById('invItemPrice').value = '';
+                    document.getElementById('invItemStock').value = '';
+                    alert("✅ Barang berhasil disimpan!");
+                }
+            });
+        }
+
+        function deleteInventoryItem(key) {
+            if (confirm("Hapus barang " + key + " dari stok?")) {
+                db.ref('inventory/' + key).remove();
+            }
+        }
+
+        function openStaffManagerModal() {
+            renderStaffList();
+            document.getElementById('staffManagerModal').style.display = 'flex';
+        }
+        function closeStaffManagerModal() { document.getElementById('staffManagerModal').style.display = 'none'; }
+
+        function addStaffAccount() {
+            var u = document.getElementById('newStaffUsername').value.trim();
+            var p = document.getElementById('newStaffPassword').value.trim();
+            if (!u || !p) { alert("Username dan Password wajib diisi!"); return; }
+
+            db.ref('staffs/' + u).set({ password: p }, function(err) {
+                if (!err) {
+                    document.getElementById('newStaffUsername').value = '';
+                    document.getElementById('newStaffPassword').value = '';
+                    alert("✅ Akun karyawan berhasil dibuat!");
+                }
+            });
+        }
+
+        function deleteStaffAccount(key) {
+            if (confirm("Hapus akun " + key + "?")) {
+                db.ref('staffs/' + key).remove();
+            }
+        }
+
+        function openPosCafeModal() {
+            posCartList = [];
+            renderPosCart();
+            populateStockDropdowns();
+            document.getElementById('posCustName').value = '';
+            document.getElementById('posCafeModal').style.display = 'flex';
+        }
+        function closePosCafeModal() { document.getElementById('posCafeModal').style.display = 'none'; }
+
+        function addPosCafeItem() {
+            var itemKey = document.getElementById('posItemSelect').value;
+            var qty = parseInt(document.getElementById('posItemQty').value) || 1;
+            if (!itemKey) { alert("Pilih barang terlebih dahulu!"); return; }
+
+            var itemData = inventoryData[itemKey];
+            if (!itemData) return;
+
+            if (itemData.stock < qty) {
+                alert("Stok tidak cukup! Sisa stok: " + itemData.stock);
+                return;
+            }
+
+            posCartList.push({ name: itemKey, price: itemData.price * qty, qty: qty, singlePrice: itemData.price });
+            renderPosCart();
+        }
+
+        function renderPosCart() {
+            var container = document.getElementById('posCartList');
+            if (!container) return;
+            container.innerHTML = '';
+            var total = 0;
+
+            posCartList.forEach(function(item, idx) {
+                total += item.price;
+                var row = document.createElement('div');
+                row.className = 'fnb-added-item';
+                row.innerHTML = '<div>' + item.name + ' (' + item.qty + 'x) - ' + formatRupiah(item.price) + '</div>' +
+                    '<button class="btn-del-item" onclick="posCartList.splice(' + idx + ', 1); renderPosCart();">Hapus</button>';
+                container.appendChild(row);
+            });
+
+            document.getElementById('posCartTotal').innerText = formatRupiah(total);
+        }
+
+        function processPosCafePayment() {
+            var custName = document.getElementById('posCustName').value.trim() || "PEMBELI CAFE";
+            var method = document.getElementById('posPayMethod').value;
+            var total = 0;
+            posCartList.forEach(function(i) { total += i.price; });
+
+            if (total === 0) { alert("Keranjang belanja masih kosong!"); return; }
+
+            // Potong Stok
+            posCartList.forEach(function(item) {
+                if (inventoryData[item.name]) {
+                    var newStock = (inventoryData[item.name].stock || 0) - item.qty;
+                    db.ref('inventory/' + item.name + '/stock').set(newStock < 0 ? 0 : newStock);
+                }
+            });
+
+            var now = new Date();
+            var historyItem = {
+                time: now.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}),
+                date: now.toLocaleDateString('id-ID'),
+                opDate: getOperationalDate(now),
+                table: 'CAFE',
+                customer: custName.toUpperCase(),
+                duration: 0,
+                tablePrice: 0,
+                fnbPrice: total,
+                total: total,
+                method: method,
+                cashPaid: method === 'Tunai' ? total : 0,
+                qrisPaid: method === 'QRIS' ? total : 0,
+                fnbList: posCartList
+            };
+
+            db.ref('history').push(historyItem, function(err) {
+                if (!err) {
+                    closePosCafeModal();
+                    alert("✅ Transaksi Cafe Berhasil!");
+                }
+            });
+        }
+        
+        // INISIALISASI
         function init() {
             applyBizProfileUI();
             updateRelayBadge();
-            setMode(currentMode, false);
+            setMode(currentMode);
             if (currentUserRole && currentMode !== 'tv') {
                 document.getElementById('loginModal').style.display = 'none';
                 applyUserRolePermissions();
