@@ -636,12 +636,6 @@
             var mejaInt = parseInt(nomorMeja);
             var channelRelay = mejaInt;
 
-            if (mejaInt === 1) {
-                channelRelay = 7;
-            } else if (mejaInt === 4) {
-                channelRelay = 8;
-            }
-
             var state = status ? "1" : "0"; 
 
             // 1. Kirim Sinyal HTTP Lokal via Image Object
