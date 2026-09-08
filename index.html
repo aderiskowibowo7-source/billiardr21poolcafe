@@ -639,7 +639,32 @@
                 tablePrice: tablePrice
             };
         }
+        // UPDATE PREVIEW DI MODAL DURASI (MAIN 5 JAM: 4 JAM BAYAR, 1 JAM GRATIS)
+        function updateDurationModalCalc() {
+            var totalMinutes = parseInt(document.getElementById('customMinutesInput').value) || 0;
+            var totalHours = Math.round(totalMinutes / 60);
+            
+            var paidHours = totalHours;
+            var bonusHours = 0;
 
+            if (totalHours >= 5) {
+                var sets = Math.floor(totalHours / 5);
+                var remainder = totalHours % 5;
+                paidHours = (sets * 4) + remainder;
+                bonusHours = totalHours - paidHours;
+            }
+
+            var totalPrice = paidHours * hourlyRate;
+            var infoText = "Total: " + totalHours + " Jam (" + formatRupiah(totalPrice) + ")";
+            
+            if (bonusHours > 0) {
+                infoText += " (Gratis " + bonusHours + " Jam Promo!)";
+            }
+            
+            var previewEl = document.getElementById('durationPreviewTxt');
+            if (previewEl) previewEl.innerText = infoText;
+        }
+        
 
 
         // CONTROL SAKELAR LAMPU RELAY (MAPPING HARDWARE LAMA: MEJA 1 -> CH 7, MEJA 4 -> CH 8)
@@ -816,8 +841,21 @@
             updateDurationPreview();
         }
 
-        function updateDurationPreview() {
+                function updateDurationPreview() {
             var mnt = parseInt(document.getElementById('customMinutesInput').value) || 0;
+            var totalHours = Math.round(mnt / 60);
+            
+            var paidHours = totalHours;
+            var bonusHours = 0;
+
+            if (totalHours >= 5) {
+                var sets = Math.floor(totalHours / 5);
+                var remainder = totalHours % 5;
+                paidHours = (sets * 4) + remainder;
+                bonusHours = totalHours - paidHours;
+            }
+
+            var totalPrice = paidHours * hourlyRate;
             var jam = Math.floor(mnt / 60);
             var sisa = mnt % 60;
             var txtDurasi = "";
@@ -825,10 +863,10 @@
             if (sisa > 0) txtDurasi += sisa + " Min";
             if (!txtDurasi) txtDurasi = "0 Min";
 
-            var billing = calculateBillingLogic(mnt);
-            var bonusTxt = billing.bonusHours > 0 ? " (Gratis " + billing.bonusHours + " Jam Promo!)" : "";
-            document.getElementById('durationPreviewTxt').innerText = "Total: " + txtDurasi.trim() + " (" + formatRupiah(billing.tablePrice) + ")" + bonusTxt;
+            var bonusTxt = bonusHours > 0 ? " (Gratis " + bonusHours + " Jam Promo!)" : "";
+            document.getElementById('durationPreviewTxt').innerText = "Total: " + txtDurasi.trim() + " (" + formatRupiah(totalPrice) + ")" + bonusTxt;
         }
+
 
         function confirmStartDuration() {
             var name = document.getElementById('durationCustName').value.trim();
