@@ -107,7 +107,7 @@
             max-height: 110px;
             overflow-y: auto;
         }
-                .table-card {
+        .table-card {
             background-color: var(--card-bg); border-radius: 12px; padding: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex;
             flex-direction: column; border: 2px solid #334155;
@@ -116,8 +116,7 @@
         .table-card.active { border-color: var(--accent); }
         .table-card.warning { border-color: var(--warning); }
         .table-card.expired { border-color: var(--danger); }
-        
-        .card-header-row {
+                .card-header-row {
             display: flex; justify-content: space-between; align-items: center;
             width: 100%; margin-bottom: 8px; border-bottom: 1px dashed #334155; padding-bottom: 6px;
         }
@@ -230,6 +229,15 @@
         body.tv-mode .header-status-bar, 
         body.tv-mode .mode-selector { display: none !important; }
 
+        .tv-switch-bar {
+            display: none; position: fixed; top: 10px; right: 10px; z-index: 99; gap: 6px;
+        }
+        body.tv-mode .tv-switch-bar { display: flex !important; }
+        .tv-switch-bar button {
+            background: rgba(30, 41, 59, 0.85); color: #cbd5e1; border: 1px solid #475569;
+            padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;
+        }
+
         body.tv-mode .brand-subtitle { font-size: 1.4rem; margin-bottom: 4px; letter-spacing: 2px; text-align: center; }
         body.tv-mode .grid-container { 
             display: grid !important; grid-template-columns: repeat(3, 1fr) !important; 
@@ -265,6 +273,11 @@
     </style>
 </head>
 <body>
+    <div class="tv-switch-bar">
+        <button onclick="setMode('controller')">📱 Mode HP</button>
+        <button onclick="setMode('landscape')">💻 Mode Kasir</button>
+    </div>
+
     <h1 id="page-title">Sistem Timer & Kasir</h1>
     <div class="brand-subtitle" id="displayBrandName">R21 POOL & CAFE</div>
     
@@ -383,7 +396,7 @@
             <button class="btn-action" style="width:100%; padding:10px; margin-top:5px; background:#22c55e; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="processLogin()">Masuk</button>
         </div>
     </div>
-        <!-- MODAL PINDAH MEJA -->
+    <!-- MODAL PINDAH MEJA -->
     <div class="modal-overlay" id="moveTableModal">
         <div class="modal-content" style="max-width:350px;">
             <div class="modal-title" id="moveTableModalTitle">Pindah Meja</div>
@@ -402,13 +415,17 @@
     <div class="modal-overlay" id="payModal">
         <div class="modal-content" style="max-width:400px;">
             <div class="modal-title" id="payModalTitle">Rincian Pembayaran Meja X</div>
-            <div style="font-size:0.9rem; line-height:1.6; margin-bottom:15px; border-bottom:1px dashed #334155; padding-bottom:10px;">
+            <div style="font-size:0.9rem; line-height:1.6; margin-bottom:10px; border-bottom:1px dashed #334155; padding-bottom:10px;">
                 <div>Pelanggan: <b id="payCustomerName" style="color:var(--cust-color); text-transform:uppercase;">-</b></div>
                 <div>Durasi Main: <b id="payDuration">0 Min</b> (<span id="payTablePrice">Rp 0</span>)</div>
                 <div id="promoNotice" style="font-size:0.8rem; color:#facc15; display:none; margin-top:2px;"></div>
                 <div id="payFnbSummaryList" style="margin-top:5px; color:#cbd5e1; font-size:0.85rem;"></div>
             </div>
-            <div style="font-size:1.2rem; font-weight:bold; color:var(--price-color); text-align:center; margin-bottom:15px;">
+
+            <!-- TOMBOL AKSES CEK RIWAYAT TRANSAKSI LANGSUNG DARI MODAL BAYAR -->
+            <button style="width:100%; background:#8b5cf6; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; margin-bottom:12px; font-size:0.85rem;" onclick="openHistoryModal()">📜 Cek Riwayat Transaksi</button>
+
+            <div style="font-size:1.2rem; font-weight:bold; color:var(--price-color); text-align:center; margin-bottom:12px;">
                 Total Bayar: <span id="payGrandTotal">Rp 0</span>
             </div>
             <div class="form-group">
@@ -460,7 +477,6 @@
             </div>
         </div>
     </div>
-
     <!-- MODAL STOK CAFE -->
     <div class="modal-overlay" id="inventoryModal">
         <div class="modal-content" style="max-width:450px;">
@@ -515,6 +531,7 @@
             </div>
         </div>
     </div>
+
     <!-- MODAL RIWAYAT TRANSAKSI -->
     <div class="modal-overlay" id="historyModal">
         <div class="modal-content" style="max-width:650px;">
@@ -618,13 +635,12 @@
 
         var currentMode = localStorage.getItem('biliard_mode') || 'controller';
 
-                        // LOGIKA PROMO AKUMULASI 4+1 YANG PRESISI
+        // LOGIKA PROMO AKUMULASI 4+1 YANG PRESISI (5 JAM BAYAR 4 JAM)
         function calculateBillingLogic(totalMinutes) {
             var totalHours = Math.round(totalMinutes / 60);
             var paidHours = totalHours;
             var bonusHours = 0;
 
-            // Promo 4+1 baru jalan jika total main sudah mencapai 5 jam atau lebih
             if (totalHours >= 5) {
                 var sets = Math.floor(totalHours / 5);
                 var remainder = totalHours % 5;
@@ -639,19 +655,10 @@
                 tablePrice: tablePrice
             };
         }
-   
-       
-
-        // CONTROL SAKELAR LAMPU RELAY (MAPPING HARDWARE LAMA: MEJA 1 -> CH 7, MEJA 4 -> CH 8)
+        // CONTROL SAKELAR LAMPU RELAY (MAPPING HARDWARE 1:1)
         function sakelarLampu(nomorMeja, status) {
             var mejaInt = parseInt(nomorMeja);
-            var channelRelay = mejaInt;
-
-            if (mejaInt === 1) {
-                channelRelay = 7;
-            } else if (mejaInt === 4) {
-                channelRelay = 8;
-            }
+            var channelRelay = mejaInt; // Mapping 1:1 (Meja 1 = CH 1, Meja 2 = CH 2, dst.)
 
             var state = status ? "1" : "0"; 
 
@@ -671,6 +678,7 @@
                 headers: { 'Content-Type': 'application/json' }
             }).catch(function(e) { console.log("Cloud sync error", e); });
         }
+
         // SYNC DATA FIREBASE
         db.ref('staffs').on('value', function(snapshot) {
             staffAccounts = snapshot.val() || {};
@@ -712,10 +720,10 @@
             renderHistoryTable();
         });
 
-        // CEK SOUND & SUARA PERINGATAN
+        // CEK SOUND & SUARA PERINGATAN (AKTIF DI TV & KASIR LANDSCAPE)
         db.ref('audioTrigger').on('value', function(snap) {
             var val = snap.val();
-            if (val && currentMode === 'tv') { playTvChimeSound(); }
+            if (val && (currentMode === 'tv' || currentMode === 'landscape')) { playTvChimeSound(); }
         });
 
         function testSound() {
@@ -737,7 +745,7 @@
         }
 
         function speakWarning(text) {
-            if (currentMode !== 'tv') return;
+            if (currentMode !== 'tv' && currentMode !== 'landscape') return;
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 var speech = new SpeechSynthesisUtterance(text);
@@ -745,7 +753,6 @@
                 window.speechSynthesis.speak(speech);
             }
         }
-
         // PENGATURAN MODAL SETTING & PROFIL USAHA
         function openSettingModal() {
             document.getElementById('cfgBizName').value = bizProfile.name;
@@ -793,6 +800,7 @@
             document.getElementById('printBizPhone').innerText = "Telp: " + bizProfile.phone;
             document.getElementById('printFooterBizName').innerText = bizProfile.name;
         }
+
         // LOGIKA MODAL POP-UP DURASI
         function openDurationModal(index) {
             pendingStartTableIndex = index;
@@ -816,7 +824,7 @@
             updateDurationPreview();
         }
 
-                        function updateDurationPreview() {
+        function updateDurationPreview() {
             var mnt = parseInt(document.getElementById('customMinutesInput').value) || 0;
             var totalHours = Math.round(mnt / 60);
             
@@ -841,8 +849,6 @@
             var bonusTxt = bonusHours > 0 ? " (Gratis " + bonusHours + " Jam Promo!)" : "";
             document.getElementById('durationPreviewTxt').innerText = "Total: " + txtDurasi.trim() + " (" + formatRupiah(totalPrice) + ")" + bonusTxt;
         }
-
-
 
         function confirmStartDuration() {
             var name = document.getElementById('durationCustName').value.trim();
@@ -933,7 +939,7 @@
             updateTimers();
         }
 
-        // UPDATE TIMER REALTIME & PROMO 4+1 (TANPA KEDIP 30 DETIK)
+        // UPDATE TIMER REALTIME & PROMO 4+1
         function updateTimers() {
             var now = Date.now();
             for (var i = 0; i < TOTAL_TABLES; i++) {
@@ -1000,9 +1006,7 @@
                         if (!table.expiredWarned) {
                             table.expiredWarned = true;
                             sakelarLampu(i + 1, false);
-                            if (currentMode === 'tv') {
-                                speakWarning('Perhatian, waktu bermain Meja ' + (i + 1) + ' telah habis.');
-                            }
+                            speakWarning('Perhatian, waktu bermain Meja ' + (i + 1) + ' telah habis.');
                         }
 
                         if (normalControls && expiredControls) {
@@ -1033,9 +1037,7 @@
 
                     if (totalSeconds <= 300 && !table.warned) {
                         table.warned = true;
-                        if (currentMode === 'tv') {
-                            speakWarning('Perhatian, waktu bermain Meja ' + (i + 1) + ' tersisa lima menit lagi.');
-                        }
+                        speakWarning('Perhatian, waktu bermain Meja ' + (i + 1) + ' tersisa lima menit lagi.');
                         cardEl.classList.add('warning');
                     }
 
@@ -1117,6 +1119,7 @@
         }
 
         function updateHourlyRate(val) { db.ref('rate').set(parseInt(val) || 0); }
+
         // PINDAH MEJA & PEMBAYARAN
         function openMoveTableModal(sourceIndex) {
             var currentTable = tablesData[sourceIndex];
@@ -1491,6 +1494,7 @@
                 container.appendChild(row);
             });
         }
+
         // RIWAYAT TRANSAKSI OPERASIONAL & PENJUMLAHAN TOTAL UANG
         function getOperationalDate(dateObj) {
             var d = new Date(dateObj);
