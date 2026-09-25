@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kasir & Timer Biliar R21</title>
     
-    <script>
-        window.firebaseAvailable = false;
-    </script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js" onload="window.firebaseAvailable=true" onerror="console.log('Firebase Offline Mode')"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js" onerror="console.log('Firebase Database Offline')"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
         :root {
@@ -41,22 +38,10 @@
             font-size: 1.05rem;
             color: var(--price-color);
             font-weight: bold;
-            margin-bottom: 4px;
+            margin-bottom: 8px;
             letter-spacing: 2px;
         }
         
-        .realtime-clock-bar {
-            font-size: 0.95rem;
-            font-weight: bold;
-            color: #facc15;
-            background: rgba(30, 41, 59, 0.8);
-            padding: 4px 12px;
-            border-radius: 20px;
-            border: 1px solid #475569;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }
-
         .header-status-bar {
             display: flex;
             align-items: center;
@@ -80,7 +65,9 @@
             background: #991b1b;
             color: #fca5a5;
         }
-                .mode-selector { margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+        .relay-status-badge.connected { background: #065f46; color: #34d399; }
+
+        .mode-selector { margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
         .mode-selector button {
             padding: 8px 12px; font-weight: bold; cursor: pointer; border: none;
             border-radius: 6px; background: #334155; color: white; font-size: 0.8rem;
@@ -88,6 +75,7 @@
         .mode-selector button.active { background: var(--accent); }
         .btn-setting { background: #475569 !important; color: white !important; }
         
+        /* LAYOUT GRID CONTAINER */
         .grid-container {
             display: flex;
             flex-direction: column;
@@ -96,6 +84,7 @@
             max-width: 500px;
         }
 
+        /* MODE LANDSCAPE KASIR (3 KOLOM & DUAL SIDE RINCIAN) */
         body.landscape-mode .grid-container {
             display: grid !important;
             grid-template-columns: repeat(3, 1fr) !important;
@@ -125,10 +114,9 @@
             transition: all 0.2s ease; box-sizing: border-box; width: 100%;
         }
         .table-card.active { border-color: var(--accent); }
-        .table-card.opentable { border-color: #38bdf8; }
         .table-card.warning { border-color: var(--warning); }
         .table-card.expired { border-color: var(--danger); }
-        .card-header-row {
+                .card-header-row {
             display: flex; justify-content: space-between; align-items: center;
             width: 100%; margin-bottom: 8px; border-bottom: 1px dashed #334155; padding-bottom: 6px;
         }
@@ -156,9 +144,9 @@
         .selesai-display { font-size: 0.8rem; font-weight: bold; color: var(--warning); margin: 4px 0; }
 
         .table-card.active .timer-display { color: var(--accent); }
-        .table-card.opentable .timer-display { color: #38bdf8; }
         .table-card.warning .timer-display { color: var(--warning); }
         .table-card.expired .timer-display { color: var(--danger); animation: blink 1s infinite; }
+
         .price-display {
             font-size: 1.1rem; font-weight: bold; color: var(--price-color);
             background: rgba(56, 189, 248, 0.1); padding: 4px 12px;
@@ -171,12 +159,6 @@
             border-radius: 4px; font-size: 0.75rem; font-weight: bold;
             margin-bottom: 6px; text-align: center; border: 1px solid #a855f7;
         }
-        
-        .bonus-badge {
-            background: #065f46; color: #a7f3d0; padding: 2px 6px;
-            border-radius: 4px; font-size: 0.75rem; font-weight: bold;
-            margin-bottom: 6px; text-align: center; border: 1px solid #10b981;
-        }
 
         @keyframes blink { 50% { opacity: 0.3; } }
         
@@ -187,13 +169,13 @@
             font-weight: bold; cursor: pointer; font-size: 0.8rem;
         }
         .btn-start { background-color: #2563eb; color: white; }
-        .btn-open { background-color: #0284c7; color: white; }
         .btn-stop { background-color: var(--danger); color: white; }
         .btn-fnb { background-color: #f59e0b; color: white; }
         .btn-pay { background-color: #10b981; color: white; font-weight: bold; }
         .btn-move { background-color: #8b5cf6; color: white; font-weight: bold; }
         .controls button:active { opacity: 0.7; transform: scale(0.98); }
 
+        /* MODAL POPUP */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); z-index: 100; justify-content: center; align-items: center;
@@ -234,6 +216,8 @@
             align-items: center; flex-wrap: wrap; gap: 10px;
         }
         .history-summary-total { font-weight: bold; font-size: 0.95rem; color: var(--accent); }
+
+        /* MODE TV DISPLAY */
         body.tv-mode {
             padding: 8px !important; height: 100vh; box-sizing: border-box; overflow: hidden;
             justify-content: center;
@@ -296,13 +280,13 @@
 
     <h1 id="page-title">Sistem Timer & Kasir</h1>
     <div class="brand-subtitle" id="displayBrandName">R21 POOL & CAFE</div>
-    <div class="realtime-clock-bar" id="realtimeClockDisplay">🕒 --:--:--</div>
     
     <div class="header-status-bar">
-        <div id="statusBadge" class="status-badge">Mode Offline (Lokal)</div>
+        <div id="statusBadge" class="status-badge">Cloud: Connecting...</div>
         <div id="relayStatusBadge" class="relay-status-badge">Relay IP: 192.168.1.20</div>
     </div>
     
+    <!-- HEADER BARIS TOMBOL (MODE & SETTING) -->
     <div class="mode-selector">
         <button id="btn-mode-controller" onclick="setMode('controller')">📱 Mode HP</button>
         <button id="btn-mode-landscape" onclick="setMode('landscape')">💻 Mode Landscape Kasir</button>
@@ -311,10 +295,12 @@
         <button class="btn-setting" onclick="openSettingModal()">⚙️ Setting</button>
     </div>
 
+    <!-- GRID MEJA BILIAR -->
     <div class="grid-container" id="tablesGrid"></div>
+
     <!-- MODAL POP-UP PILIH DURASI MEJA -->
     <div class="modal-overlay" id="durationModal">
-        <div class="modal-content" style="max-width:380px;">
+        <div class="modal-content" style="max-width:360px;">
             <div class="modal-title" id="durationModalTitle">Mulai Meja X</div>
             <div class="form-group">
                 <label>Nama Pelanggan (Wajib):</label>
@@ -328,19 +314,10 @@
             </div>
             <div class="form-group">
                 <label>Total Durasi Dipilih (Menit):</label>
-                <input type="number" id="customMinutesInput" value="60" min="1" step="30" oninput="updateDurationPreview()">
+                <input type="number" id="customMinutesInput" value="60" min="1" oninput="updateDurationPreview()">
             </div>
-            
-            <!-- CHECKBOX BONUS KHUSUS (TIDAK MASUK OMSET) -->
-            <div style="background:#0f172a; padding:8px 10px; border-radius:6px; border:1px solid #334155; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
-                <input type="checkbox" id="isSpecialBonusCheck" onchange="updateDurationPreview()" style="width:18px; height:18px; cursor:pointer;">
-                <label for="isSpecialBonusCheck" style="font-size:0.8rem; color:#34d399; font-weight:bold; cursor:pointer;">
-                    🎁 Jadikan Bonus Khusus (Rp 0 / Bebas Omset)
-                </label>
-            </div>
-
             <div style="font-size:0.75rem; color:#facc15; margin-bottom:8px; line-height:1.3;">
-                💡 <b>Tarif:</b> Rp <span id="ratePreviewLabel">20.000</span> / 30 Menit. Promo: Main 5 Jam bayar 4 Jam!
+                💡 <b>Promo Akumulasi:</b> Setiap main 5 jam otomatis gratis 1 jam!
             </div>
             <div style="background:#0f172a; padding:10px; border-radius:6px; text-align:center; font-weight:bold; color:var(--price-color); margin-bottom:12px;" id="durationPreviewTxt">
                 Total: 1 Jam (Rp 40.000)
@@ -351,28 +328,12 @@
             </div>
         </div>
     </div>
-
-    <!-- MODAL OPEN TABLE (STOPWATCH) -->
-    <div class="modal-overlay" id="openTableModal">
-        <div class="modal-content" style="max-width:360px;">
-            <div class="modal-title" id="openTableModalTitle">Open Table Meja X</div>
-            <div class="form-group">
-                <label>Nama Pelanggan (Wajib):</label>
-                <input type="text" id="openTableCustName" placeholder="Masukkan nama..." style="text-transform:uppercase;">
-            </div>
-            <div style="font-size:0.8rem; color:#38bdf8; background:#0f172a; padding:10px; border-radius:6px; margin-bottom:12px; line-height:1.4;">
-                ⏱️ <b>Mode Open Table:</b> Timer akan menghitung maju dari 00:00:00. Tarif otomatis dihitung per 30 menit berjalan.
-            </div>
-            <div class="modal-footer">
-                <button style="background:#ef4444; color:white;" onclick="closeOpenTableModal()">❌ Batal</button>
-                <button style="background:#0284c7; color:white;" onclick="confirmStartOpenTable()">▶️ MULAI OPEN TABLE</button>
-            </div>
-        </div>
-    </div>
     <!-- MODAL ⚙️ SETTING PUSAT -->
     <div class="modal-overlay" id="settingModal">
         <div class="modal-content" style="max-width:480px;">
             <div class="modal-title">⚙️ PENGATURAN SIKASIR R21</div>
+            
+            <!-- LIST 1: PROFIL USAHA -->
             <div style="background:#0f172a; padding:12px; border-radius:8px; border:1px solid #334155; margin-bottom:10px;">
                 <div style="font-size:0.85rem; font-weight:bold; color:var(--price-color); margin-bottom:8px;">🏢 PROFIL USAHA</div>
                 <div class="form-group" style="margin-bottom:6px;">
@@ -387,6 +348,7 @@
                 <button class="btn-action" style="background:#2563eb; color:white; border:none; width:100%; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="saveBizProfile()">Simpan Profil Usaha</button>
             </div>
 
+            <!-- LIST 2: IP RELAY & TARIF -->
             <div style="background:#0f172a; padding:12px; border-radius:8px; border:1px solid #334155; margin-bottom:10px;">
                 <div style="font-size:0.85rem; font-weight:bold; color:var(--price-color); margin-bottom:8px;">🔌 KONEKSI & TARIF</div>
                 <div class="form-group" style="margin-bottom:6px;">
@@ -397,11 +359,12 @@
                     </div>
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
-                    <label>Tarif Biliar / 30 Menit (Rp):</label>
-                    <input type="number" id="halfHourlyRate" value="20000" step="1000" onchange="updateRateSetting(this.value)">
+                    <label>Tarif Biliar / Jam (Rp):</label>
+                    <input type="number" id="hourlyRate" value="40000" step="1000" onchange="updateHourlyRate(this.value)">
                 </div>
             </div>
 
+            <!-- LIST 3: MANAJEMEN OPERASIONAL -->
             <div style="background:#0f172a; padding:12px; border-radius:8px; border:1px solid #334155; margin-bottom:10px;">
                 <div style="font-size:0.85rem; font-weight:bold; color:var(--price-color); margin-bottom:8px;">☕ MANAJEMEN & LAPORAN</div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
@@ -421,6 +384,7 @@
             </div>
         </div>
     </div>
+
     <!-- MODAL LOGIN -->
     <div class="modal-overlay" id="loginModal">
         <div class="modal-content" style="max-width:320px; text-align:center;">
@@ -432,7 +396,6 @@
             <button class="btn-action" style="width:100%; padding:10px; margin-top:5px; background:#22c55e; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="processLogin()">Masuk</button>
         </div>
     </div>
-
     <!-- MODAL PINDAH MEJA -->
     <div class="modal-overlay" id="moveTableModal">
         <div class="modal-content" style="max-width:350px;">
@@ -459,6 +422,7 @@
                 <div id="payFnbSummaryList" style="margin-top:5px; color:#cbd5e1; font-size:0.85rem;"></div>
             </div>
 
+            <!-- TOMBOL AKSES CEK RIWAYAT TRANSAKSI LANGSUNG DARI MODAL BAYAR -->
             <button style="width:100%; background:#8b5cf6; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; margin-bottom:12px; font-size:0.85rem;" onclick="openHistoryModal()">📜 Cek Riwayat Transaksi</button>
 
             <div style="font-size:1.2rem; font-weight:bold; color:var(--price-color); text-align:center; margin-bottom:12px;">
@@ -481,18 +445,6 @@
             <div class="modal-footer">
                 <button style="background:#ef4444; color:white;" onclick="closePayModal()">Batal</button>
                 <button style="background:#22c55e; color:white;" onclick="confirmPayAndFinish()">LUNAS & SIMPAN</button>
-            </div>
-        </div>
-    </div>
-    <!-- MODAL PREVIEW STRUK (KLIK PADA RIWAYAT) -->
-    <div class="modal-overlay" id="previewTrxModal">
-        <div class="modal-content" style="max-width:380px; background:#0f172a; border:2px solid #38bdf8;">
-            <div class="modal-title" style="color:#38bdf8; border-bottom:1px dashed #334155; padding-bottom:8px;">
-                🧾 PREVIEW TRANSAKSI
-            </div>
-            <div id="previewTrxBody" style="font-size:0.85rem; line-height:1.6; color:#f8fafc; margin-top:10px;"></div>
-            <div class="modal-footer" style="margin-top:15px;">
-                <button style="background:#64748b; color:white;" onclick="closePreviewTrxModal()">Tutup Preview</button>
             </div>
         </div>
     </div>
@@ -525,7 +477,6 @@
             </div>
         </div>
     </div>
-
     <!-- MODAL STOK CAFE -->
     <div class="modal-overlay" id="inventoryModal">
         <div class="modal-content" style="max-width:450px;">
@@ -543,6 +494,7 @@
             </div>
         </div>
     </div>
+
     <!-- MODAL KELOLA KARYAWAN -->
     <div class="modal-overlay" id="staffManagerModal">
         <div class="modal-content" style="max-width:400px;">
@@ -580,9 +532,9 @@
         </div>
     </div>
 
-    <!-- MODAL RIWAYAT TRANSAKSI OPERASIONAL -->
+    <!-- MODAL RIWAYAT TRANSAKSI -->
     <div class="modal-overlay" id="historyModal">
-        <div class="modal-content" style="max-width:680px;">
+        <div class="modal-content" style="max-width:650px;">
             <div class="modal-title">RIWAYAT TRANSAKSI OPERASIONAL</div>
             <div style="margin-bottom:10px; display:flex; align-items:center; gap:10px;">
                 <label>Filter Tanggal:</label>
@@ -604,6 +556,7 @@
                 </table>
             </div>
 
+            <!-- RINGKASAN TOTAL UANG & TOMBOL WA SHIFT -->
             <div class="history-summary-box">
                 <div>
                     Total Transaksi: <span id="historyTotalCount" style="font-weight:bold; color:white;">0</span> | 
@@ -641,35 +594,35 @@
             <p>-- <span id="printFooterBizName">R21 Pool & Cafe</span> --</p>
         </div>
     </div>
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        var db = null;
-        if (window.firebaseAvailable && typeof firebase !== 'undefined') {
-            try {
-                var firebaseConfig = {
-                    databaseURL: "https://billiard-21-default-rtdb.asia-southeast1.firebasedatabase.app"
-                };
-                firebase.initializeApp(firebaseConfig);
-                db = firebase.database();
-            } catch(e) { console.log("Firebase Init Skip Offline"); }
-        }
+        var firebaseConfig = {
+            databaseURL: "https://billiard-21-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+        
+        try { firebase.initializeApp(firebaseConfig); } catch(e) {}
 
+        var db = firebase.database();
         var TOTAL_TABLES = 6;
-        var halfHourlyRate = parseInt(localStorage.getItem('R21_HALF_RATE')) || 20000;
+        var hourlyRate = 40000;
 
+        // BIZ PROFILE DINAMIS (LOCALSTORAGE)
         var bizProfile = JSON.parse(localStorage.getItem('R21_BIZ_PROFILE')) || {
             name: "R21 POOL & CAFE",
             address: "Jl. Biliar No. 21",
             phone: "0811-4989-333"
         };
 
+        // IP RELAY DINAMIS (LOCALSTORAGE)
         var currentIpRelay = localStorage.getItem('IP_RELAY_BILIAR') || '192.168.1.20';
+
         var currentUserRole = localStorage.getItem('r21_user_role') || null;
         var currentUsername = localStorage.getItem('r21_username') || '';
-        var staffAccounts = JSON.parse(localStorage.getItem('R21_STAFFS')) || {};
-        var inventoryData = JSON.parse(localStorage.getItem('R21_INVENTORY')) || {};
+        var staffAccounts = {};
+        var inventoryData = {};
 
         var tablesData = Array(TOTAL_TABLES).fill(null).map(function() {
-            return { endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, isOpenTable: false, isSpecialBonus: false, warned: false, expiredWarned: false, customerName: "", fnbList: [] };
+            return { endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, warned: false, expiredWarned: false, customerName: "", fnbList: [] };
         });
 
         var dailyHistoryRaw = {};
@@ -682,80 +635,97 @@
 
         var currentMode = localStorage.getItem('biliard_mode') || 'controller';
 
-        // JAM REAL-TIME HEADER
-        function updateRealtimeClock() {
-            var now = new Date();
-            var hours = String(now.getHours()).padStart(2, '0');
-            var minutes = String(now.getMinutes()).padStart(2, '0');
-            var seconds = String(now.getSeconds()).padStart(2, '0');
-            var options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
-            var dateStr = now.toLocaleDateString('id-ID', options);
-            
-            var clockEl = document.getElementById('realtimeClockDisplay');
-            if (clockEl) {
-                clockEl.innerText = "🕒 " + dateStr + " | " + hours + ":" + minutes + ":" + seconds;
-            }
-        }
-        setInterval(updateRealtimeClock, 1000);
-
-        // LOGIKA BILLING DENGAN DUKUNGAN PER 30 MENIT & PROMO 5 JAM BAYAR 4 JAM
-        function calculateBillingLogic(totalMinutes, isSpecialBonus, isOpenTable, elapsedTimeSec) {
-            if (isSpecialBonus) {
-                return { paidHours: 0, bonusHours: 0, tablePrice: 0 };
-            }
-
-            var calcMinutes = totalMinutes;
-            if (isOpenTable) {
-                calcMinutes = Math.ceil((elapsedTimeSec || 0) / 60);
-            }
-
-            // Hitung unit 30 menit
-            var halfHourUnits = Math.ceil(calcMinutes / 30);
-            if (halfHourUnits < 1 && calcMinutes > 0) halfHourUnits = 1;
-
-            var totalHours = calcMinutes / 60;
-            var fullHoursRound = Math.floor(totalHours);
-            
-            var paidUnits = halfHourUnits;
+        // LOGIKA PROMO AKUMULASI 4+1 YANG PRESISI (5 JAM BAYAR 4 JAM)
+        function calculateBillingLogic(totalMinutes) {
+            var totalHours = Math.round(totalMinutes / 60);
+            var paidHours = totalHours;
             var bonusHours = 0;
 
-            // Promo 5 jam bayar 4 jam (setiap kelipatan 10 unit 30 menit)
-            if (halfHourUnits >= 10) {
-                var sets = Math.floor(halfHourUnits / 10);
-                var remainder = halfHourUnits % 10;
-                paidUnits = (sets * 8) + remainder;
-                bonusHours = sets;
+            if (totalHours >= 5) {
+                var sets = Math.floor(totalHours / 5);
+                var remainder = totalHours % 5;
+                paidHours = (sets * 4) + remainder;
+                bonusHours = totalHours - paidHours;
             }
 
-            var tablePrice = paidUnits * halfHourlyRate;
+            var tablePrice = paidHours * hourlyRate;
             return {
-                paidHours: paidUnits / 2,
+                paidHours: paidHours,
                 bonusHours: bonusHours,
                 tablePrice: tablePrice
             };
         }
-
+        // CONTROL SAKELAR LAMPU RELAY (MAPPING HARDWARE 1:1)
         function sakelarLampu(nomorMeja, status) {
             var mejaInt = parseInt(nomorMeja);
-            var channelRelay = mejaInt;
+            var channelRelay = mejaInt; // Mapping 1:1 (Meja 1 = CH 1, Meja 2 = CH 2, dst.)
+
             var state = status ? "1" : "0"; 
 
+            // 1. Kirim Sinyal HTTP Lokal via Image Object
             var targetUrl = "http://" + currentIpRelay + "/" + channelRelay + "/" + state;
             var imgPing = new Image();
             imgPing.src = targetUrl + "?t=" + new Date().getTime();
 
-            if (db) {
-                var secret = "TGOVnUocfqgdoULy9ZxgGx0Y4gammmu9ttr45HI4";
-                var isPowered = status ? true : false;
-                var urlCloud = "https://billing0015-32812-default-rtdb.firebaseio.com/vTfGwLoX/relays/billing" + channelRelay + ".json?auth=" + secret;
+            // 2. Sync Sinyal ke Firebase Cloud
+            var secret = "TGOVnUocfqgdoULy9ZxgGx0Y4gammmu9ttr45HI4";
+            var isPowered = status ? true : false;
+            var urlCloud = "https://billing0015-32812-default-rtdb.firebaseio.com/vTfGwLoX/relays/billing" + channelRelay + ".json?auth=" + secret;
 
-                fetch(urlCloud, {
-                    method: 'PUT',
-                    body: JSON.stringify(isPowered),
-                    headers: { 'Content-Type': 'application/json' }
-                }).catch(function(e) { console.log("Cloud sync error", e); });
-            }
+            fetch(urlCloud, {
+                method: 'PUT',
+                body: JSON.stringify(isPowered),
+                headers: { 'Content-Type': 'application/json' }
+            }).catch(function(e) { console.log("Cloud sync error", e); });
         }
+
+        // SYNC DATA FIREBASE
+        db.ref('staffs').on('value', function(snapshot) {
+            staffAccounts = snapshot.val() || {};
+            renderStaffList();
+        });
+
+        db.ref('inventory').on('value', function(snapshot) {
+            inventoryData = snapshot.val() || {};
+            renderInventoryList();
+            populateStockDropdowns();
+        });
+
+        db.ref('.info/connected').on('value', function(snap) {
+            var badge = document.getElementById('statusBadge');
+            if (snap.val() === true) {
+                badge.innerText = "Cloud Terhubung"; badge.classList.add('online');
+            } else {
+                badge.innerText = "Menghubungkan Cloud..."; badge.classList.remove('online');
+            }
+        });
+
+        db.ref('tables').on('value', function(snapshot) {
+            var data = snapshot.val();
+            if (data) { tablesData = data; updateTimers(); }
+        });
+
+        db.ref('rate').on('value', function(snapshot) {
+            var rate = snapshot.val();
+            if (rate !== null) { 
+                hourlyRate = rate; 
+                var el = document.getElementById('hourlyRate');
+                if (el) el.value = rate; 
+                updateTimers(); 
+            }
+        });
+
+        db.ref('history').on('value', function(snapshot) {
+            dailyHistoryRaw = snapshot.val() || {};
+            renderHistoryTable();
+        });
+
+        // CEK SOUND & SUARA PERINGATAN (AKTIF DI TV & KASIR LANDSCAPE)
+        db.ref('audioTrigger').on('value', function(snap) {
+            var val = snap.val();
+            if (val && (currentMode === 'tv' || currentMode === 'landscape')) { playTvChimeSound(); }
+        });
+
         function testSound() {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
@@ -763,7 +733,15 @@
                 pesan.lang = 'id-ID'; pesan.rate = 0.9;
                 window.speechSynthesis.speak(pesan);
             }
-            if (db) db.ref('audioTrigger').set(Date.now());
+            db.ref('audioTrigger').set(Date.now());
+        }
+
+        function playTvChimeSound() {
+            if ('speechSynthesis' in window) {
+                var speech = new SpeechSynthesisUtterance("Tes suara dari HP Kasir diterima.");
+                speech.lang = 'id-ID';
+                window.speechSynthesis.speak(speech);
+            }
         }
 
         function speakWarning(text) {
@@ -775,13 +753,12 @@
                 window.speechSynthesis.speak(speech);
             }
         }
-
+        // PENGATURAN MODAL SETTING & PROFIL USAHA
         function openSettingModal() {
             document.getElementById('cfgBizName').value = bizProfile.name;
             document.getElementById('cfgBizAddress').value = bizProfile.address;
             document.getElementById('cfgBizPhone').value = bizProfile.phone;
             document.getElementById('cfgRelayIp').value = currentIpRelay;
-            document.getElementById('halfHourlyRate').value = halfHourlyRate;
             document.getElementById('settingModal').style.display = 'flex';
         }
 
@@ -811,14 +788,6 @@
             }
         }
 
-        function updateRateSetting(val) {
-            halfHourlyRate = parseInt(val) || 20000;
-            localStorage.setItem('R21_HALF_RATE', halfHourlyRate);
-            var previewLabel = document.getElementById('ratePreviewLabel');
-            if (previewLabel) previewLabel.innerText = formatRupiah(halfHourlyRate).replace('Rp', '').trim();
-            if (db) db.ref('halfRate').set(halfHourlyRate);
-        }
-
         function updateRelayBadge() {
             var b = document.getElementById('relayStatusBadge');
             if(b) b.innerText = "Relay IP: " + currentIpRelay;
@@ -832,36 +801,19 @@
             document.getElementById('printFooterBizName').innerText = bizProfile.name;
         }
 
+        // LOGIKA MODAL POP-UP DURASI
         function openDurationModal(index) {
             pendingStartTableIndex = index;
             var t = tablesData[index];
             document.getElementById('durationModalTitle').innerText = "Atur Main Meja " + (index + 1);
             document.getElementById('durationCustName').value = t.customerName || "";
             document.getElementById('customMinutesInput').value = "60";
-            document.getElementById('isSpecialBonusCheck').checked = false;
-            
-            var previewLabel = document.getElementById('ratePreviewLabel');
-            if (previewLabel) previewLabel.innerText = formatRupiah(halfHourlyRate).replace('Rp', '').trim();
-
             updateDurationPreview();
             document.getElementById('durationModal').style.display = 'flex';
         }
 
         function closeDurationModal() {
             document.getElementById('durationModal').style.display = 'none';
-            pendingStartTableIndex = null;
-        }
-
-        function openOpenTableModal(index) {
-            pendingStartTableIndex = index;
-            var t = tablesData[index];
-            document.getElementById('openTableModalTitle').innerText = "Open Table Meja " + (index + 1);
-            document.getElementById('openTableCustName').value = t.customerName || "";
-            document.getElementById('openTableModal').style.display = 'flex';
-        }
-
-        function closeOpenTableModal() {
-            document.getElementById('openTableModal').style.display = 'none';
             pendingStartTableIndex = null;
         }
 
@@ -874,14 +826,19 @@
 
         function updateDurationPreview() {
             var mnt = parseInt(document.getElementById('customMinutesInput').value) || 0;
-            var isBonus = document.getElementById('isSpecialBonusCheck').checked;
+            var totalHours = Math.round(mnt / 60);
+            
+            var paidHours = totalHours;
+            var bonusHours = 0;
 
-            if (isBonus) {
-                document.getElementById('durationPreviewTxt').innerText = "Total: " + mnt + " Min (Rp 0 - GRATIS BONUS)";
-                return;
+            if (totalHours >= 5) {
+                var sets = Math.floor(totalHours / 5);
+                var remainder = totalHours % 5;
+                paidHours = (sets * 4) + remainder;
+                bonusHours = totalHours - paidHours;
             }
 
-            var billing = calculateBillingLogic(mnt, false, false, 0);
+            var totalPrice = paidHours * hourlyRate;
             var jam = Math.floor(mnt / 60);
             var sisa = mnt % 60;
             var txtDurasi = "";
@@ -889,97 +846,42 @@
             if (sisa > 0) txtDurasi += sisa + " Min";
             if (!txtDurasi) txtDurasi = "0 Min";
 
-            var bonusTxt = billing.bonusHours > 0 ? " (Gratis " + billing.bonusHours + " Jam Promo!)" : "";
-            document.getElementById('durationPreviewTxt').innerText = "Total: " + txtDurasi.trim() + " (" + formatRupiah(billing.tablePrice) + ")" + bonusTxt;
+            var bonusTxt = bonusHours > 0 ? " (Gratis " + bonusHours + " Jam Promo!)" : "";
+            document.getElementById('durationPreviewTxt').innerText = "Total: " + txtDurasi.trim() + " (" + formatRupiah(totalPrice) + ")" + bonusTxt;
         }
 
         function confirmStartDuration() {
             var name = document.getElementById('durationCustName').value.trim();
             var minutes = parseInt(document.getElementById('customMinutesInput').value) || 0;
-            var isBonus = document.getElementById('isSpecialBonusCheck').checked;
 
             if (!name) { alert("Nama pelanggan wajib diisi!"); return; }
             if (minutes <= 0) { alert("Durasi menit harus lebih dari 0!"); return; }
 
             if (pendingStartTableIndex !== null) {
-                executeAddTime(pendingStartTableIndex, minutes, name.toUpperCase(), false, isBonus);
+                executeAddTime(pendingStartTableIndex, minutes, name.toUpperCase());
                 closeDurationModal();
             }
         }
 
-        function confirmStartOpenTable() {
-            var name = document.getElementById('openTableCustName').value.trim();
-            if (!name) { alert("Nama pelanggan wajib diisi!"); return; }
-
-            if (pendingStartTableIndex !== null) {
-                executeAddTime(pendingStartTableIndex, 0, name.toUpperCase(), true, false);
-                closeOpenTableModal();
-            }
-        }
-
-        function saveTablesToLocal() {
-            localStorage.setItem('R21_TABLES_DATA', JSON.stringify(tablesData));
-        }
-
-        function loadTablesFromLocal() {
-            var saved = localStorage.getItem('R21_TABLES_DATA');
-            if (saved) {
-                try { tablesData = JSON.parse(saved); } catch(e) {}
-            }
-        }
-
-        function saveHistoryToLocal(historyItem) {
-            var localHistory = JSON.parse(localStorage.getItem('R21_HISTORY_DATA')) || {};
-            var newKey = 'loc_' + Date.now();
-            localHistory[newKey] = historyItem;
-            localStorage.setItem('R21_HISTORY_DATA', JSON.stringify(localHistory));
-            dailyHistoryRaw = localHistory;
-            renderHistoryTable();
-        }
-
-        function loadHistoryFromLocal() {
-            var savedHistory = localStorage.getItem('R21_HISTORY_DATA');
-            if (savedHistory) {
-                try {
-                    var parsed = JSON.parse(savedHistory);
-                    dailyHistoryRaw = Object.assign({}, parsed, dailyHistoryRaw);
-                } catch(e) {}
-            }
-        }
-        function executeAddTime(index, minutes, customerName, isOpenTable, isSpecialBonus) {
+        function executeAddTime(index, minutes, customerName) {
             sakelarLampu(index + 1, true);
         
             var now = Date.now();
-            var currentTable = tablesData[index] || { endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, isOpenTable: false, isSpecialBonus: false, warned: false, expiredWarned: false, customerName: "", fnbList: [] };
-            
-            if (isOpenTable) {
-                tablesData[index].startTime = now;
-                tablesData[index].endTime = 0;
-                tablesData[index].bookedMinutes = 0;
-                tablesData[index].isOpenTable = true;
-                tablesData[index].isSpecialBonus = false;
-            } else {
-                var baseTime = (currentTable.isRunning && !currentTable.isOpenTable && currentTable.endTime > now) ? currentTable.endTime : now;
-                var currentBooked = (currentTable.isRunning && !currentTable.isOpenTable) ? (currentTable.bookedMinutes || 0) : 0;
-                var startTs = (currentTable.isRunning && !currentTable.isOpenTable && currentTable.endTime > now) ? currentTable.startTime : now;
+            var currentTable = tablesData[index] || { endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, warned: false, expiredWarned: false, customerName: "", fnbList: [] };
+            var baseTime = (currentTable.isRunning && currentTable.endTime > now) ? currentTable.endTime : now;
+            var currentBooked = (currentTable.isRunning || currentTable.customerName !== "") ? (currentTable.bookedMinutes || 0) : 0;
+            var startTs = (currentTable.isRunning && currentTable.endTime > now) ? currentTable.startTime : now;
 
-                tablesData[index].endTime = baseTime + (minutes * 60 * 1000);
-                tablesData[index].bookedMinutes = currentBooked + minutes;
-                tablesData[index].startTime = startTs;
-                tablesData[index].isOpenTable = false;
-                tablesData[index].isSpecialBonus = isSpecialBonus || false;
-            }
-
+            tablesData[index].endTime = baseTime + (minutes * 60 * 1000);
+            tablesData[index].bookedMinutes = currentBooked + minutes;
+            tablesData[index].startTime = startTs;
             tablesData[index].isRunning = true;
             tablesData[index].warned = false;
             tablesData[index].expiredWarned = false;
             tablesData[index].customerName = customerName;
-            
-            if (db) { try { db.ref('tables').set(tablesData); } catch(e) {} }
-            saveTablesToLocal();
-            renderTables();
+            db.ref('tables').set(tablesData);
         }
-
+        // RENDER KARTU MEJA (SUPPORT DUAL-SIDE SISI KIRI RINCIAN & SISI KANAN TIMER)
         function renderTables() {
             var grid = document.getElementById('tablesGrid');
             if (!grid) return;
@@ -1007,24 +909,20 @@
                     '</div>' +
 
                     '<div class="promo-badge" id="promo-badge-' + i + '" style="display:none;">🎁 BONUS PROMO +1 JAM</div>' +
-                    '<div class="bonus-badge" id="special-bonus-badge-' + i + '" style="display:none;">⭐ BONUS KHUSUS (BEBAS OMSET)</div>' +
                     
                     '<div class="controls" id="controls-normal-' + i + '">' +
                         '<div class="btn-row">' +
-                            '<button class="btn-start" onclick="openDurationModal(' + i + ')">⏱️ Main Paket</button>' +
-                            '<button class="btn-open" onclick="openOpenTableModal(' + i + ')">🔓 Open Table</button>' +
-                        '</div>' +
-                        '<div class="btn-row">' +
+                            '<button class="btn-start" onclick="openDurationModal(' + i + ')">⏱️ Main / Tambah</button>' +
                             '<button class="btn-fnb" onclick="openFnbModal(' + i + ')">☕ Cafe</button>' +
-                            '<button class="btn-move" onclick="openMoveTableModal(' + i + ')">🔀 Pindah</button>' +
                         '</div>' +
                         '<div class="btn-row">' +
+                            '<button class="btn-move" onclick="openMoveTableModal(' + i + ')">🔀 Pindah</button>' +
                             '<button class="btn-pay" onclick="openPayModal(' + i + ')">💳 Bayar</button>' +
                             '<button class="btn-stop" id="btn-reset-' + i + '" onclick="resetTimerOnly(' + i + ')">Reset</button>' +
                         '</div>' +
-                        '<div class="btn-row" style="margin-top:2px;">' +
-                            '<button style="background:#16a34a; color:white; padding:4px;" onclick="sakelarLampu(' + (i + 1) + ', true)">💡 ON</button>' +
-                            '<button style="background:#dc2626; color:white; padding:4px;" onclick="sakelarLampu(' + (i + 1) + ', false)">💡 OFF</button>' +
+                        '<div class="btn-row" style="margin-top:4px;">' +
+                            '<button style="background:#16a34a; color:white; padding:5px;" onclick="sakelarLampu(' + (i + 1) + ', true)">💡 ON</button>' +
+                            '<button style="background:#dc2626; color:white; padding:5px;" onclick="sakelarLampu(' + (i + 1) + ', false)">💡 OFF</button>' +
                         '</div>' +
                     '</div>' +
 
@@ -1041,10 +939,11 @@
             updateTimers();
         }
 
+        // UPDATE TIMER REALTIME & PROMO 4+1
         function updateTimers() {
             var now = Date.now();
             for (var i = 0; i < TOTAL_TABLES; i++) {
-                var table = tablesData[i] || { endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, isOpenTable: false, isSpecialBonus: false, warned: false, expiredWarned: false, customerName: "", fnbList: [] };
+                var table = tablesData[i] || { endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, warned: false, expiredWarned: false, customerName: "", fnbList: [] };
                 var timerEl = document.getElementById('timer-' + i);
                 var jamMulaiSelesaiEl = document.getElementById('jam-mulai-selesai-' + i);
                 var priceEl = document.getElementById('price-' + i);
@@ -1052,7 +951,6 @@
                 var custTvEl = document.getElementById('cust-tv-' + i);
                 var detailListEl = document.getElementById('detail-list-' + i);
                 var promoBadgeEl = document.getElementById('promo-badge-' + i);
-                var specialBonusBadgeEl = document.getElementById('special-bonus-badge-' + i);
                 
                 var normalControls = document.getElementById('controls-normal-' + i);
                 var expiredControls = document.getElementById('controls-expired-' + i);
@@ -1063,17 +961,12 @@
                 if (custTvEl) { custTvEl.innerText = table.customerName ? table.customerName.toUpperCase() : "-"; }
 
                 var bookedMinutes = table.bookedMinutes || 0;
-                var elapsedSec = table.isRunning ? Math.floor((now - (table.startTime || now)) / 1000) : 0;
-                var billing = calculateBillingLogic(bookedMinutes, table.isSpecialBonus, table.isOpenTable, elapsedSec);
+                var billing = calculateBillingLogic(bookedMinutes);
                 var fnbTotal = calculateFnbTotal(table.fnbList);
                 var grandTotal = billing.tablePrice + fnbTotal;
 
-                if (specialBonusBadgeEl) {
-                    specialBonusBadgeEl.style.display = table.isSpecialBonus ? 'block' : 'none';
-                }
-
                 if (promoBadgeEl) {
-                    if (billing.bonusHours > 0 && !table.isSpecialBonus) {
+                    if (billing.bonusHours > 0) {
                         promoBadgeEl.innerText = '🎁 BONUS PROMO +' + billing.bonusHours + ' JAM';
                         promoBadgeEl.style.display = 'block';
                     } else {
@@ -1081,20 +974,13 @@
                     }
                 }
 
+                // RINCIAN BILIAR & FNB CAFE SISI KIRI
                 if (detailListEl) {
-    detailListEl.innerHTML = '';
-    if (table.isRunning) {
-        var lblBiliar = "";
-        if (table.isOpenTable) {
-            lblBiliar = "🎱 Biliar (Open)";
-        } else {
-            var jamTxt = (bookedMinutes >= 60) ? (bookedMinutes / 60) + " Jam" : bookedMinutes + " Min";
-            lblBiliar = "🎱 Biliar (" + jamTxt + ")";
-        }
-        if (table.isSpecialBonus) lblBiliar += " (BONUS)";
-        detailListEl.innerHTML += '<div class="detail-item-row"><span>' + lblBiliar + '</span><span>' + formatRupiah(billing.tablePrice) + '</span></div>';
-    }
-
+                    detailListEl.innerHTML = '';
+                    if (bookedMinutes > 0) {
+                        var jamTxt = (bookedMinutes / 60) + " Jam";
+                        detailListEl.innerHTML += '<div class="detail-item-row"><span>🎱 Biliar (' + jamTxt + ')</span><span>' + formatRupiah(billing.tablePrice) + '</span></div>';
+                    }
                     if (table.fnbList && table.fnbList.length > 0) {
                         table.fnbList.forEach(function(item) {
                             detailListEl.innerHTML += '<div class="detail-item-row"><span>☕ ' + item.name + '</span><span>' + formatRupiah(item.price) + '</span></div>';
@@ -1103,44 +989,17 @@
                 }
 
                 if (btnResetEl) {
+                    var elapsedSec = (now - (table.startTime || 0)) / 1000;
                     if (table.isRunning && elapsedSec > 30) { btnResetEl.style.display = 'none'; } 
                     else { btnResetEl.style.display = 'block'; }
                 }
 
-                if (!table.isRunning) {
+                if (!table.isRunning || table.endTime <= now) {
                     timerEl.innerText = "00:00:00";
                     if(jamMulaiSelesaiEl) jamMulaiSelesaiEl.innerText = "🕒 Jam: -";
-                    cardEl.classList.remove('active', 'warning', 'expired', 'opentable');
-                    priceEl.innerText = formatRupiah(grandTotal);
 
-                    if (normalControls && expiredControls) {
-                        normalControls.style.display = 'flex'; expiredControls.style.display = 'none';
-                    }
-                } else if (table.isOpenTable) {
-                    // MODE OPEN TABLE (STOPWATCH)
-                    cardEl.classList.add('opentable');
-                    cardEl.classList.remove('active', 'expired', 'warning');
-
-                    if(jamMulaiSelesaiEl) {
-                        jamMulaiSelesaiEl.innerText = "🕒 Mulai: " + formatJam(table.startTime) + " (Open)";
-                    }
-
-                    priceEl.innerText = formatRupiah(grandTotal);
-                    
-                    var oHours = String(Math.floor(elapsedSec / 3600)).padStart(2, '0');
-                    var oMinutes = String(Math.floor((elapsedSec % 3600) / 60)).padStart(2, '0');
-                    var oSeconds = String(elapsedSec % 60).padStart(2, '0');
-                    timerEl.innerText = oHours + ':' + oMinutes + ':' + oSeconds;
-
-                    if (normalControls && expiredControls) {
-                        normalControls.style.display = 'flex'; expiredControls.style.display = 'none';
-                    }
-                } else {
-                    // MODE REGULER PAKET
-                    if (table.endTime <= now) {
-                        timerEl.innerText = "00:00:00";
-                        if(jamMulaiSelesaiEl) jamMulaiSelesaiEl.innerText = "🕒 Jam: -";
-                        cardEl.classList.remove('active', 'warning', 'opentable');
+                    if (table.isRunning && table.endTime <= now) {
+                        cardEl.classList.remove('active', 'warning');
                         cardEl.classList.add('expired');
                         priceEl.innerText = formatRupiah(grandTotal);
 
@@ -1154,35 +1013,43 @@
                             normalControls.style.display = 'none'; expiredControls.style.display = 'flex';
                         }
                     } else {
-                        cardEl.classList.add('active'); cardEl.classList.remove('expired', 'opentable');
-                        
-                        if(jamMulaiSelesaiEl) {
-                            jamMulaiSelesaiEl.innerText = "🕒 " + formatJam(table.startTime) + " - " + formatJam(table.endTime);
-                        }
-
-                        var diff = table.endTime - now;
-                        var totalSeconds = Math.floor(diff / 1000);
+                        cardEl.classList.remove('active', 'warning', 'expired');
                         priceEl.innerText = formatRupiah(grandTotal);
 
                         if (normalControls && expiredControls) {
                             normalControls.style.display = 'flex'; expiredControls.style.display = 'none';
                         }
-
-                        if (totalSeconds <= 300 && !table.warned) {
-                            table.warned = true;
-                            speakWarning('Perhatian, waktu bermain Meja ' + (i + 1) + ' tersisa lima menit lagi.');
-                            cardEl.classList.add('warning');
-                        }
-
-                        var hours = String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, '0');
-                        var minutes = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
-                        var seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
-                        timerEl.innerText = hours + ':' + minutes + ':' + seconds;
                     }
+                } else {
+                    cardEl.classList.add('active'); cardEl.classList.remove('expired');
+                    
+                    if(jamMulaiSelesaiEl) {
+                        jamMulaiSelesaiEl.innerText = "🕒 " + formatJam(table.startTime) + " - " + formatJam(table.endTime);
+                    }
+
+                    var diff = table.endTime - now;
+                    var totalSeconds = Math.floor(diff / 1000);
+                    priceEl.innerText = formatRupiah(grandTotal);
+
+                    if (normalControls && expiredControls) {
+                        normalControls.style.display = 'flex'; expiredControls.style.display = 'none';
+                    }
+
+                    if (totalSeconds <= 300 && !table.warned) {
+                        table.warned = true;
+                        speakWarning('Perhatian, waktu bermain Meja ' + (i + 1) + ' tersisa lima menit lagi.');
+                        cardEl.classList.add('warning');
+                    }
+
+                    var hours = String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, '0');
+                    var minutes = String(Math.floor((diff / (1000 * 60)) % 60)).padStart(2, '0');
+                    var seconds = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
+                    timerEl.innerText = hours + ':' + minutes + ':' + seconds;
                 }
             }
         }
-               function processLogin() {
+        // KONTROL UMUM & AUTH
+        function processLogin() {
             var rawUser = document.getElementById('loginUsername').value.trim();
             var rawPass = document.getElementById('loginPassword').value.trim();
             if (!rawUser || !rawPass) { alert("Masukkan Username dan Password!"); return; }
@@ -1251,9 +1118,12 @@
             return total;
         }
 
+        function updateHourlyRate(val) { db.ref('rate').set(parseInt(val) || 0); }
+
+        // PINDAH MEJA & PEMBAYARAN
         function openMoveTableModal(sourceIndex) {
             var currentTable = tablesData[sourceIndex];
-            if (!currentTable || !currentTable.isRunning) {
+            if (!currentTable || !currentTable.isRunning || currentTable.endTime <= Date.now()) {
                 alert("Meja ini sedang tidak aktif!"); return;
             }
             activeMoveSourceIndex = sourceIndex;
@@ -1289,17 +1159,14 @@
             tablesData[targetIndex] = JSON.parse(JSON.stringify(tablesData[activeMoveSourceIndex]));
             clearTableDataLocal(activeMoveSourceIndex);
 
-            saveTablesToLocal();
-            if (db) db.ref('tables').set(tablesData);
-            closeMoveTableModal();
-            renderTables();
-            alert("Berhasil pindah ke Meja " + (targetIndex + 1) + "!");
+            db.ref('tables').set(tablesData, function(err) {
+                if (!err) { closeMoveTableModal(); alert("Berhasil pindah ke Meja " + (targetIndex + 1) + "!"); }
+            });
         }
 
         function clearTableDataLocal(index) {
             tablesData[index].endTime = 0; tablesData[index].bookedMinutes = 0;
             tablesData[index].startTime = 0; tablesData[index].isRunning = false;
-            tablesData[index].isOpenTable = false; tablesData[index].isSpecialBonus = false;
             tablesData[index].warned = false; tablesData[index].expiredWarned = false;
             tablesData[index].customerName = ""; tablesData[index].fnbList = [];
         }
@@ -1307,38 +1174,29 @@
         function resetTimerOnly(index) {
             sakelarLampu(index + 1, false);
             if (confirm("Reset Meja " + (index + 1) + " tanpa simpan omset?")) {
-                clearTableDataLocal(index); 
-                saveTablesToLocal();
-                if (db) db.ref('tables').set(tablesData);
-                renderTables();
+                clearTableDataLocal(index); db.ref('tables').set(tablesData);
             }
         }
 
         function openPayModal(index) {
             sakelarLampu(parseInt(index) + 1, false);
             var table = tablesData[index];
-            var now = Date.now();
             var bookedMinutes = table.bookedMinutes || 0;
-            var elapsedSec = table.isRunning ? Math.floor((now - (table.startTime || now)) / 1000) : 0;
-            
-            var billing = calculateBillingLogic(bookedMinutes, table.isSpecialBonus, table.isOpenTable, elapsedSec);
+            var billing = calculateBillingLogic(bookedMinutes);
             var fnbTotal = calculateFnbTotal(table.fnbList);
             var grandTotal = billing.tablePrice + fnbTotal;
+
+            if (grandTotal === 0) { alert("Meja ini belum memiliki transaksi."); return; }
 
             activePayTableIndex = index;
             document.getElementById('payModalTitle').innerText = "Rincian Pembayaran Meja " + (index + 1);
             document.getElementById('payCustomerName').innerText = (table.customerName || "PELANGGAN").toUpperCase();
-            
-            var durationTxt = table.isOpenTable ? Math.ceil(elapsedSec / 60) + " Min (Open)" : bookedMinutes + " Min";
-            document.getElementById('payDuration').innerText = durationTxt;
+            document.getElementById('payDuration').innerText = bookedMinutes + " Min";
             document.getElementById('payTablePrice').innerText = formatRupiah(billing.tablePrice);
             
             var promoNotice = document.getElementById('promoNotice');
             if (promoNotice) {
-                if (table.isSpecialBonus) {
-                    promoNotice.innerText = "⭐ TRSANSAKSI BONUS KHUSUS (TIDAK MASUK OMSET LAPORAN)";
-                    promoNotice.style.display = 'block';
-                } else if (billing.bonusHours > 0) {
+                if (billing.bonusHours > 0) {
                     promoNotice.innerText = "🎁 Bonus Promo: " + billing.bonusHours + " Jam Gratis!";
                     promoNotice.style.display = 'block';
                 } else {
@@ -1375,10 +1233,8 @@
         function calcSplitBillSisa() {
             if (activePayTableIndex === null) return;
             var table = tablesData[activePayTableIndex];
-            var now = Date.now();
             var bookedMinutes = table.bookedMinutes || 0;
-            var elapsedSec = table.isRunning ? Math.floor((now - (table.startTime || now)) / 1000) : 0;
-            var billing = calculateBillingLogic(bookedMinutes, table.isSpecialBonus, table.isOpenTable, elapsedSec);
+            var billing = calculateBillingLogic(bookedMinutes);
             var grandTotal = billing.tablePrice + calculateFnbTotal(table.fnbList);
             var cashVal = parseInt(document.getElementById('splitCashInput').value) || 0;
             var qrisVal = grandTotal - cashVal;
@@ -1391,10 +1247,8 @@
             if (activePayTableIndex === null) return;
             var index = activePayTableIndex;
             var table = tablesData[index];
-            var nowTs = Date.now();
             var bookedMinutes = table.bookedMinutes || 0;
-            var elapsedSec = table.isRunning ? Math.floor((nowTs - (table.startTime || nowTs)) / 1000) : 0;
-            var billing = calculateBillingLogic(bookedMinutes, table.isSpecialBonus, table.isOpenTable, elapsedSec);
+            var billing = calculateBillingLogic(bookedMinutes);
             var fnbTotal = calculateFnbTotal(table.fnbList);
             var grandTotal = billing.tablePrice + fnbTotal;
             var method = document.getElementById('payMethodSelect').value;
@@ -1409,77 +1263,32 @@
             } else if (method === 'QRIS') { cashPaid = 0; qrisPaid = grandTotal; }
 
             var now = new Date();
-            var finalDuration = table.isOpenTable ? Math.ceil(elapsedSec / 60) : bookedMinutes;
-
             var historyItem = {
                 time: now.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}),
                 date: now.toLocaleDateString('id-ID'),
                 opDate: getOperationalDate(now),
                 table: index + 1,
                 customer: (table.customerName || "PELANGGAN").toUpperCase(),
-                duration: finalDuration,
+                duration: bookedMinutes,
                 tablePrice: billing.tablePrice,
                 fnbPrice: fnbTotal,
                 total: grandTotal,
                 method: method,
                 cashPaid: cashPaid,
                 qrisPaid: qrisPaid,
-                isSpecialBonus: table.isSpecialBonus || false,
                 fnbList: table.fnbList || []
             };
 
-            // JIKA BUKAN BONUS KHUSUS -> SIMPAN KE LAPORAN OMSET
-            if (!table.isSpecialBonus) {
-                saveHistoryToLocal(historyItem);
-                if (db) { try { db.ref('history').push(historyItem); } catch(e) {} }
-            }
-
-            clearTableDataLocal(index);
-            saveTablesToLocal();
-            if (db) { try { db.ref('tables').set(tablesData); } catch(e) {} }
-
-            closePayModal();
-            renderTables();
-            
-            if (table.isSpecialBonus) {
-                alert("⭐ Transaksi Selesai (Bonus Khusus - Tidak Dicatat di Omset Laporan)!");
-            } else {
-                alert("✅ Pembayaran Meja " + (index + 1) + " Berhasil Disimpan!");
-            }
+            db.ref('history').push(historyItem, function(err) {
+                if (!err) {
+                    clearTableDataLocal(index);
+                    db.ref('tables').set(tablesData);
+                    closePayModal();
+                    alert("✅ Pembayaran Meja " + (index + 1) + " Berhasil Disimpan!");
+                }
+            });
         }
-
-        // PREVIEW TRANSAKSI RIWAYAT (KLIK BROWSER/TV)
-        function showPreviewTrx(key) {
-            var item = dailyHistoryRaw[key];
-            if (!item) return;
-
-            var body = document.getElementById('previewTrxBody');
-            var fnbHtml = "";
-            if (item.fnbList && item.fnbList.length > 0) {
-                fnbHtml = "<div style='margin-top:6px; font-weight:bold;'>Pesanan Cafe:</div>";
-                item.fnbList.forEach(function(f) {
-                    fnbHtml += "<div style='display:flex; justify-content:space-between;'><span>- " + f.name + "</span><span>" + formatRupiah(f.price) + "</span></div>";
-                });
-            }
-
-            body.innerHTML = 
-                "<div><b>Tanggal/Jam:</b> " + (item.date || '-') + " (" + (item.time || '-') + ")</div>" +
-                "<div><b>Layanan:</b> " + (item.table === 'CAFE' ? 'Pesanan Cafe' : 'Sewa Meja ' + item.table) + "</div>" +
-                "<div><b>Pelanggan:</b> " + (item.customer || '-').toUpperCase() + "</div>" +
-                "<div><b>Durasi:</b> " + (item.duration || 0) + " Min (" + formatRupiah(item.tablePrice || 0) + ")</div>" +
-                fnbHtml +
-                "<div style='border-top:1px dashed #334155; margin-top:8px; padding-top:6px; font-size:1rem; font-weight:bold; color:#38bdf8; display:flex; justify-content:space-between;'>" +
-                "<span>TOTAL:</span><span>" + formatRupiah(item.total || 0) + "</span>" +
-                "</div>" +
-                "<div><b>Metode:</b> " + item.method + "</div>";
-
-            document.getElementById('previewTrxModal').style.display = 'flex';
-        }
-
-        function closePreviewTrxModal() {
-            document.getElementById('previewTrxModal').style.display = 'none';
-        }
-
+        // MANAJEMEN STOK & POS CAFE
         function openInventoryModal() { renderInventoryList(); document.getElementById('inventoryModal').style.display = 'flex'; }
         function closeInventoryModal() { document.getElementById('inventoryModal').style.display = 'none'; }
 
@@ -1489,16 +1298,14 @@
             var stock = parseInt(document.getElementById('invItemStock').value) || 0;
             if (!name || price <= 0) { alert("Isi nama dan harga!"); return; }
 
-            inventoryData[name] = { price: price, stock: stock };
-            localStorage.setItem('R21_INVENTORY', JSON.stringify(inventoryData));
-            if (db) db.ref('inventory/' + name).set({ price: price, stock: stock });
-            
-            alert("Barang '" + name + "' tersimpan!");
-            document.getElementById('invItemName').value = '';
-            document.getElementById('invItemPrice').value = '';
-            document.getElementById('invItemStock').value = '';
-            renderInventoryList();
-            populateStockDropdowns();
+            db.ref('inventory/' + name).set({ price: price, stock: stock }, function(err) {
+                if (!err) {
+                    alert("Barang '" + name + "' tersimpan!");
+                    document.getElementById('invItemName').value = '';
+                    document.getElementById('invItemPrice').value = '';
+                    document.getElementById('invItemStock').value = '';
+                }
+            });
         }
 
         function renderInventoryList() {
@@ -1518,13 +1325,7 @@
         }
 
         function deleteInventoryItem(key) {
-            if (confirm("Hapus '" + key + "'?")) { 
-                delete inventoryData[key];
-                localStorage.setItem('R21_INVENTORY', JSON.stringify(inventoryData));
-                if (db) db.ref('inventory/' + key).remove();
-                renderInventoryList();
-                populateStockDropdowns();
-            }
+            if (confirm("Hapus '" + key + "'?")) { db.ref('inventory/' + key).remove(); }
         }
 
         function populateStockDropdowns() {
@@ -1551,7 +1352,6 @@
 
         function openPosCafeModal() {
             posCartList = []; document.getElementById('posCustName').value = ''; renderPosCart();
-            populateStockDropdowns();
             document.getElementById('posCafeModal').style.display = 'flex';
         }
         function closePosCafeModal() { document.getElementById('posCafeModal').style.display = 'none'; }
@@ -1602,17 +1402,16 @@
             posCartList.forEach(function(i) {
                 if (inventoryData[i.name]) {
                     var newStock = (inventoryData[i.name].stock || 0) - i.qty;
-                    inventoryData[i.name].stock = newStock < 0 ? 0 : newStock;
-                    if (db) db.ref('inventory/' + i.name + '/stock').set(inventoryData[i.name].stock);
+                    db.ref('inventory/' + i.name + '/stock').set(newStock < 0 ? 0 : newStock);
                 }
             });
-            localStorage.setItem('R21_INVENTORY', JSON.stringify(inventoryData));
 
-            saveHistoryToLocal(historyItem);
-            if (db) { try { db.ref('history').push(historyItem); } catch(e) {} }
-
-            closePosCafeModal();
-            alert("✅ Transaksi Cafe Berhasil Disimpan!");
+            db.ref('history').push(historyItem, function(err) {
+                if (!err) {
+                    closePosCafeModal();
+                    alert("✅ Transaksi Cafe Berhasil Disimpan!");
+                }
+            });
         }
 
         function openFnbModal(index) {
@@ -1620,7 +1419,6 @@
             tempFnbList = JSON.parse(JSON.stringify(tablesData[index].fnbList || []));
             document.getElementById('modalTableTitle').innerText = "Pesanan Cafe - Meja " + (index + 1);
             document.getElementById('manualFnbName').value = ""; document.getElementById('manualFnbPrice').value = "";
-            populateStockDropdowns();
             renderTempFnbList();
             document.getElementById('fnbModal').style.display = 'flex';
         }
@@ -1632,11 +1430,7 @@
             
             if (inventoryData[name]) {
                 var currentStock = inventoryData[name].stock || 0;
-                if (currentStock > 0) { 
-                    inventoryData[name].stock = currentStock - 1;
-                    localStorage.setItem('R21_INVENTORY', JSON.stringify(inventoryData));
-                    if (db) db.ref('inventory/' + name + '/stock').set(inventoryData[name].stock);
-                }
+                if (currentStock > 0) { db.ref('inventory/' + name + '/stock').set(currentStock - 1); }
             }
 
             tempFnbList.push({ name: name, price: price });
@@ -1662,9 +1456,7 @@
         function saveFnbModal() {
             if (activeFnbTableIndex !== null) { 
                 tablesData[activeFnbTableIndex].fnbList = tempFnbList; 
-                saveTablesToLocal();
-                if (db) db.ref('tables').set(tablesData); 
-                renderTables();
+                db.ref('tables').set(tablesData); 
             }
             closeFnbModal();
         }
@@ -1679,21 +1471,13 @@
             if (!u || !p) { alert("Isi Username dan Password!"); return; }
             if (u.toLowerCase() === 'owner') { alert("Username 'owner' dilarang!"); return; }
 
-            staffAccounts[u] = { password: p, role: 'kasir' };
-            localStorage.setItem('R21_STAFFS', JSON.stringify(staffAccounts));
-            if (db) db.ref('staffs/' + u).set({ password: p, role: 'kasir' });
-
-            alert("Akun '" + u + "' dibuat!"); uInput.value = ''; pInput.value = '';
-            renderStaffList();
+            db.ref('staffs/' + u).set({ password: p, role: 'kasir' }, function(err) {
+                if (!err) { alert("Akun '" + u + "' dibuat!"); uInput.value = ''; pInput.value = ''; }
+            });
         }
 
         function deleteStaffAccount(u) {
-            if (confirm("Hapus akun '" + u + "'?")) { 
-                delete staffAccounts[u];
-                localStorage.setItem('R21_STAFFS', JSON.stringify(staffAccounts));
-                if (db) db.ref('staffs/' + u).remove();
-                renderStaffList();
-            }
+            if (confirm("Hapus akun '" + u + "'?")) { db.ref('staffs/' + u).remove(); }
         }
 
         function renderStaffList() {
@@ -1711,6 +1495,7 @@
             });
         }
 
+        // RIWAYAT TRANSAKSI OPERASIONAL & PENJUMLAHAN TOTAL UANG
         function getOperationalDate(dateObj) {
             var d = new Date(dateObj);
             if (d.getHours() < 8) { d.setDate(d.getDate() - 1); }
@@ -1759,11 +1544,7 @@
                         '<td>' + (item.customer || '-') + '</td>' +
                         '<td><b>' + methodTxt + '</b></td>' +
                         '<td style="font-weight:bold; color:var(--price-color);">' + formatRupiah(item.total || 0) + '</td>' +
-                        '<td>' +
-                            '<button style="background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; margin-right:4px;" onclick="showPreviewTrx(\'' + key + '\')">👁️</button>' +
-                            '<button style="background:#8b5cf6; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; margin-right:4px;" onclick="reprintHistory(\'' + key + '\')">🖨️</button>' + 
-                            deleteBtn + 
-                        '</td>';
+                        '<td><button style="background:#8b5cf6; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; margin-right:4px;" onclick="reprintHistory(\'' + key + '\')">🖨️</button>' + deleteBtn + '</td>';
                     tbody.appendChild(tr);
                 }
             });
@@ -1781,12 +1562,7 @@
         function closeHistoryModal() { document.getElementById('historyModal').style.display = 'none'; }
 
         function deleteHistoryItem(key) {
-            if (confirm("Hapus transaksi ini?")) { 
-                delete dailyHistoryRaw[key];
-                localStorage.setItem('R21_HISTORY_DATA', JSON.stringify(dailyHistoryRaw));
-                if (db) db.ref('history/' + key).remove();
-                renderHistoryTable();
-            }
+            if (confirm("Hapus transaksi ini?")) { db.ref('history/' + key).remove(function() { renderHistoryTable(); }); }
         }
 
         function reprintHistory(key) {
@@ -1820,6 +1596,7 @@
             window.print();
         }
 
+        // LAPORAN SHIFT WHATSAPP
         function sendWaReport() {
             var filterVal = document.getElementById('historyDateFilter').value;
             var currentOpDate = filterVal ? new Date(filterVal).toLocaleDateString('id-ID') : getOperationalDate(new Date());
@@ -1858,6 +1635,7 @@
             window.open("https://wa.me/" + cleanPhone + "?text=" + encodeURIComponent(message), '_blank');
         }
 
+        // GANTI MODE TAMPILAN (CONTROLLER, LANDSCAPE, TV)
         function setMode(mode) {
             currentMode = mode;
             localStorage.setItem('biliard_mode', mode);
@@ -1886,15 +1664,11 @@
             }
         }
 
+        // INISIALISASI UTAMA
         function init() {
             applyBizProfileUI();
             updateRelayBadge();
-            updateRealtimeClock();
-            loadTablesFromLocal();
-            loadHistoryFromLocal();
-            populateStockDropdowns();
             setMode(currentMode);
-
             if (currentUserRole && currentMode !== 'tv') {
                 document.getElementById('loginModal').style.display = 'none';
                 applyUserRolePermissions();
@@ -1906,27 +1680,6 @@
         }
 
         init();
-
-        // === SKRIP FULLSCREEN CHROME ===
-        function mintaFullscreen() {
-            const el = document.documentElement;
-            if (el.requestFullscreen) {
-                el.requestFullscreen();
-            } else if (el.webkitRequestFullscreen) {
-                el.webkitRequestFullscreen();
-            }
-        }
-
-        document.addEventListener('click', function aktifkanFS() {
-            mintaFullscreen();
-            document.removeEventListener('click', aktifkanFS);
-        });
-
-        window.addEventListener("load", function() {
-            setTimeout(function() {
-                window.scrollTo(0, 1);
-            }, 100);
-        });
     </script>
 </body>
 </html>
