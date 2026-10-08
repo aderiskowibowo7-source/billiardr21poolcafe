@@ -2,493 +2,322 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kasir & Timer Biliar R21 - FULL ONLINE</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sikasir R21 Pool & Cafe</title>
+    <!-- FIREBASE SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
-        window.firebaseAvailable = false;
+        if (typeof firebase !== 'undefined') {
+            window.firebaseAvailable = true;
+        } else {
+            window.firebaseAvailable = false;
+        }
     </script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js" onload="window.firebaseAvailable=true" onerror="alert('Koneksi Internet Putus! Firebase tidak dapat diakses.')"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js" onerror="console.log('Database Offline')"></script>
-
     <style>
         :root {
-            --bg-color: #0f172a;
+            --bg-dark: #0f172a;
             --card-bg: #1e293b;
-            --accent: #22c55e;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --text: #f8fafc;
-            --price-color: #38bdf8;
-            --subtext-color: #f1f5f9;
-            --cust-color: #facc15;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text);
-            margin: 0;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
+            --accent-blue: #0284c7;
+            --text-main: #f8fafc;
+            --price-color: #facc15;
+            --border-color: #334155;
         }
 
-        h1#page-title { margin-bottom: 2px; font-size: 1.3rem; text-align: center; }
-        .brand-subtitle {
-            font-size: 1.05rem;
-            color: var(--price-color);
-            font-weight: bold;
-            margin-bottom: 4px;
-            letter-spacing: 2px;
-        }
-        
-        .realtime-clock-bar {
-            font-size: 0.95rem;
-            font-weight: bold;
-            color: #facc15;
-            background: rgba(30, 41, 59, 0.8);
-            padding: 4px 12px;
-            border-radius: 20px;
-            border: 1px solid #475569;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background: var(--bg-dark); color: var(--text-main); padding: 10px; font-size: 14px; }
 
-        .header-status-bar {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
+        /* HEADER */
+        .app-header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--card-bg); padding: 12px 16px; border-radius: 8px;
+            margin-bottom: 12px; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 8px;
         }
-        .status-badge {
-            font-size: 0.75rem;
-            padding: 4px 10px;
-            border-radius: 12px;
-            background: #334155;
-            color: #94a3b8;
-            font-weight: bold;
-        }
-        .status-badge.online { background: #065f46; color: #34d399; }
-        .relay-status-badge {
-            font-size: 0.75rem;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-weight: bold;
-            background: #991b1b;
-            color: #fca5a5;
-        }
+        .brand-title { font-size: 1.3rem; font-weight: bold; color: #38bdf8; }
+        .header-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .clock-display { font-size: 0.9rem; font-weight: bold; color: #a855f7; background: #2e1065; padding: 6px 12px; border-radius: 6px; }
 
-        /* RINGKAS MENU ATAS */
-        .mode-selector { margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; align-items: center; }
-        .mode-selector button, .mode-selector select {
-            padding: 8px 12px; font-weight: bold; cursor: pointer; border: none;
-            border-radius: 6px; background: #334155; color: white; font-size: 0.8rem;
+        .btn {
+            background: #334155; color: white; border: none; padding: 8px 12px;
+            border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 4px;
         }
-        .mode-selector select { background: #1e293b; border: 1px solid #475569; color: #38bdf8; outline: none; }
-        .btn-cafe-front { background-color: #0d9488 !important; color: white !important; font-weight: bold; }
-        .btn-setting { background: #475569 !important; color: white !important; }
-        
+        .btn:hover { opacity: 0.9; }
+        .btn-owner-only { display: none; }
+
+        /* GRID MEJA */
         .grid-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            width: 100%;
-            max-width: 500px;
-        }
-
-        body.landscape-mode .grid-container {
-            display: grid !important;
-            grid-template-columns: repeat(3, 1fr) !important;
-            max-width: 100% !important;
-            gap: 10px;
-        }
-        body.landscape-mode .card-body-split {
-            display: flex !important;
-            flex-direction: row;
-            gap: 8px;
-            width: 100%;
-        }
-        body.landscape-mode .card-left-detail {
-            display: flex !important;
-            flex: 1;
-            background: rgba(15, 23, 42, 0.9);
-            border-radius: 6px;
-            padding: 6px;
-            border: 1px solid #334155;
-            max-height: 110px;
-            overflow-y: auto;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px;
         }
 
         .table-card {
-            background-color: var(--card-bg); border-radius: 12px; padding: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex;
-            flex-direction: column; border: 2px solid #334155;
-            transition: all 0.2s ease; box-sizing: border-box; width: 100%; position: relative;
+            background: var(--card-bg); border: 2px solid var(--border-color);
+            border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px;
+            position: relative; transition: all 0.3s;
         }
-        .table-card.active { border-color: var(--accent); }
-        .table-card.opentable { border-color: #38bdf8; }
-        .table-card.warning { border-color: var(--warning); }
-        .table-card.expired { border-color: var(--danger); }
-        
-        .card-header-row {
-            display: flex; justify-content: space-between; align-items: center;
-            width: 100%; margin-bottom: 6px; border-bottom: 1px dashed #334155; padding-bottom: 6px;
-        }
-        .table-title { font-size: 1.05rem; font-weight: bold; color: white; }
-        
-        /* BADGE STATUS BAYAR */
-        .pay-status-badge {
-            font-size: 0.7rem; font-weight: 800; padding: 3px 8px; border-radius: 6px; text-transform: uppercase;
-        }
-        .pay-status-badge.unpaid { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid #ef4444; }
-        .pay-status-badge.paid { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid #22c55e; }
+        .table-card.active { border-color: #10b981; }
+        .table-card.warning { border-color: #f59e0b; animation: pulse-warning 1s infinite; }
+        .table-card.expired { border-color: #ef4444; background: #2d1215; }
+        .table-card.opentable { border-color: #06b6d4; }
 
-        .customer-tv-display {
-            font-size: 0.85rem; font-weight: 800; color: var(--cust-color);
-            text-transform: uppercase; background: rgba(250, 204, 21, 0.1);
-            padding: 3px 10px; border-radius: 6px; border: 1px solid rgba(250, 204, 21, 0.2);
-            max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        @keyframes pulse-warning {
+            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
         }
 
-        .card-note-box {
-            font-size: 0.75rem; color: #cbd5e1; font-style: italic; background: rgba(15, 23, 42, 0.6);
-            padding: 4px 8px; border-radius: 4px; border: 1px solid #334155; margin-bottom: 8px;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
+        .card-header-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border-color); padding-bottom: 6px; }
+        .table-title { font-size: 1.2rem; font-weight: bold; color: #38bdf8; }
+        .customer-tv-display { font-size: 0.95rem; font-weight: bold; color: #facc15; }
 
-        .card-body-split { display: flex; gap: 10px; width: 100%; margin-bottom: 10px; }
-        .card-left-detail { display: none; }
-        .detail-items-list { font-size: 0.75rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 2px; width: 100%; }
-        .detail-item-row { display: flex; justify-content: space-between; gap: 4px; }
+        /* BADGE STATUS PEMBAYARAN */
+        .pay-status-badge { font-size: 0.75rem; padding: 3px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; }
+        .pay-status-badge.paid { background: #065f46; color: #34d399; border: 1px solid #10b981; }
+        .pay-status-badge.unpaid { background: #881337; color: #fda4af; border: 1px solid #f43f5e; }
 
-        .card-right-timer {
-            flex: 1; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; width: 100%;
-        }
-        .timer-display {
-            font-size: 2.2rem; font-family: monospace; font-weight: bold;
-            margin: 0; color: #94a3b8; line-height: 1;
-        }
-        .selesai-display { font-size: 0.8rem; font-weight: bold; color: var(--warning); margin: 4px 0; }
+        .card-note-box { background: #0f172a; border: 1px solid var(--border-color); padding: 6px 8px; border-radius: 6px; font-size: 0.8rem; color: #cbd5e1; }
 
-        .table-card.active .timer-display { color: var(--accent); }
-        .table-card.opentable .timer-display { color: #38bdf8; }
-        .table-card.warning .timer-display { color: var(--warning); }
-        .table-card.expired .timer-display { color: var(--danger); animation: blink 1s infinite; }
-        .price-display {
-            font-size: 1.1rem; font-weight: bold; color: var(--price-color);
-            background: rgba(56, 189, 248, 0.1); padding: 4px 12px;
-            border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.2);
-            text-align: center; width: 90%;
-        }
+        .card-body-split { display: flex; justify-content: space-between; gap: 8px; }
+        .card-left-detail { flex: 1; font-size: 0.8rem; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+        .detail-item-row { display: flex; justify-content: space-between; color: #94a3b8; }
 
-        .promo-badge {
-            background: #581c87; color: #e9d5ff; padding: 2px 6px;
-            border-radius: 4px; font-size: 0.75rem; font-weight: bold;
-            margin-bottom: 6px; text-align: center; border: 1px solid #a855f7;
-        }
-        
-        .bonus-badge {
-            background: #065f46; color: #a7f3d0; padding: 2px 6px;
-            border-radius: 4px; font-size: 0.75rem; font-weight: bold;
-            margin-bottom: 6px; text-align: center; border: 1px solid #10b981;
-        }
+        .card-right-timer { text-align: right; }
+        .timer-display { font-size: 1.8rem; font-weight: bold; font-family: monospace; color: #10b981; }
+        .table-card.expired .timer-display { color: #ef4444; }
+        .table-card.warning .timer-display { color: #f59e0b; }
+        .selesai-display { font-size: 0.75rem; color: #94a3b8; }
+        .price-display { font-size: 1.1rem; font-weight: bold; color: var(--price-color); }
 
-        @keyframes blink { 50% { opacity: 0.3; } }
-        
-        .controls { display: flex; flex-direction: column; gap: 5px; width: 100%; }
-        .btn-row { display: flex; gap: 5px; width: 100%; }
-        .controls button {
-            flex: 1; padding: 8px 4px; border: none; border-radius: 5px;
-            font-weight: bold; cursor: pointer; font-size: 0.8rem;
-        }
-        .btn-start { background-color: #2563eb; color: white; }
-        .btn-open { background-color: #0284c7; color: white; }
-        .btn-stop { background-color: var(--danger); color: white; }
-        .btn-fnb { background-color: #f59e0b; color: white; }
-        .btn-pay { background-color: #10b981; color: white; font-weight: bold; }
-        .btn-move { background-color: #8b5cf6; color: white; font-weight: bold; }
-        .btn-reduce { background-color: #d97706; color: white; font-weight: bold; }
-        .controls button:active { opacity: 0.7; transform: scale(0.98); }
+        .promo-badge { background: #831843; color: #f472b6; text-align: center; font-size: 0.75rem; font-weight: bold; padding: 3px; border-radius: 4px; }
+        .bonus-badge { background: #1e1b4b; color: #a78bfa; text-align: center; font-size: 0.75rem; font-weight: bold; padding: 3px; border-radius: 4px; }
 
-        /* SAKELAR LIGHT TOGGLE RINGKAS */
-        .btn-toggle-light { width: 100%; font-weight: bold; padding: 6px; border-radius: 5px; border: none; cursor: pointer; }
-        .btn-toggle-light.on { background-color: #dc2626; color: white; }
-        .btn-toggle-light.off { background-color: #16a34a; color: white; }
+        /* KONTROL BUTTONS */
+        .controls { display: flex; flex-direction: column; gap: 6px; }
+        .btn-row { display: flex; gap: 6px; }
+        .btn-row button { flex: 1; padding: 8px 4px; border: none; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; color: white; }
 
+        .btn-start { background: #0284c7; }
+        .btn-open { background: #0891b2; }
+        .btn-fnb { background: #d97706; }
+        .btn-reduce { background: #4f46e5; }
+        .btn-move { background: #7c3aed; }
+        .btn-pay { background: #10b981; }
+        .btn-stop { background: #dc2626; }
+        .btn-note { background: #d97706; }
+
+        .btn-toggle-light { width: 100%; padding: 8px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; }
+        .btn-toggle-light.on { background: #16a34a; }
+        .btn-toggle-light.off { background: #dc2626; }
+
+        /* MODAL */
         .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); z-index: 100; justify-content: center; align-items: center;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center;
+            z-index: 999; padding: 10px;
         }
         .modal-content {
-            background: var(--card-bg); padding: 18px; border-radius: 12px; width: 90%; max-width: 450px;
-            border: 1px solid #475569; max-height: 85vh; overflow-y: auto;
+            background: var(--card-bg); border-radius: 10px; padding: 16px;
+            width: 100%; max-width: 480px; border: 1px solid var(--border-color); max-height: 90vh; overflow-y: auto;
         }
-        .modal-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 12px; color: var(--price-color); text-align: center; }
-        
-        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-        .form-group label { font-size: 0.8rem; font-weight: bold; color: #cbd5e1; }
+        .modal-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 12px; color: #38bdf8; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 0.8rem; margin-bottom: 4px; color: #94a3b8; }
         .form-group input, .form-group select {
-            padding: 9px; border-radius: 6px; border: 1px solid #475569;
-            background-color: #0f172a; color: white; font-size: 0.85rem;
+            width: 100%; padding: 8px; background: #0f172a; border: 1px solid var(--border-color);
+            color: white; border-radius: 6px; font-size: 0.9rem;
         }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+        .modal-footer button { padding: 8px 14px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
 
-        .duration-preset-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
-        .duration-preset-grid button {
-            background: #334155; color: white; border: 1px solid #475569; padding: 10px;
-            border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem;
-        }
-
-        .fnb-added-list { margin-top: 10px; border-top: 1px solid #334155; padding-top: 8px; }
-        .fnb-added-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px dashed #334155; font-size: 0.8rem; }
-        .btn-del-item { background: #ef4444; color: white; border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
-
-        .modal-footer { display: flex; gap: 8px; margin-top: 15px; }
-        .modal-footer button { flex: 1; padding: 9px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
-
-        .history-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 10px; }
-        .history-table th, .history-table td { border: 1px solid #334155; padding: 8px; text-align: left; }
-        .history-table th { background-color: #0f172a; color: var(--price-color); }
-
-        .history-summary-box {
-            background: #0f172a; border: 1px solid #334155; border-radius: 8px;
-            padding: 10px; margin-top: 12px; display: flex; justify-content: space-between;
-            align-items: center; flex-wrap: wrap; gap: 10px;
-        }
-        .history-summary-total { font-weight: bold; font-size: 0.95rem; color: var(--accent); }
-        
-        body.tv-mode {
-            padding: 8px !important; height: 100vh; box-sizing: border-box; overflow: hidden;
-            justify-content: center;
-            background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), 
-                        url('bg-tv.png') no-repeat center center / cover !important;
-        }
-        body.tv-mode h1#page-title, 
-        body.tv-mode .controls, 
-        body.tv-mode .header-status-bar, 
-        body.tv-mode .mode-selector { display: none !important; }
-
-        .tv-switch-bar {
-            display: none; position: fixed; top: 10px; right: 10px; z-index: 99; gap: 6px;
-        }
-        body.tv-mode .tv-switch-bar { display: flex !important; }
-        .tv-switch-bar button {
-            background: rgba(30, 41, 59, 0.85); color: #cbd5e1; border: 1px solid #475569;
-            padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;
-        }
-
-        body.tv-mode .brand-subtitle { font-size: 1.4rem; margin-bottom: 4px; letter-spacing: 2px; text-align: center; }
-        body.tv-mode .grid-container { 
-            display: grid !important; grid-template-columns: repeat(3, 1fr) !important; 
-            gap: 8px; max-width: 100%;
-        }
-        body.tv-mode .table-card { padding: 8px 10px; border-radius: 8px; }
-        body.tv-mode .card-body-split { display: flex !important; flex-direction: row; gap: 8px; width: 100%; }
-        body.tv-mode .card-left-detail {
-            display: flex !important; flex: 1; background: rgba(15, 23, 42, 0.9);
-            border-radius: 6px; padding: 6px; border: 1px solid #334155; max-height: 100px; overflow-y: auto;
-        }
-        body.tv-mode .card-right-timer { flex: 1.1; }
-        body.tv-mode .timer-display { font-size: 2rem; margin: 2px 0; }
-        body.tv-mode .selesai-display { font-size: 0.75rem; margin-bottom: 2px; }
-        body.tv-mode .price-display { font-size: 0.95rem; margin-bottom: 2px; padding: 2px 6px; }
-        body.tv-mode .table-title { font-size: 1.05rem; }
-        body.tv-mode .customer-tv-display { font-size: 0.85rem; padding: 2px 6px; max-width: 100%; }
-
-        #receiptPrintArea { display: none; }
+        /* PRINT RECEIPT STYLES */
         @media print {
             body * { visibility: hidden; }
-            #receiptPrintArea, #receiptPrintArea * { visibility: visible; }
-            #receiptPrintArea {
-                display: block !important; position: absolute; left: 0; top: 0; width: 58mm;
-                font-family: 'Courier New', Courier, monospace; font-size: 11px;
-                color: black; background: white; padding: 5px;
-            }
-            .receipt-header { text-align: center; border-bottom: 1px dashed black; padding-bottom: 5px; margin-bottom: 5px; }
-            .receipt-title { font-weight: bold; font-size: 14px; }
-            .receipt-line { display: flex; justify-content: space-between; margin: 3px 0; }
-            .receipt-footer { text-align: center; border-top: 1px dashed black; margin-top: 8px; padding-top: 5px; font-size: 10px; }
+            #receiptArea, #receiptArea * { visibility: visible; }
+            #receiptArea { position: absolute; left: 0; top: 0; width: 58mm; font-family: monospace; font-size: 10px; color: black; background: white; padding: 5px; }
+            .no-print { display: none !important; }
         }
     </style>
 </head>
 <body>
-    <div class="tv-switch-bar">
-        <button onclick="setMode('controller')">📱 Mode HP</button>
-        <button onclick="setMode('landscape')">💻 Mode Kasir</button>
+    <!-- HEADER APLIKASI -->
+    <div class="app-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div class="brand-title" id="displayBrandName">R21 POOL & CAFE</div>
+            <span id="relayStatusBadge" style="font-size:0.75rem; background:#1e1b4b; color:#818cf8; padding:3px 8px; border-radius:4px; font-weight:bold;">Relay IP: -</span>
+            <span id="userRoleBadge" style="font-size:0.75rem; background:#065f46; color:#34d399; padding:3px 8px; border-radius:4px; font-weight:bold;">Kasir</span>
+        </div>
+        <div class="header-controls">
+            <div class="clock-display" id="realtimeClockDisplay">🕒 --:--:--</div>
+            
+            <select id="modeDropdownSelect" onchange="setMode(this.value)" style="background:#0f172a; color:#38bdf8; border:1px solid #334155; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer;">
+                <option value="controller">💻 Controller</option>
+                <option value="landscape">📱 Landscape</option>
+                <option value="tv">📺 TV Display</option>
+            </select>
+
+            <button class="btn" onclick="openPosCafeModal()">🛒 POS Cafe</button>
+            <button class="btn" onclick="openHistoryModal()">📊 Laporan</button>
+            <button class="btn btn-owner-only" onclick="openInventoryModal()">📦 Stok</button>
+            <button class="btn btn-owner-only" onclick="openStaffManagerModal()">👥 Karyawan</button>
+            <button class="btn btn-owner-only" onclick="openSettingModal()">⚙️ Pengaturan</button>
+            <button class="btn" style="background:#dc2626;" onclick="logout()">🚪 Logout</button>
+        </div>
     </div>
 
-    <h1 id="page-title">Sistem Timer & Kasir</h1>
-    <div class="brand-subtitle" id="displayBrandName">R21 POOL & CAFE</div>
-    <div class="realtime-clock-bar" id="realtimeClockDisplay">🕒 --:--:--</div>
-    
-    <div class="header-status-bar">
-        <div id="statusBadge" class="status-badge online">🌐 Mode Online (Cloud)</div>
-        <div id="relayStatusBadge" class="relay-status-badge">Relay IP: 192.168.1.20</div>
-    </div>
-    
-    <div class="mode-selector">
-        <select id="modeDropdownSelect" onchange="setMode(this.value)">
-            <option value="controller">📱 Mode HP (Portrait)</option>
-            <option value="landscape">💻 Mode Landscape Kasir</option>
-            <option value="tv">📺 Mode TV Display</option>
-        </select>
-        <button class="btn-cafe-front" onclick="openPosCafeModal()">🛒 Transaksi Cafe</button>
-        <button style="background-color: #22c55e;" onclick="testSound()">🔊 Cek Sound</button>
-        <button class="btn-setting" onclick="openSettingModal()">⚙️ Setting</button>
+    <!-- GRID CARDS MEJA -->
+    <div class="grid-container" id="tablesGrid">
+        <!-- Generasi Meja 1 - 6 via JS -->
     </div>
 
-    <div class="grid-container" id="tablesGrid"></div>
-        <!-- MODAL ATUR DURASI / MULAI MEJA -->
+    <!-- MODAL DURATION / MAIN PAKET -->
     <div class="modal-overlay" id="durationModal">
-        <div class="modal-content" style="max-width:380px;">
-            <div class="modal-title" id="durationModalTitle">Mulai Meja X</div>
+        <div class="modal-content">
+            <div class="modal-title" id="durationModalTitle">Atur Waktu Bermain</div>
             <div class="form-group">
-                <label>Nama Pelanggan (Wajib):</label>
+                <label>Nama Pelanggan:</label>
                 <input type="text" id="durationCustName" placeholder="Masukkan nama..." style="text-transform:uppercase;">
             </div>
             <div class="form-group">
                 <label>Catatan / Keterangan (Opsional):</label>
-                <input type="text" id="durationCustNote" placeholder="Misal: DP 20rb, Member, Stick 2...">
-            </div>
-            <div style="font-size:0.8rem; font-weight:bold; color:#cbd5e1; margin-bottom:6px;">Pilih / Tambah Durasi:</div>
-            <div class="duration-preset-grid">
-                <button onclick="addPresetMinutes(30)">+30 Min</button>
-                <button onclick="addPresetMinutes(60)">+1 Jam</button>
-                <button onclick="addPresetMinutes(120)">+2 Jam</button>
+                <input type="text" id="durationCustNote" placeholder="Misal: DP / Booking / Meja Bawah" style="text-transform:uppercase;">
             </div>
             <div class="form-group">
-                <label>Total Durasi Dipilih (Menit):</label>
-                <input type="number" id="customMinutesInput" value="60" min="1" step="30" oninput="updateDurationPreview()">
+                <label>Pilih Durasi Menit:</label>
+                <div style="display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap;">
+                    <button type="button" class="btn" style="background:#0284c7;" onclick="addPresetMinutes(30)">+30 Min</button>
+                    <button type="button" class="btn" style="background:#0284c7;" onclick="addPresetMinutes(60)">+1 Jam</button>
+                    <button type="button" class="btn" style="background:#0284c7;" onclick="addPresetMinutes(120)">+2 Jam</button>
+                    <button type="button" class="btn" style="background:#0284c7;" onclick="addPresetMinutes(180)">+3 Jam</button>
+                </div>
+                <input type="number" id="customMinutesInput" placeholder="Sebutkan menit..." oninput="updateDurationPreview()">
             </div>
-            
-            <div style="background:#0f172a; padding:8px 10px; border-radius:6px; border:1px solid #334155; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
-                <input type="checkbox" id="isSpecialBonusCheck" onchange="updateDurationPreview()" style="width:18px; height:18px; cursor:pointer;">
-                <label for="isSpecialBonusCheck" style="font-size:0.8rem; color:#34d399; font-weight:bold; cursor:pointer;">
-                    🎁 Jadikan Bonus Khusus (Rp 0 / Bebas Omset)
-                </label>
+            <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+                <input type="checkbox" id="isSpecialBonusCheck" style="width:auto;" onchange="updateDurationPreview()">
+                <label for="isSpecialBonusCheck" style="margin:0; color:#a78bfa; font-weight:bold;">⭐ Bonus Khusus / Bebas Omset</label>
             </div>
+            <div id="durationPreviewTxt" style="font-weight:bold; color:var(--price-color); margin-bottom:10px;">Total: 0 Min (Rp 0)</div>
+            <div class="modal-footer">
+                <button style="background:#ef4444; color:white;" onclick="closeDurationModal()">Batal</button>
+                <button style="background:#10b981; color:white;" onclick="confirmStartDuration()">START</button>
+            </div>
+        </div>
+    </div>
 
-            <div style="font-size:0.75rem; color:#facc15; margin-bottom:8px; line-height:1.3;">
-                💡 <b>Tarif:</b> Rp <span id="ratePreviewLabel">20.000</span> / 30 Menit. Promo: Main 5 Jam bayar 4 Jam!
+    <!-- MODAL OPEN TABLE -->
+    <div class="modal-overlay" id="openTableModal">
+        <div class="modal-content" style="max-width:380px;">
+            <div class="modal-title" id="openTableModalTitle">Start Open Table</div>
+            <div class="form-group">
+                <label>Nama Pelanggan:</label>
+                <input type="text" id="openTableCustName" placeholder="Masukkan nama..." style="text-transform:uppercase;">
             </div>
-            <div style="background:#0f172a; padding:10px; border-radius:6px; text-align:center; font-weight:bold; color:var(--price-color); margin-bottom:12px;" id="durationPreviewTxt">
-                Total: 1 Jam (Rp 40.000)
+            <div class="form-group">
+                <label>Catatan (Opsional):</label>
+                <input type="text" id="openTableCustNote" placeholder="Catatan..." style="text-transform:uppercase;">
             </div>
             <div class="modal-footer">
-                <button style="background:#ef4444; color:white;" onclick="closeDurationModal()">❌ Batal</button>
-                <button style="background:#22c55e; color:white;" onclick="confirmStartDuration()">▶️ START & NYALAKAN</button>
+                <button style="background:#ef4444; color:white;" onclick="closeOpenTableModal()">Batal</button>
+                <button style="background:#0891b2; color:white;" onclick="confirmStartOpenTable()">START OPEN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CATATAN CEPAT (EDIT MID-RUNNING) -->
+    <div class="modal-overlay" id="quickNoteModal">
+        <div class="modal-content" style="max-width:350px;">
+            <div class="modal-title" id="quickNoteTitle">Catatan Meja</div>
+            <div class="form-group">
+                <label>Keterangan / Jadwal Booking:</label>
+                <input type="text" id="quickNoteInput" placeholder="Misal: Booking jam 20:00..." style="text-transform:uppercase;">
+            </div>
+            <div class="modal-footer">
+                <button style="background:#ef4444; color:white;" onclick="closeQuickNoteModal()">Batal</button>
+                <button style="background:#2563eb; color:white;" onclick="confirmSaveQuickNote()">Simpan Catatan</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL KURANGI / EDIT DURASI JAM MAIN -->
     <div class="modal-overlay" id="reduceModal">
-        <div class="modal-content" style="max-width:350px;">
-            <div class="modal-title" id="reduceModalTitle">Kurangi Durasi Meja X</div>
-            <div style="font-size:0.8rem; color:#facc15; background:#0f172a; padding:10px; border-radius:6px; margin-bottom:10px; line-height:1.4;">
-                ⚠️ Durasi saat ini: <b id="reduceCurrentDurationTxt">-</b><br>
-                Pilih atau ketik durasi baru yang diinginkan (pastikan belum lewat dari waktu berjalan).
+        <div class="modal-content" style="max-width:380px;">
+            <div class="modal-title" id="reduceModalTitle">Edit Durasi Meja</div>
+            <div class="form-group">
+                <label>Durasi Saat Ini:</label>
+                <div id="reduceCurrentDurationTxt" style="font-weight:bold; color:#38bdf8; font-size:1.1rem; margin-bottom:8px;">0 Menit</div>
             </div>
             <div class="form-group">
-                <label>Durasi Baru (Menit):</label>
-                <input type="number" id="reduceMinutesInput" min="1" step="30">
+                <label>Ubah Total Durasi Menit Jadi:</label>
+                <input type="number" id="reduceMinutesInput" placeholder="Masukkan total menit baru...">
             </div>
             <div class="modal-footer">
                 <button style="background:#ef4444; color:white;" onclick="closeReduceModal()">Batal</button>
-                <button style="background:#d97706; color:white;" onclick="confirmReduceDuration()">Simpan Perubahan</button>
+                <button style="background:#4f46e5; color:white;" onclick="confirmReduceDuration()">Simpan Perubahan</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL OPEN TABLE (STOPWATCH) -->
-    <div class="modal-overlay" id="openTableModal">
-        <div class="modal-content" style="max-width:360px;">
-            <div class="modal-title" id="openTableModalTitle">Open Table Meja X</div>
-            <div class="form-group">
-                <label>Nama Pelanggan (Wajib):</label>
-                <input type="text" id="openTableCustName" placeholder="Masukkan nama..." style="text-transform:uppercase;">
+    <!-- MODAL PEMBAYARAN -->
+    <div class="modal-overlay" id="payModal">
+        <div class="modal-content">
+            <div class="modal-title" id="payModalTitle">Rincian Pembayaran</div>
+            <div style="font-size:0.9rem; margin-bottom:10px; background:#0f172a; padding:10px; border-radius:6px; border:1px solid #334155;">
+                <div>Pelanggan: <b id="payCustomerName" style="color:#facc15;">-</b></div>
+                <div>Catatan: <span id="payCustomerNote">-</span></div>
+                <div>Durasi Biliar: <b id="payDuration">-</b></div>
+                <div>Sewa Meja: <b id="payTablePrice">Rp 0</b></div>
+                <div id="promoNotice" style="color:#f472b6; font-weight:bold; margin-top:4px; display:none;"></div>
+                <div id="payFnbSummaryList" style="margin-top:6px; border-top:1px dashed #334155; padding-top:6px;"></div>
+            </div>
+            <div style="font-size:1.3rem; font-weight:bold; color:var(--price-color); text-align:right; margin-bottom:12px;">
+                TOTAL: <span id="payGrandTotal">Rp 0</span>
             </div>
             <div class="form-group">
-                <label>Catatan / Keterangan (Opsional):</label>
-                <input type="text" id="openTableCustNote" placeholder="Misal: DP 50rb...">
+                <label>Metode Pembayaran:</label>
+                <select id="payMethodSelect" onchange="toggleSplitBillInput()">
+                    <option value="Tunai">Tunai</option>
+                    <option value="QRIS">QRIS</option>
+                    <option value="Split">Split Bill (Tunai + QRIS)</option>
+                </select>
             </div>
-            <div style="font-size:0.8rem; color:#38bdf8; background:#0f172a; padding:10px; border-radius:6px; margin-bottom:12px; line-height:1.4;">
-                ⏱️ <b>Mode Open Table:</b> Timer menghitung maju dari 00:00:00. Tarif otomatis per 30 menit berjalan.
+            <div id="splitBillInputs" style="display:none; flex-direction:column; gap:8px; margin-bottom:10px; background:#0f172a; padding:8px; border-radius:6px;">
+                <div class="form-group" style="margin:0;">
+                    <label>Bayar Tunai (Rp):</label>
+                    <input type="number" id="splitCashInput" oninput="calcSplitBillSisa()" placeholder="0">
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label>Sisa QRIS (Rp):</label>
+                    <input type="number" id="splitQrisInput" readonly placeholder="0">
+                </div>
             </div>
             <div class="modal-footer">
-                <button style="background:#ef4444; color:white;" onclick="closeOpenTableModal()">❌ Batal</button>
-                <button style="background:#0284c7; color:white;" onclick="confirmStartOpenTable()">▶️ MULAI OPEN TABLE</button>
+                <button style="background:#ef4444; color:white;" onclick="closePayModal()">Batal</button>
+                <button style="background:#10b981; color:white; font-size:1rem;" onclick="confirmPayAndFinish()">LUNAS & SIMPAN</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL ⚙️ SETTING PUSAT -->
-    <div class="modal-overlay" id="settingModal">
-        <div class="modal-content" style="max-width:480px;">
-            <div class="modal-title">⚙️ PENGATURAN SIKASIR R21</div>
-            <div style="background:#0f172a; padding:12px; border-radius:8px; border:1px solid #334155; margin-bottom:10px;">
-                <div style="font-size:0.85rem; font-weight:bold; color:var(--price-color); margin-bottom:8px;">🏢 PROFIL USAHA</div>
-                <div class="form-group" style="margin-bottom:6px;">
-                    <input type="text" id="cfgBizName" placeholder="Nama Usaha (misal: R21 POOL & CAFE)">
-                </div>
-                <div class="form-group" style="margin-bottom:6px;">
-                    <input type="text" id="cfgBizAddress" placeholder="Alamat Usaha">
-                </div>
-                <div class="form-group" style="margin-bottom:8px;">
-                    <input type="text" id="cfgBizPhone" placeholder="No. Telepon / WA Usaha">
-                </div>
-                <button class="btn-action" style="background:#2563eb; color:white; border:none; width:100%; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="saveBizProfile()">Simpan Profil Usaha</button>
+    <!-- MODAL TAMBAH FNB TABLE -->
+    <div class="modal-overlay" id="fnbModal">
+        <div class="modal-content">
+            <div class="modal-title" id="modalTableTitle">Pesanan Cafe Meja</div>
+            <div class="form-group">
+                <label>Pilih Dari Stok Barang:</label>
+                <select id="tableFnbStockSelect" onchange="autoFillTableFnbPrice()">
+                    <option value="">-- Pilih Barang --</option>
+                </select>
             </div>
-
-            <div style="background:#0f172a; padding:12px; border-radius:8px; border:1px solid #334155; margin-bottom:10px;">
-                <div style="font-size:0.85rem; font-weight:bold; color:var(--price-color); margin-bottom:8px;">🔌 KONEKSI & TARIF</div>
-                <div class="form-group" style="margin-bottom:6px;">
-                    <label>IP Modul Relay Lokal:</label>
-                    <div style="display:flex; gap:6px;">
-                        <input type="text" id="cfgRelayIp" placeholder="192.168.1.20" style="flex:1;">
-                        <button style="background:#16a34a; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="saveRelayIp()">Simpan IP</button>
-                    </div>
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>Tarif Biliar / 30 Menit (Rp):</label>
-                    <input type="number" id="halfHourlyRate" value="20000" step="1000" onchange="updateRateSetting(this.value)">
-                </div>
+            <div style="display:flex; gap:6px; margin-bottom:10px;">
+                <input type="text" id="manualFnbName" placeholder="Nama Pesanan..." style="flex:2; padding:8px; background:#0f172a; border:1px solid #334155; color:white; border-radius:6px;">
+                <input type="number" id="manualFnbPrice" placeholder="Harga..." style="flex:1; padding:8px; background:#0f172a; border:1px solid #334155; color:white; border-radius:6px;">
+                <button class="btn" style="background:#d97706;" onclick="addManualFnbItem()">+ Tambah</button>
             </div>
-
-            <div style="background:#0f172a; padding:12px; border-radius:8px; border:1px solid #334155; margin-bottom:10px;">
-                <div style="font-size:0.85rem; font-weight:bold; color:var(--price-color); margin-bottom:8px;">☕ MANAJEMEN & LAPORAN</div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                    <button class="btn-action" style="background:#0d9488; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="openPosCafeModal()">🛒 Transaksi Cafe</button>
-                    <button class="btn-action" style="background:#d97706; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="openInventoryModal()">📦 Stok Cafe</button>
-                    <button class="btn-action" style="background:#8b5cf6; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="openHistoryModal()">📜 Riwayat Transaksi</button>
-                    <button class="btn-action" style="background:#16a34a; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="sendWaReport()">📱 Kirim WA Shift</button>
-                </div>
-                <div class="btn-owner-only" style="margin-top:8px; display:flex; gap:8px;">
-                    <button class="btn-action" style="background:#0284c7; color:white; border:none; flex:1; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="openStaffManagerModal()">👥 Kelola Karyawan</button>
-                    <button class="btn-action" style="background:#ef4444; color:white; border:none; flex:1; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="logout()">🔒 Logout (<span id="userRoleBadge">-</span>)</button>
-                </div>
+            <div id="fnbAddedList" style="max-height:150px; overflow-y:auto; background:#0f172a; padding:8px; border-radius:6px; margin-bottom:10px;">
+                <!-- List Fnb Sementara -->
             </div>
-
             <div class="modal-footer">
-                <button style="background:#64748b; color:white;" onclick="closeSettingModal()">Tutup Setting</button>
+                <button style="background:#ef4444; color:white;" onclick="closeFnbModal()">Batal</button>
+                <button style="background:#10b981; color:white;" onclick="saveFnbModal()">Simpan Pesanan</button>
             </div>
-        </div>
-    </div>
-
-    <!-- MODAL LOGIN -->
-    <div class="modal-overlay" id="loginModal">
-        <div class="modal-content" style="max-width:320px; text-align:center;">
-            <div class="modal-title">LOGIN SYSTEM</div>
-            <div class="form-group" style="margin-top:15px;">
-                <input type="text" id="loginUsername" placeholder="Username">
-                <input type="password" id="loginPassword" placeholder="Password">
-            </div>
-            <button class="btn-action" style="width:100%; padding:10px; margin-top:5px; background:#22c55e; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="processLogin()">Masuk</button>
         </div>
     </div>
 
@@ -502,226 +331,222 @@
             </div>
             <div class="modal-footer">
                 <button style="background:#ef4444; color:white;" onclick="closeMoveTableModal()">Batal</button>
-                <button style="background:#8b5cf6; color:white;" onclick="confirmMoveTable()">Konfirmasi Pindah</button>
+                <button style="background:#7c3aed; color:white;" onclick="confirmMoveTable()">Pindahkan</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL PEMBAYARAN (DENGAN DUKUNGAN BAYAR PAS RUNNING) -->
-    <div class="modal-overlay" id="payModal">
-        <div class="modal-content" style="max-width:400px;">
-            <div class="modal-title" id="payModalTitle">Rincian Pembayaran Meja X</div>
-            <div style="font-size:0.9rem; line-height:1.6; margin-bottom:10px; border-bottom:1px dashed #334155; padding-bottom:10px;">
-                <div>Pelanggan: <b id="payCustomerName" style="color:var(--cust-color); text-transform:uppercase;">-</b></div>
-                <div>Catatan: <b id="payCustomerNote" style="color:#cbd5e1;">-</b></div>
-                <div>Durasi Main: <b id="payDuration">0 Min</b> (<span id="payTablePrice">Rp 0</span>)</div>
-                <div id="promoNotice" style="font-size:0.8rem; color:#facc15; display:none; margin-top:2px;"></div>
-                <div id="payFnbSummaryList" style="margin-top:5px; color:#cbd5e1; font-size:0.85rem;"></div>
-            </div>
-
-            <button style="width:100%; background:#8b5cf6; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer; margin-bottom:12px; font-size:0.85rem;" onclick="openHistoryModal()">📜 Cek Riwayat Transaksi</button>
-
-            <div style="font-size:1.2rem; font-weight:bold; color:var(--price-color); text-align:center; margin-bottom:12px;">
-                Total Bayar: <span id="payGrandTotal">Rp 0</span>
-            </div>
-            <div class="form-group">
-                <label>Metode Pembayaran:</label>
-                <select id="payMethodSelect" onchange="toggleSplitBillInput()">
-                    <option value="Tunai">💵 Tunai (Cash)</option>
-                    <option value="QRIS">📱 QRIS</option>
-                    <option value="Split">🔀 Split Bill (Tunai + QRIS)</option>
-                </select>
-            </div>
-            <div id="splitBillInputs" style="display:none;" class="form-group">
-                <label>Nominal Tunai (Cash):</label>
-                <input type="number" id="splitCashInput" placeholder="0" oninput="calcSplitBillSisa()">
-                <label>Nominal QRIS (Otomatis Sisa):</label>
-                <input type="number" id="splitQrisInput" placeholder="0" readonly style="background:#1e293b; color:#38bdf8;">
-            </div>
-            <div class="modal-footer">
-                <button style="background:#ef4444; color:white;" onclick="closePayModal()">Batal</button>
-                <button style="background:#22c55e; color:white;" onclick="confirmPayAndFinish()">LUNAS & SIMPAN</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL PREVIEW STRUK -->
-    <div class="modal-overlay" id="previewTrxModal">
-        <div class="modal-content" style="max-width:380px; background:#0f172a; border:2px solid #38bdf8;">
-            <div class="modal-title" style="color:#38bdf8; border-bottom:1px dashed #334155; padding-bottom:8px;">
-                🧾 PREVIEW TRANSAKSI
-            </div>
-            <div id="previewTrxBody" style="font-size:0.85rem; line-height:1.6; color:#f8fafc; margin-top:10px;"></div>
-            <div class="modal-footer" style="margin-top:15px;">
-                <button style="background:#64748b; color:white;" onclick="closePreviewTrxModal()">Tutup Preview</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL TRANSAKSI CAFE -->
+    <!-- MODAL POS CAFE MANDIRI -->
     <div class="modal-overlay" id="posCafeModal">
-        <div class="modal-content" style="max-width:400px;">
-            <div class="modal-title">TRANSAKSI CAFE (NON-BILIAR)</div>
+        <div class="modal-content">
+            <div class="modal-title">Kasir POS Cafe Standalone</div>
             <div class="form-group">
-                <input type="text" id="posCustName" placeholder="Nama Pembeli" style="text-transform:uppercase;">
-                <select id="posItemSelect"><option value="">-- Pilih Barang dari Stok --</option></select>
-                <input type="number" id="posItemQty" placeholder="Jumlah (Pcs)" value="1" min="1">
-                <button class="btn-action" style="background:#3b82f6; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="addPosCafeItem()">+ Tambahkan Ke Keranjang</button>
+                <label>Nama Pembeli:</label>
+                <input type="text" id="posCustName" placeholder="Nama pembeli..." style="text-transform:uppercase;">
             </div>
-            <div style="font-weight:bold; font-size:0.85rem; margin-top:10px;">Keranjang Pesanan:</div>
-            <div class="fnb-added-list" id="posCartList"></div>
-            <div style="font-size:1.1rem; font-weight:bold; color:var(--price-color); text-align:right; margin-top:10px;">
-                Total: <span id="posCartTotal">Rp 0</span>
+            <div class="form-group">
+                <label>Pilih Barang Stok:</label>
+                <select id="posItemSelect"></select>
             </div>
-            <div class="form-group" style="margin-top:10px;">
-                <label>Metode Pembayaran:</label>
+            <div style="display:flex; gap:6px; margin-bottom:10px;">
+                <input type="number" id="posItemQty" value="1" placeholder="Qty" style="width:80px; padding:8px; background:#0f172a; border:1px solid #334155; color:white; border-radius:6px;">
+                <button class="btn" style="background:#0284c7; flex:1;" onclick="addPosCafeItem()">+ Masukkan Keranjang</button>
+            </div>
+            <div id="posCartList" style="max-height:150px; overflow-y:auto; background:#0f172a; padding:8px; border-radius:6px; margin-bottom:10px;"></div>
+            <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.1rem; color:var(--price-color); margin-bottom:10px;">
+                <span>Total Cafe:</span><span id="posCartTotal">Rp 0</span>
+            </div>
+            <div class="form-group">
+                <label>Metode Bayar:</label>
                 <select id="posPayMethod">
-                    <option value="Tunai">💵 Tunai (Cash)</option>
-                    <option value="QRIS">📱 QRIS</option>
+                    <option value="Tunai">Tunai</option>
+                    <option value="QRIS">QRIS</option>
                 </select>
             </div>
             <div class="modal-footer">
                 <button style="background:#ef4444; color:white;" onclick="closePosCafeModal()">Batal</button>
-                <button style="background:#22c55e; color:white;" onclick="processPosCafePayment()">BAYAR & SIMPAN</button>
+                <button style="background:#10b981; color:white;" onclick="processPosCafePayment()">BAYAR SEKARANG</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL STOK CAFE -->
+    <!-- MODAL STOK BARANG -->
     <div class="modal-overlay" id="inventoryModal">
-        <div class="modal-content" style="max-width:450px;">
-            <div class="modal-title">STOK BARANG CAFE</div>
-            <div class="form-group">
-                <input type="text" id="invItemName" placeholder="Nama Barang (misal: Es Teh / Kopi)">
-                <input type="number" id="invItemPrice" placeholder="Harga Jual (Rp)">
-                <input type="number" id="invItemStock" placeholder="Stok Awal (Jumlah)">
-                <button class="btn-action" style="background:#22c55e; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="saveInventoryItem()">+ Simpan Barang Baru</button>
-            </div>
-            <div style="font-weight:bold; font-size:0.85rem; margin-top:10px;">Daftar Stok Saat Ini:</div>
-            <div class="fnb-added-list" id="inventoryListContainer"></div>
-            <div class="modal-footer" style="margin-top:15px;">
-                <button style="background:#64748b; color:white;" onclick="closeInventoryModal()">Tutup</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL KELOLA KARYAWAN -->
-    <div class="modal-overlay" id="staffManagerModal">
-        <div class="modal-content" style="max-width:400px;">
-            <div class="modal-title">KELOLA AKUN KARYAWAN</div>
-            <div class="form-group">
-                <input type="text" id="newStaffUsername" placeholder="Username Karyawan Baru">
-                <input type="password" id="newStaffPassword" placeholder="Password Karyawan Baru">
-                <button class="btn-action" style="background:#22c55e; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="addStaffAccount()">+ Buat Akun Karyawan</button>
-            </div>
-            <div style="font-weight:bold; font-size:0.85rem; margin-top:15px;">Daftar Akun Karyawan:</div>
-            <div class="fnb-added-list" id="staffListContainer"></div>
-            <div class="modal-footer" style="margin-top:20px;">
-                <button style="background:#64748b; color:white;" onclick="closeStaffManagerModal()">Tutup</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL PESANAN MEJA CAFE -->
-    <div class="modal-overlay" id="fnbModal">
         <div class="modal-content">
-            <div class="modal-title" id="modalTableTitle">Tambah Pesanan Cafe</div>
-            <div class="form-group">
-                <label>Pilih Dari Stok Barang:</label>
-                <select id="tableFnbStockSelect" onchange="autoFillTableFnbPrice()"><option value="">-- Pilih Barang --</option></select>
-                <input type="text" id="manualFnbName" placeholder="Nama Makanan/Minuman">
-                <input type="number" id="manualFnbPrice" placeholder="Harga (Rp)">
-                <button class="btn-action" style="background:#3b82f6; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="addManualFnbItem()">+ Tambahkan Pesanan</button>
+            <div class="modal-title">Kelola Stok Barang / Menu Cafe</div>
+            <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
+                <input type="text" id="invItemName" placeholder="Nama Barang/Minuman..." style="flex:2; padding:8px; background:#0f172a; border:1px solid #334155; color:white; border-radius:6px;">
+                <input type="number" id="invItemPrice" placeholder="Harga..." style="flex:1; padding:8px; background:#0f172a; border:1px solid #334155; color:white; border-radius:6px;">
+                <input type="number" id="invItemStock" placeholder="Stok..." style="width:70px; padding:8px; background:#0f172a; border:1px solid #334155; color:white; border-radius:6px;">
+                <button class="btn" style="background:#10b981;" onclick="saveInventoryItem()">Simpan</button>
             </div>
-            <div style="font-weight:bold; font-size:0.85rem; margin-top:10px;">Daftar Pesanan Meja Ini:</div>
-            <div class="fnb-added-list" id="fnbAddedList"></div>
+            <div id="inventoryListContainer" style="max-height:220px; overflow-y:auto; background:#0f172a; padding:8px; border-radius:6px;"></div>
             <div class="modal-footer">
-                <button style="background:#ef4444; color:white;" onclick="closeFnbModal()">Batal</button>
-                <button style="background:#22c55e; color:white;" onclick="saveFnbModal()">Simpan Ke Meja</button>
+                <button style="background:#ef4444; color:white;" onclick="closeInventoryModal()">Tutup</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL RIWAYAT TRANSAKSI -->
+    <!-- MODAL LAPORAN HISTORI -->
     <div class="modal-overlay" id="historyModal">
-        <div class="modal-content" style="max-width:680px;">
-            <div class="modal-title">RIWAYAT TRANSAKSI OPERASIONAL</div>
-            <div style="margin-bottom:10px; display:flex; align-items:center; gap:10px;">
-                <label>Filter Tanggal:</label>
-                <input type="date" id="historyDateFilter" style="padding:5px; border-radius:4px; border:1px solid #475569; background:#0f172a; color:white;" onchange="renderHistoryTable()">
+        <div class="modal-content" style="max-width:650px;">
+            <div class="modal-title" style="display:flex; justify-content:space-between; align-items:center;">
+                <span>Laporan & Omset</span>
+                <button class="btn" style="background:#25d366;" onclick="sendWaReport()">📱 Kirim WA</button>
             </div>
-            <div style="overflow-x:auto;">
-                <table class="history-table">
+            <div style="display:flex; gap:10px; margin-bottom:10px; align-items:center;">
+                <label>Filter Operasional:</label>
+                <input type="date" id="historyDateFilter" onchange="renderHistoryTable()" style="padding:6px; background:#0f172a; border:1px solid #334155; color:white; border-radius:6px;">
+            </div>
+            <div style="max-height:200px; overflow-y:auto; margin-bottom:12px;">
+                <table style="width:100%; border-collapse:collapse; font-size:0.8rem; text-align:left;">
                     <thead>
-                        <tr>
-                            <th>Jam</th>
-                            <th>Layanan</th>
-                            <th>Pelanggan</th>
-                            <th>Metode</th>
-                            <th>Total</th>
-                            <th>Aksi</th>
+                        <tr style="background:#0f172a; color:#94a3b8;">
+                            <th style="padding:6px;">Jam</th>
+                            <th style="padding:6px;">Layanan</th>
+                            <th style="padding:6px;">Pelanggan</th>
+                            <th style="padding:6px;">Metode</th>
+                            <th style="padding:6px;">Total</th>
+                            <th style="padding:6px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="historyTableBody"></tbody>
                 </table>
             </div>
 
-            <div class="history-summary-box">
-                <div>
-                    Total Transaksi: <span id="historyTotalCount" style="font-weight:bold; color:white;">0</span> | 
-                    Total Uang: <span id="historyTotalAmount" class="history-summary-total">Rp 0</span>
-                </div>
-                <button style="background:#16a34a; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="sendWaReport()">📱 Kirim WA Shift</button>
+            <div class="modal-title" style="font-size:0.95rem; margin-top:10px;">Ringkasan Cafe Terjual</div>
+            <div style="max-height:120px; overflow-y:auto; margin-bottom:10px;">
+                <table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
+                    <thead>
+                        <tr style="background:#0f172a; color:#94a3b8; text-align:left;">
+                            <th style="padding:4px;">Nama Barang</th>
+                            <th style="padding:4px; text-align:center;">Qty</th>
+                            <th style="padding:4px; text-align:right;">Total Omset</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cafeSummaryTableBody"></tbody>
+                </table>
             </div>
 
-            <div style="margin-top: 15px; border-top: 2px dashed #334155; padding-top: 12px;">
-                <div style="font-size:0.9rem; font-weight:bold; color:#38bdf8; margin-bottom:8px;">☕ RINGKASAN MENU CAFE TERJUAL (TANGGAL INI)</div>
-                <div style="overflow-x:auto;">
-                    <table class="history-table">
-                        <thead>
-                            <tr style="background:#0f172a;">
-                                <th>Nama Barang Cafe</th>
-                                <th style="text-align:center;">Qty Terjual</th>
-                                <th style="text-align:right;">Total Omset Cafe</th>
-                            </tr>
-                        </thead>
-                        <tbody id="cafeSummaryTableBody"></tbody>
-                    </table>
-                </div>
+            <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1rem; color:var(--price-color); border-top:1px solid #334155; padding-top:8px;">
+                <span>Total Transaksi: <span id="historyTotalCount">0</span></span>
+                <span>Omset: <span id="historyTotalAmount">Rp 0</span></span>
             </div>
-
-            <div class="modal-footer" style="margin-top:15px;">
-                <button style="background:#64748b; color:white;" onclick="closeHistoryModal()">Tutup</button>
+            <div class="modal-footer">
+                <button style="background:#ef4444; color:white;" onclick="closeHistoryModal()">Tutup</button>
             </div>
         </div>
     </div>
 
-    <!-- AREA CETAK STRUK -->
-    <div id="receiptPrintArea">
-        <div class="receipt-header">
-            <div class="receipt-title" id="printBizName">R21 POOL & CAFE</div>
-            <div id="printBizAddress">Jl. Biliar No. 21</div>
-            <div id="printBizPhone">Telp: 0811-4989-333</div>
+    <!-- MODAL DETAIL TRANSAKSI PREVIEW -->
+    <div class="modal-overlay" id="previewTrxModal">
+        <div class="modal-content" style="max-width:350px;">
+            <div class="modal-title">Rincian Transaksi</div>
+            <div id="previewTrxBody" style="font-size:0.85rem; line-height:1.5; background:#0f172a; padding:10px; border-radius:6px; margin-bottom:10px;"></div>
+            <div class="modal-footer">
+                <button style="background:#ef4444; color:white;" onclick="closePreviewTrxModal()">Tutup</button>
+            </div>
         </div>
-        <div class="receipt-line"><span>Tanggal:</span><span id="recDate">-</span></div>
-        <div class="receipt-line"><span>No. Struk:</span><span id="recId">-</span></div>
-        <div class="receipt-line"><span>Pelanggan:</span><span id="recCustomer" style="text-transform:uppercase;">-</span></div>
-        <div class="receipt-line"><span>Catatan:</span><span id="recNote">-</span></div>
-        <div style="border-bottom: 1px dashed black; margin: 5px 0;"></div>
-        <div class="receipt-line"><span id="recTable">Sewa Meja</span><span id="recDuration">-</span></div>
-        <div class="receipt-line"><span>Biaya Meja:</span><span id="recTablePrice">Rp 0</span></div>
-        <div style="border-bottom: 1px dashed black; margin: 5px 0;"></div>
+    </div>
+
+    <!-- MODAL PENGATURAN USaha -->
+    <div class="modal-overlay" id="settingModal">
+        <div class="modal-content">
+            <div class="modal-title">Pengaturan Usaha & Hardware</div>
+            <div class="form-group">
+                <label>Nama Usaha:</label>
+                <input type="text" id="cfgBizName">
+            </div>
+            <div class="form-group">
+                <label>Alamat Usaha:</label>
+                <input type="text" id="cfgBizAddress">
+            </div>
+            <div class="form-group">
+                <label>Nomor Telepon (WA Laporan):</label>
+                <input type="text" id="cfgBizPhone">
+            </div>
+            <button class="btn" style="background:#0284c7; width:100%; justify-content:center; margin-bottom:12px;" onclick="saveBizProfile()">Simpan Profil Usaha</button>
+            
+            <div class="form-group">
+                <label>IP Relay Controller Module:</label>
+                <input type="text" id="cfgRelayIp">
+            </div>
+            <button class="btn" style="background:#0284c7; width:100%; justify-content:center; margin-bottom:12px;" onclick="saveRelayIp()">Simpan IP Relay</button>
+
+            <div class="form-group">
+                <label>Tarif Per Setengah Jam (30 Min):</label>
+                <input type="number" id="halfHourlyRate" onchange="updateRateSetting(this.value)">
+            </div>
+
+            <button class="btn" style="background:#8b5cf6; width:100%; justify-content:center; margin-top:10px;" onclick="testSound()">🔊 Tes Audio Suara</button>
+            <div class="modal-footer">
+                <button style="background:#ef4444; color:white;" onclick="closeSettingModal()">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LOGIN staff/OWNER -->
+    <div class="modal-overlay" id="loginModal" style="display:none;">
+        <div class="modal-content" style="max-width:320px;">
+            <div class="modal-title">Login Sistem Kasir</div>
+            <div class="form-group">
+                <label>Username:</label>
+                <input type="text" id="loginUsername" placeholder="Masukkan username...">
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="loginPassword" placeholder="Masukkan password...">
+            </div>
+            <div class="modal-footer">
+                <button style="background:#10b981; color:white; width:100%; justify-content:center;" onclick="processLogin()">LOGIN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL KELOLA KARYAWAN -->
+    <div class="modal-overlay" id="staffManagerModal">
+        <div class="modal-content" style="max-width:380px;">
+            <div class="modal-title">Kelola Akun Kasir</div>
+            <div style="display:flex; gap:6px; margin-bottom:10px;">
+                <input type="text" id="newStaffUsername" placeholder="Username..." style="flex:1; padding:8px; background:#0f172a; border:1px solid #334155; color:white; border-radius:6px;">
+                <input type="text" id="newStaffPassword" placeholder="Pass..." style="flex:1; padding:8px; background:#0f172a; border:1px solid #334155; color:white; border-radius:6px;">
+                <button class="btn" style="background:#10b981;" onclick="addStaffAccount()">+ Buat</button>
+            </div>
+            <div id="staffListContainer" style="max-height:180px; overflow-y:auto; background:#0f172a; padding:8px; border-radius:6px;"></div>
+            <div class="modal-footer">
+                <button style="background:#ef4444; color:white;" onclick="closeStaffManagerModal()">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEMPLATE NOTA CETAK THERMAL 58MM -->
+    <div id="receiptArea">
+        <div style="text-align:center; font-weight:bold; font-size:12px;" id="printBizName">R21 POOL & CAFE</div>
+        <div style="text-align:center;" id="printBizAddress">Jl. Biliar No. 21</div>
+        <div style="text-align:center;" id="printBizPhone">Telp: 0811-4989-333</div>
+        <div>--------------------------------</div>
+        <div>Tgl : <span id="recDate"></span></div>
+        <div>ID  : <span id="recId"></span></div>
+        <div>Plg : <span id="recCustomer"></span></div>
+        <div>Ket : <span id="recNote"></span></div>
+        <div>--------------------------------</div>
+        <div style="display:flex; justify-content:space-between;">
+            <span id="recTable">Sewa Meja</span>
+            <span id="recTablePrice">Rp 0</span>
+        </div>
+        <div style="font-size:9px; color:#555;">Durasi: <span id="recDuration">0 Min</span></div>
         <div id="recFnbList"></div>
-        <div style="border-bottom: 1px dashed black; margin: 5px 0;"></div>
-        <div class="receipt-line" style="font-weight: bold; font-size: 13px;"><span>TOTAL BAYAR:</span><span id="recTotal">Rp 0</span></div>
-        <div class="receipt-line"><span>Metode Bayar:</span><span id="recMethod">Tunai</span></div>
-        <div class="receipt-footer">
-            <p>Terima kasih atas kunjungan Anda!</p>
-            <p>-- <span id="printFooterBizName">R21 Pool & Cafe</span> --</p>
+        <div>--------------------------------</div>
+        <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:11px;">
+            <span>TOTAL:</span><span id="recTotal">Rp 0</span>
         </div>
+        <div>Metode: <span id="recMethod">Tunai</span></div>
+        <div>--------------------------------</div>
+        <div style="text-align:center; margin-top:5px;">Terima Kasih Atas Kunjungan Anda!</div>
+        <div style="text-align:center; font-size:8px; margin-top:2px;" id="printFooterBizName">R21 POOL & CAFE</div>
     </div>
     <script>
-        // --- 100% ONLINE FIREBASE CLOUD REAL-TIME DATABASE ---
+        // --- FIREBASE CLOUD REAL-TIME DATABASE ---
         var db = null;
         if (window.firebaseAvailable && typeof firebase !== 'undefined') {
             try {
@@ -761,6 +586,7 @@
         var activeFnbTableIndex = null;
         var activePayTableIndex = null;
         var activeReduceTableIndex = null;
+        var activeNoteTableIndex = null;
         var tempFnbList = [];
         var posCartList = [];
         var pendingStartTableIndex = null;
@@ -837,7 +663,6 @@
             }
         }
 
-        // SAKELAR RINGKAS 1 TOMBOL TOGGLE
         function toggleSakelarLampu(index) {
             var t = tablesData[index];
             t.isLightOn = !t.isLightOn;
@@ -922,10 +747,6 @@
             document.getElementById('durationCustNote').value = t.customerNote || "";
             document.getElementById('customMinutesInput').value = "60";
             document.getElementById('isSpecialBonusCheck').checked = false;
-            
-            var previewLabel = document.getElementById('ratePreviewLabel');
-            if (previewLabel) previewLabel.innerText = formatRupiah(halfHourlyRate).replace('Rp', '').trim();
-
             updateDurationPreview();
             document.getElementById('durationModal').style.display = 'flex';
         }
@@ -949,7 +770,33 @@
             pendingStartTableIndex = null;
         }
 
-        // FITUR KURANGI / EDIT DURASI JAM MAIN
+        // CATATAN CEPAT
+        function openQuickNoteModal(index) {
+            activeNoteTableIndex = index;
+            var t = tablesData[index];
+            document.getElementById('quickNoteTitle').innerText = "Catatan Meja " + (index + 1);
+            document.getElementById('quickNoteInput').value = t.customerNote || "";
+            document.getElementById('quickNoteModal').style.display = 'flex';
+        }
+
+        function closeQuickNoteModal() {
+            document.getElementById('quickNoteModal').style.display = 'none';
+            activeNoteTableIndex = null;
+        }
+
+        function confirmSaveQuickNote() {
+            if (activeNoteTableIndex === null) return;
+            var noteVal = document.getElementById('quickNoteInput').value.trim();
+            tablesData[activeNoteTableIndex].customerNote = noteVal;
+
+            if (db) {
+                db.ref('tables').set(tablesData);
+            }
+            closeQuickNoteModal();
+            renderTables();
+        }
+
+        // KURANGI / EDIT DURASI
         function openReduceModal(index) {
             var t = tablesData[index];
             if (!t.isRunning || t.isOpenTable) {
@@ -973,7 +820,7 @@
             if (activeReduceTableIndex === null) return;
             var index = activeReduceTableIndex;
             var t = tablesData[index];
-            var newMnt = parseInt(document.getElementById('reduceMinutesInput5') || document.getElementById('reduceMinutesInput').value) || 0;
+            var newMnt = parseInt(document.getElementById('reduceMinutesInput').value) || 0;
             
             if (newMnt <= 0) { alert("Durasi minimal 1 menit!"); return; }
 
@@ -1127,6 +974,7 @@
                             '<button class="btn-fnb" onclick="openFnbModal(' + i + ')">☕ Cafe</button>' +
                             '<button class="btn-reduce" onclick="openReduceModal(' + i + ')">⏱️ Edit Jam</button>' +
                             '<button class="btn-move" onclick="openMoveTableModal(' + i + ')">🔀 Pindah</button>' +
+                            '<button class="btn-note" onclick="openQuickNoteModal(' + i + ')">📝 Catatan</button>' +
                         '</div>' +
                         '<div class="btn-row">' +
                             '<button class="btn-pay" id="btn-pay-action-' + i + '" onclick="openPayModal(' + i + ')">💳 Bayar</button>' +
@@ -1191,10 +1039,18 @@
                     if (table.isRunning) {
                         if (table.isPaid) {
                             payBadgeContainer.innerHTML = '<span class="pay-status-badge paid">✅ LUNAS</span>';
-                            if (btnPayAction) { btnPayAction.innerText = "✓ Lunas"; btnPayAction.style.background = "#475569"; }
+                            if (btnPayAction) { 
+                                btnPayAction.innerText = "🛑 Tutup Meja"; 
+                                btnPayAction.style.background = "#ef4444"; 
+                                btnPayAction.onclick = (function(idx){ return function(){ forceClosePaidTable(idx); }; })(i);
+                            }
                         } else {
                             payBadgeContainer.innerHTML = '<span class="pay-status-badge unpaid">🔴 BELUM BAYAR</span>';
-                            if (btnPayAction) { btnPayAction.innerText = "💳 Bayar"; btnPayAction.style.background = "#10b981"; }
+                            if (btnPayAction) { 
+                                btnPayAction.innerText = "💳 Bayar"; 
+                                btnPayAction.style.background = "#10b981"; 
+                                btnPayAction.onclick = (function(idx){ return function(){ openPayModal(idx); }; })(i);
+                            }
                         }
                     } else {
                         payBadgeContainer.innerHTML = '';
@@ -1281,7 +1137,6 @@
                         cardEl.classList.add('expired');
                         priceEl.innerText = formatRupiah(grandTotal);
 
-                        // AUTO-RESET JIKA WAKTU HABIS DAN SUDAH LUNAS SEBELUMNYA
                         if (table.isPaid) {
                             finalizeAndResetTable(i);
                             continue;
@@ -1327,7 +1182,19 @@
             }
         }
 
-        // AUTO-FINALIZE SETELAH WAKTU HABIS (JIKA SUDAH BAYAR DULUAN)
+        // TUTUP MEJA LUNAS JIKA PULANG DULUAN
+        function forceClosePaidTable(index) {
+            if (confirm("Pelanggan sudah pulang? Meja " + (index + 1) + " akan ditutup, lampu dimatikan, dan meja dikosongkan.")) {
+                sakelarLampu(index + 1, false);
+                clearTableDataLocal(index);
+                if (db) {
+                    try { db.ref('tables').set(tablesData); } catch(e) {}
+                }
+                renderTables();
+                alert("✅ Meja " + (index + 1) + " berhasil ditutup.");
+            }
+        }
+
         function finalizeAndResetTable(index) {
             sakelarLampu(index + 1, false);
             clearTableDataLocal(index);
@@ -1585,15 +1452,12 @@
                 if (db) { try { db.ref('history').push(historyItem); } catch(e) {} }
             }
 
-            // CEK APAKAH BAYAR PAS RUNNING ATAU SAAT EXPIRED
             var isExpiredNow = table.endTime > 0 && table.endTime <= nowTs;
             
             if (isExpiredNow || table.isOpenTable) {
-                // Jika sudah expired atau open table, langsung tutup & reset meja
                 sakelarLampu(index + 1, false);
                 clearTableDataLocal(index);
             } else {
-                // Jika dibayar saat meja masih running (belum habis), lampu & timer TETAP JALAN, status diubah jadi LUNAS
                 table.isPaid = true;
                 table.paidMethod = method;
             }
@@ -2093,8 +1957,6 @@
                 db.ref('halfHourlyRate').on('value', function(snap) {
                     if (snap.val()) {
                         halfHourlyRate = snap.val();
-                        var previewLabel = document.getElementById('ratePreviewLabel');
-                        if (previewLabel) previewLabel.innerText = formatRupiah(halfHourlyRate).replace('Rp', '').trim();
                     }
                 });
 
