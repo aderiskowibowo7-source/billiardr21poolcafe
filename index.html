@@ -27,14 +27,14 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
         body { background: var(--bg-dark); color: var(--text-main); padding: 10px; font-size: 14px; }
 
-        /* HEADER */
+        /* HEADER SEMULA (1 BARIS RAPI) */
         .app-header {
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--card-bg); padding: 12px 16px; border-radius: 8px;
-            margin-bottom: 12px; border: 1px solid var(--border-color); flex-wrap: wrap; gap: 8px;
+            background: var(--card-bg); padding: 10px 16px; border-radius: 8px;
+            margin-bottom: 12px; border: 1px solid var(--border-color); flex-wrap: nowrap; white-space: nowrap; overflow-x: auto;
         }
         .brand-title { font-size: 1.3rem; font-weight: bold; color: #38bdf8; }
-        .header-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .header-controls { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
         .clock-display { font-size: 0.9rem; font-weight: bold; color: #a855f7; background: #2e1065; padding: 6px 12px; border-radius: 6px; }
 
         .btn {
@@ -129,13 +129,18 @@
         .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
         .modal-footer button { padding: 8px 14px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
 
-        /* PRINT RECEIPT STYLES */
+        /* KUNCI AREA STRUK AGAR TIDAK BOCOR KE LAYAR MONITOR */
+        #receiptArea { display: none; }
+
         @media print {
             body * { visibility: hidden; }
-            #receiptArea, #receiptArea * { visibility: visible; }
+            #receiptArea, #receiptArea * { visibility: visible; display: block !important; }
             #receiptArea { position: absolute; left: 0; top: 0; width: 58mm; font-family: monospace; font-size: 10px; color: black; background: white; padding: 5px; }
             .no-print { display: none !important; }
         }
+
+        /* MODAL MODE DISPLAY TV PELANGGAN */
+        body.tv-mode .controls, body.tv-mode .header-controls { display: none !important; }
     </style>
 </head>
 <body>
@@ -449,7 +454,7 @@
         </div>
     </div>
 
-    <!-- MODAL PENGATURAN USaha -->
+    <!-- MODAL PENGATURAN USAHA -->
     <div class="modal-overlay" id="settingModal">
         <div class="modal-content">
             <div class="modal-title">Pengaturan Usaha & Hardware</div>
@@ -485,7 +490,7 @@
         </div>
     </div>
 
-    <!-- MODAL LOGIN staff/OWNER -->
+    <!-- MODAL LOGIN STAFF/OWNER -->
     <div class="modal-overlay" id="loginModal" style="display:none;">
         <div class="modal-content" style="max-width:320px;">
             <div class="modal-title">Login Sistem Kasir</div>
@@ -759,7 +764,7 @@
         function openOpenTableModal(index) {
             pendingStartTableIndex = index;
             var t = tablesData[index];
-            document.getElementById('openTableModalTitle').innerText = "Open Table Meja " + (index + 1);
+            document.getElementById('openTableModalTitle').innerText = "Start Open Table";
             document.getElementById('openTableCustName').value = t.customerName || "";
             document.getElementById('openTableCustNote').value = t.customerNote || "";
             document.getElementById('openTableModal').style.display = 'flex';
@@ -770,7 +775,7 @@
             pendingStartTableIndex = null;
         }
 
-        // CATATAN CEPAT
+        // CATATAN CEPAT MID-RUN
         function openQuickNoteModal(index) {
             activeNoteTableIndex = index;
             var t = tablesData[index];
