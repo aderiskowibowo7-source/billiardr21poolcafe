@@ -1330,11 +1330,17 @@
     expiredControls.style.display = 'none';
 }
 
-var payBtnInCard = normalControls.querySelector('.btn-pay') || normalControls.querySelector('button');
-if (payBtnInCard && table.isPaid) {
-    payBtnInCard.innerText = "Tutup / Reset Meja";
-    payBtnInCard.className = "btn-reset";
-    payBtnInCard.setAttribute("onclick", "resetTimerOnly(" + i + ")");
+var payBtnInCard = normalControls.querySelector('.btn-pay');
+if (payBtnInCard) {
+    if (table.isPaid) {
+        payBtnInCard.innerText = "Tutup / Reset Meja";
+        payBtnInCard.className = "btn-reset";
+        payBtnInCard.setAttribute("onclick", "resetTimerOnly(" + i + ")");
+    } else {
+        payBtnInCard.innerText = "Bayar / Pelunasan";
+        payBtnInCard.className = "btn-pay";
+        payBtnInCard.setAttribute("onclick", "openPayModal(" + i + ")");
+    }
 }
 
 
