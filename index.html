@@ -1326,8 +1326,17 @@
                         priceEl.innerText = formatRupiah(grandTotal);
 
                         if (normalControls && expiredControls) {
-                            normalControls.style.display = 'flex'; expiredControls.style.display = 'none';
-                        }
+    normalControls.style.display = 'flex'; 
+    expiredControls.style.display = 'none';
+}
+
+var payBtnInCard = normalControls.querySelector('.btn-pay') || normalControls.querySelector('button');
+if (payBtnInCard && table.isPaid) {
+    payBtnInCard.innerText = "Tutup / Reset Meja";
+    payBtnInCard.className = "btn-reset";
+    payBtnInCard.setAttribute("onclick", "resetTimerOnly(" + i + ")");
+}
+
 
                         if (totalSeconds <= 300 && !table.warned) {
                             table.warned = true;
