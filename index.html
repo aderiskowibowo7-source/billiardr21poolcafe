@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kasir & Timer Biliar R21</title>
+    <title>Kasir & Timer Biliar R21 - FULL ONLINE</title>
     
     <script>
         window.firebaseAvailable = false;
     </script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js" onload="window.firebaseAvailable=true" onerror="console.log('Firebase Offline Mode')"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js" onerror="console.log('Firebase Database Offline')"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js" onload="window.firebaseAvailable=true" onerror="alert('Koneksi Internet Putus! Firebase tidak dapat diakses.')"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js" onerror="console.log('Database Offline')"></script>
 
     <style>
         :root {
@@ -301,12 +301,8 @@
     <div class="realtime-clock-bar" id="realtimeClockDisplay">🕒 --:--:--</div>
     
     <div class="header-status-bar">
-        <div id="statusBadge" class="status-badge">Mode Offline (Lokal)</div>
+        <div id="statusBadge" class="status-badge online">🌐 Mode Online (Cloud)</div>
         <div id="relayStatusBadge" class="relay-status-badge">Relay IP: 192.168.1.20</div>
-        <!-- TOMBOL SWITCH ONLINE / OFFLINE -->
-        <button id="btnToggleSync" onclick="toggleSyncMode()" style="background: #dc3545; color: white; border: none; padding: 4px 10px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 0.75rem;">
-            ⚡ Mode: OFFLINE (Lokal)
-        </button>
     </div>
     
     <div class="mode-selector">
@@ -621,7 +617,7 @@
                 <button style="background:#16a34a; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="sendWaReport()">📱 Kirim WA Shift</button>
             </div>
 
-            <!-- FITUR BARU: RINGKASAN MENU CAFE TERJUAL -->
+            <!-- FITUR: RINGKASAN MENU CAFE TERJUAL -->
             <div style="margin-top: 15px; border-top: 2px dashed #334155; padding-top: 12px;">
                 <div style="font-size:0.9rem; font-weight:bold; color:#38bdf8; margin-bottom:8px;">☕ RINGKASAN MENU CAFE TERJUAL (TANGGAL INI)</div>
                 <div style="overflow-x:auto;">
@@ -668,6 +664,7 @@
         </div>
     </div>
     <script>
+        // --- 100% ONLINE FIREBASE CLOUD REAL-TIME DATABASE ---
         var db = null;
         if (window.firebaseAvailable && typeof firebase !== 'undefined') {
             try {
@@ -676,23 +673,23 @@
                 };
                 firebase.initializeApp(firebaseConfig);
                 db = firebase.database();
-            } catch(e) { console.log("Firebase Init Skip Offline"); }
+            } catch(e) { console.log("Firebase Connection Failed", e); }
         }
 
         var TOTAL_TABLES = 6;
-        var halfHourlyRate = parseInt(localStorage.getItem('R21_HALF_RATE')) || 20000;
+        var halfHourlyRate = 20000;
 
-        var bizProfile = JSON.parse(localStorage.getItem('R21_BIZ_PROFILE')) || {
+        var bizProfile = {
             name: "R21 POOL & CAFE",
             address: "Jl. Biliar No. 21",
             phone: "0811-4989-333"
         };
 
-        var currentIpRelay = localStorage.getItem('IP_RELAY_BILIAR') || '192.168.1.20';
+        var currentIpRelay = '192.168.1.20';
         var currentUserRole = localStorage.getItem('r21_user_role') || null;
         var currentUsername = localStorage.getItem('r21_username') || '';
-        var staffAccounts = JSON.parse(localStorage.getItem('R21_STAFFS')) || {};
-        var inventoryData = JSON.parse(localStorage.getItem('R21_INVENTORY')) || {};
+        var staffAccounts = {};
+        var inventoryData = {};
 
         var tablesData = Array(TOTAL_TABLES).fill(null).map(function() {
             return { endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, isOpenTable: false, isSpecialBonus: false, warned: false, expiredWarned: false, customerName: "", fnbList: [] };
@@ -708,54 +705,7 @@
 
         var currentMode = localStorage.getItem('biliard_mode') || 'controller';
 
-        // --- STATUS OFFLINE / ONLINE HYBRID ---
-        var isOfflineMode = localStorage.getItem('R21_OFFLINE_MODE') === 'true';
-
-        function updateSyncUI() {
-            var btn = document.getElementById('btnToggleSync');
-            var badge = document.getElementById('statusBadge');
-            
-            if (isOfflineMode) {
-                if (btn) {
-                    btn.innerText = "⚡ Mode: OFFLINE (Lokal)";
-                    btn.style.background = "#dc3545";
-                }
-                if (badge) {
-                    badge.innerText = "Mode Offline (Lokal)";
-                    badge.classList.remove('online');
-                }
-                if (db && typeof db.goOffline === 'function') {
-                    try { db.goOffline(); } catch(e) {}
-                }
-            } else {
-                if (btn) {
-                    btn.innerText = "🌐 Mode: ONLINE (Cloud)";
-                    btn.style.background = "#28a745";
-                }
-                if (badge) {
-                    badge.innerText = "Mode Online (Cloud)";
-                    badge.classList.add('online');
-                }
-                if (db && typeof db.goOnline === 'function') {
-                    try { db.goOnline(); } catch(e) {}
-                }
-            }
-        }
-
-        function toggleSyncMode() {
-            isOfflineMode = !isOfflineMode;
-            localStorage.setItem('R21_OFFLINE_MODE', isOfflineMode);
-            updateSyncUI();
-            
-            if (isOfflineMode) {
-                alert("📲 Beralih ke MODE OFFLINE LOKAL.\nSemua transaksi disimpan instan di memori lokal HP/TV.");
-            } else {
-                alert("🌐 Beralih ke MODE ONLINE CLOUD.\nMemulai sinkronisasi ke Firebase...");
-                location.reload();
-            }
-        }
-
-        // JAM REAL-TIME HEADER
+        // JAM REAL-TIME HEADER (SINKRON ONLINE/TV)
         function updateRealtimeClock() {
             var now = new Date();
             var hours = String(now.getHours()).padStart(2, '0');
@@ -771,7 +721,7 @@
         }
         setInterval(updateRealtimeClock, 1000);
 
-        // LOGIKA BILLING PER 30 MENIT & PROMO 5 JAM BAYAR 4 JAM
+        // LOGIKA BILLING DENGAN DUKUNGAN PER 30 MENIT & PROMO 5 JAM BAYAR 4 JAM
         function calculateBillingLogic(totalMinutes, isSpecialBonus, isOpenTable, elapsedTimeSec) {
             if (isSpecialBonus) {
                 return { paidHours: 0, bonusHours: 0, tablePrice: 0 };
@@ -803,6 +753,7 @@
             };
         }
 
+        // SAKELAR RELAY SINKRON KE CLOUD & IP RELAY LOKAL
         function sakelarLampu(nomorMeja, status) {
             var mejaInt = parseInt(nomorMeja);
             var channelRelay = mejaInt;
@@ -812,7 +763,7 @@
             var imgPing = new Image();
             imgPing.src = targetUrl + "?t=" + new Date().getTime();
 
-            if (db && !isOfflineMode) {
+            if (db) {
                 var secret = "TGOVnUocfqgdoULy9ZxgGx0Y4gammmu9ttr45HI4";
                 var isPowered = status ? true : false;
                 var urlCloud = "https://billing0015-32812-default-rtdb.firebaseio.com/vTfGwLoX/relays/billing" + channelRelay + ".json?auth=" + secret;
@@ -821,7 +772,7 @@
                     method: 'PUT',
                     body: JSON.stringify(isPowered),
                     headers: { 'Content-Type': 'application/json' }
-                }).catch(function(e) { console.log("Cloud sync error", e); });
+                }).catch(function(e) { console.log("Cloud relay error", e); });
             }
         }
 
@@ -832,7 +783,7 @@
                 pesan.lang = 'id-ID'; pesan.rate = 0.9;
                 window.speechSynthesis.speak(pesan);
             }
-            if (db && !isOfflineMode) db.ref('audioTrigger').set(Date.now());
+            if (db) db.ref('audioTrigger').set(Date.now());
         }
 
         function speakWarning(text) {
@@ -864,28 +815,22 @@
             var p = document.getElementById('cfgBizPhone').value.trim();
             if (!n) { alert("Nama usaha wajib diisi!"); return; }
             
-            bizProfile = { name: n, address: a, phone: p };
-            localStorage.setItem('R21_BIZ_PROFILE', JSON.stringify(bizProfile));
-            applyBizProfileUI();
+            var updatedProfile = { name: n, address: a, phone: p };
+            if (db) db.ref('bizProfile').set(updatedProfile);
             alert("✅ Profil usaha berhasil diperbarui!");
         }
 
         function saveRelayIp() {
             var ip = document.getElementById('cfgRelayIp').value.trim();
             if (ip) {
-                currentIpRelay = ip;
-                localStorage.setItem('IP_RELAY_BILIAR', ip);
-                updateRelayBadge();
+                if (db) db.ref('currentIpRelay').set(ip);
                 alert("✅ IP Relay berhasil diperbarui: " + ip);
             }
         }
 
         function updateRateSetting(val) {
-            halfHourlyRate = parseInt(val) || 20000;
-            localStorage.setItem('R21_HALF_RATE', halfHourlyRate);
-            var previewLabel = document.getElementById('ratePreviewLabel');
-            if (previewLabel) previewLabel.innerText = formatRupiah(halfHourlyRate).replace('Rp', '').trim();
-            if (db && !isOfflineMode) db.ref('halfRate').set(halfHourlyRate);
+            var parsed = parseInt(val) || 20000;
+            if (db) db.ref('halfHourlyRate').set(parsed);
         }
 
         function updateRelayBadge() {
@@ -986,48 +931,6 @@
             }
         }
 
-        // --- FUNGSI LOKALSTORAGE PERMANEN ---
-        function saveTablesToLocal() {
-            localStorage.setItem('R21_TABLES_DATA', JSON.stringify(tablesData));
-        }
-
-        function loadTablesFromLocal() {
-            var saved = localStorage.getItem('R21_TABLES_DATA');
-            if (saved) {
-                try { tablesData = JSON.parse(saved); } catch(e) {}
-            }
-        }
-
-        function saveHistoryToLocal(historyItem) {
-            var localHistory = JSON.parse(localStorage.getItem('R21_HISTORY_DATA')) || {};
-            var newKey = 'loc_' + Date.now();
-            localHistory[newKey] = historyItem;
-            localStorage.setItem('R21_HISTORY_DATA', JSON.stringify(localHistory));
-            dailyHistoryRaw = localHistory;
-            renderHistoryTable();
-        }
-
-        function loadHistoryFromLocal() {
-            var savedHistory = localStorage.getItem('R21_HISTORY_DATA');
-            if (savedHistory) {
-                try {
-                    var parsed = JSON.parse(savedHistory);
-                    dailyHistoryRaw = Object.assign({}, parsed, dailyHistoryRaw);
-                } catch(e) {}
-            }
-        }
-
-        function saveInventoryToLocal() {
-            localStorage.setItem('R21_INVENTORY', JSON.stringify(inventoryData));
-        }
-
-        function loadInventoryFromLocal() {
-            var saved = localStorage.getItem('R21_INVENTORY');
-            if (saved) {
-                try { inventoryData = JSON.parse(saved); } catch(e) {}
-            }
-        }
-
         function executeAddTime(index, minutes, customerName, isOpenTable, isSpecialBonus) {
             sakelarLampu(index + 1, true);
         
@@ -1057,8 +960,7 @@
             tablesData[index].expiredWarned = false;
             tablesData[index].customerName = customerName;
             
-            saveTablesToLocal();
-            if (db && !isOfflineMode) { try { db.ref('tables').set(tablesData); } catch(e) {} }
+            if (db) { try { db.ref('tables').set(tablesData); } catch(e) {} }
             renderTables();
         }
 
@@ -1103,7 +1005,7 @@
                         '<div class="btn-row">' +
                             '<button class="btn-pay" onclick="openPayModal(' + i + ')">💳 Bayar</button>' +
                             '<button class="btn-stop" id="btn-reset-' + i + '" onclick="resetTimerOnly(' + i + ')">Reset</button>' +
-                        '</div>' +
+                        } +
                         '<div class="btn-row" style="margin-top:2px;">' +
                             '<button style="background:#16a34a; color:white; padding:4px;" onclick="sakelarLampu(' + (i + 1) + ', true)">💡 ON</button>' +
                             '<button style="background:#dc2626; color:white; padding:4px;" onclick="sakelarLampu(' + (i + 1) + ', false)">💡 OFF</button>' +
@@ -1364,8 +1266,7 @@
             tablesData[targetIndex] = JSON.parse(JSON.stringify(tablesData[activeMoveSourceIndex]));
             clearTableDataLocal(activeMoveSourceIndex);
 
-            saveTablesToLocal();
-            if (db && !isOfflineMode) db.ref('tables').set(tablesData);
+            if (db) db.ref('tables').set(tablesData);
             closeMoveTableModal();
             renderTables();
             alert("Berhasil pindah ke Meja " + (targetIndex + 1) + "!");
@@ -1383,8 +1284,7 @@
             sakelarLampu(index + 1, false);
             if (confirm("Reset Meja " + (index + 1) + " tanpa simpan omset?")) {
                 clearTableDataLocal(index); 
-                saveTablesToLocal();
-                if (db && !isOfflineMode) db.ref('tables').set(tablesData);
+                if (db) db.ref('tables').set(tablesData);
                 renderTables();
             }
         }
@@ -1504,13 +1404,11 @@
             };
 
             if (!table.isSpecialBonus) {
-                saveHistoryToLocal(historyItem);
-                if (db && !isOfflineMode) { try { db.ref('history').push(historyItem); } catch(e) {} }
+                if (db) { try { db.ref('history').push(historyItem); } catch(e) {} }
             }
 
             clearTableDataLocal(index);
-            saveTablesToLocal();
-            if (db && !isOfflineMode) { try { db.ref('tables').set(tablesData); } catch(e) {} }
+            if (db) { try { db.ref('tables').set(tablesData); } catch(e) {} }
 
             closePayModal();
             renderTables();
@@ -1562,16 +1460,12 @@
             var stock = parseInt(document.getElementById('invItemStock').value) || 0;
             if (!name || price <= 0) { alert("Isi nama dan harga!"); return; }
 
-            inventoryData[name] = { price: price, stock: stock };
-            saveInventoryToLocal();
-            if (db && !isOfflineMode) db.ref('inventory/' + name).set({ price: price, stock: stock });
+            if (db) db.ref('inventory/' + name).set({ price: price, stock: stock });
             
             alert("Barang '" + name + "' tersimpan!");
             document.getElementById('invItemName').value = '';
             document.getElementById('invItemPrice').value = '';
             document.getElementById('invItemStock').value = '';
-            renderInventoryList();
-            populateStockDropdowns();
         }
 
         function renderInventoryList() {
@@ -1592,11 +1486,7 @@
 
         function deleteInventoryItem(key) {
             if (confirm("Hapus '" + key + "'?")) { 
-                delete inventoryData[key];
-                saveInventoryToLocal();
-                if (db && !isOfflineMode) db.ref('inventory/' + key).remove();
-                renderInventoryList();
-                populateStockDropdowns();
+                if (db) db.ref('inventory/' + key).remove();
             }
         }
 
@@ -1676,13 +1566,11 @@
                 if (inventoryData[i.name]) {
                     var newStock = (inventoryData[i.name].stock || 0) - i.qty;
                     inventoryData[i.name].stock = newStock < 0 ? 0 : newStock;
-                    if (db && !isOfflineMode) db.ref('inventory/' + i.name + '/stock').set(inventoryData[i.name].stock);
+                    if (db) db.ref('inventory/' + i.name + '/stock').set(inventoryData[i.name].stock);
                 }
             });
-            saveInventoryToLocal();
 
-            saveHistoryToLocal(historyItem);
-            if (db && !isOfflineMode) { try { db.ref('history').push(historyItem); } catch(e) {} }
+            if (db) { try { db.ref('history').push(historyItem); } catch(e) {} }
 
             closePosCafeModal();
             alert("✅ Transaksi Cafe Berhasil Disimpan!");
@@ -1707,8 +1595,7 @@
                 var currentStock = inventoryData[name].stock || 0;
                 if (currentStock > 0) { 
                     inventoryData[name].stock = currentStock - 1;
-                    saveInventoryToLocal();
-                    if (db && !isOfflineMode) db.ref('inventory/' + name + '/stock').set(inventoryData[name].stock);
+                    if (db) db.ref('inventory/' + name + '/stock').set(inventoryData[name].stock);
                 }
             }
 
@@ -1735,8 +1622,7 @@
         function saveFnbModal() {
             if (activeFnbTableIndex !== null) { 
                 tablesData[activeFnbTableIndex].fnbList = tempFnbList; 
-                saveTablesToLocal();
-                if (db && !isOfflineMode) db.ref('tables').set(tablesData); 
+                if (db) db.ref('tables').set(tablesData); 
                 renderTables();
             }
             closeFnbModal();
@@ -1752,20 +1638,14 @@
             if (!u || !p) { alert("Isi Username dan Password!"); return; }
             if (u.toLowerCase() === 'owner') { alert("Username 'owner' dilarang!"); return; }
 
-            staffAccounts[u] = { password: p, role: 'kasir' };
-            localStorage.setItem('R21_STAFFS', JSON.stringify(staffAccounts));
-            if (db && !isOfflineMode) db.ref('staffs/' + u).set({ password: p, role: 'kasir' });
+            if (db) db.ref('staffs/' + u).set({ password: p, role: 'kasir' });
 
             alert("Akun '" + u + "' dibuat!"); uInput.value = ''; pInput.value = '';
-            renderStaffList();
         }
 
         function deleteStaffAccount(u) {
             if (confirm("Hapus akun '" + u + "'?")) { 
-                delete staffAccounts[u];
-                localStorage.setItem('R21_STAFFS', JSON.stringify(staffAccounts));
-                if (db && !isOfflineMode) db.ref('staffs/' + u).remove();
-                renderStaffList();
+                if (db) db.ref('staffs/' + u).remove();
             }
         }
 
@@ -1801,7 +1681,7 @@
             document.getElementById('historyModal').style.display = 'flex';
         }
 
-        // --- HITUNG REKAP MENU CAFE TERJUAL ---
+        // --- REKAP PESANAN CAFE TERJUAL ---
         function renderCafeSummary() {
             var tbody = document.getElementById('cafeSummaryTableBody');
             if (!tbody) return;
@@ -1904,10 +1784,7 @@
 
         function deleteHistoryItem(key) {
             if (confirm("Hapus transaksi ini?")) { 
-                delete dailyHistoryRaw[key];
-                localStorage.setItem('R21_HISTORY_DATA', JSON.stringify(dailyHistoryRaw));
-                if (db && !isOfflineMode) db.ref('history/' + key).remove();
-                renderHistoryTable();
+                if (db) db.ref('history/' + key).remove();
             }
         }
 
@@ -2009,17 +1886,6 @@
         }
 
         function init() {
-            applyBizProfileUI();
-            updateRelayBadge();
-            updateRealtimeClock();
-            
-            loadTablesFromLocal();
-            loadHistoryFromLocal();
-            loadInventoryFromLocal();
-            populateStockDropdowns();
-            
-            updateSyncUI();
-            
             setMode(currentMode);
 
             if (currentUserRole && currentMode !== 'tv') {
@@ -2028,13 +1894,68 @@
             } else if (currentMode !== 'tv') {
                 document.getElementById('loginModal').style.display = 'flex';
             }
+
             renderTables();
             setInterval(updateTimers, 1000);
+
+            // SINKRON CLOUD SANGAT REAL-TIME 
+            if (db) {
+                db.ref('bizProfile').on('value', function(snap) {
+                    if (snap.val()) { bizProfile = snap.val(); applyBizProfileUI(); }
+                });
+
+                db.ref('currentIpRelay').on('value', function(snap) {
+                    if (snap.val()) { currentIpRelay = snap.val(); updateRelayBadge(); }
+                });
+
+                db.ref('halfHourlyRate').on('value', function(snap) {
+                    if (snap.val()) {
+                        halfHourlyRate = snap.val();
+                        var previewLabel = document.getElementById('ratePreviewLabel');
+                        if (previewLabel) previewLabel.innerText = formatRupiah(halfHourlyRate).replace('Rp', '').trim();
+                    }
+                });
+
+                db.ref('staffs').on('value', function(snap) {
+                    staffAccounts = snap.val() || {};
+                    renderStaffList();
+                });
+
+                db.ref('inventory').on('value', function(snap) {
+                    inventoryData = snap.val() || {};
+                    renderInventoryList();
+                    populateStockDropdowns();
+                });
+
+                db.ref('tables').on('value', function(snap) {
+                    var data = snap.val();
+                    if (data) { tablesData = data; updateTimers(); }
+                });
+
+                db.ref('history').on('value', function(snap) {
+                    dailyHistoryRaw = snap.val() || {};
+                    renderHistoryTable();
+                });
+
+                db.ref('audioTrigger').on('value', function(snap) {
+                    // Cek Audio via TV jika dipicu dari HP
+                    if (currentMode === 'tv' || currentMode === 'landscape') {
+                        var val = snap.val();
+                        if (val && val > Date.now() - 5000) {
+                            if ('speechSynthesis' in window) {
+                                window.speechSynthesis.cancel();
+                                var msg = new SpeechSynthesisUtterance("Suara sistem terhubung.");
+                                msg.lang = 'id-ID'; window.speechSynthesis.speak(msg);
+                            }
+                        }
+                    }
+                });
+            }
         }
 
         init();
 
-        // === SKRIP FULLSCREEN CHROME ===
+        // --- FULLSCREEN ---
         function mintaFullscreen() {
             const el = document.documentElement;
             if (el.requestFullscreen) {
