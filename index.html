@@ -1466,13 +1466,18 @@
         }
 
         function resetTimerOnly(index) {
-            if (confirm("Reset Meja " + (index + 1) + " tanpa simpan omset? Lampu akan dimatikan.")) {
-                sakelarLampu(index + 1, false);
-                clearTableDataLocal(index); 
-                if (db) db.ref('tables').set(tablesData);
-                renderTables();
-            }
-        }
+    var table = tablesData[index];
+    var pesan = (table && table.isPaid)
+        ? "Meja " + (index + 1) + " sudah LUNAS. Kosongkan meja & matikan lampu sekarang?" 
+        : "Reset Meja " + (index + 1) + " tanpa simpan omset? Lampu akan dimatikan.";
+
+    if (confirm(pesan)) {
+        sakelarLampu(index + 1, false);
+        clearTableDataLocal(index);
+        if (db) db.ref('tables').set(tablesData);
+        renderTables();
+    }
+}
 
         // FITUR 5: PELUNASAN PAS RUNNING (TIMER & LAMPU TETAP MENYALA SAMPAI HABIS)
         function openPayModal(index) {
