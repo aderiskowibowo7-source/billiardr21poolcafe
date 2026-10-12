@@ -36,23 +36,39 @@
             box-sizing: border-box;
         }
 
-        h1#page-title { margin-bottom: 2px; font-size: 1.3rem; text-align: center; }
+        h1#page-title { 
+            margin-bottom: 2px; 
+            font-size: 1.1rem; 
+            text-align: center; 
+            color: #cbd5e1;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+            letter-spacing: 1px;
+        }
+
+        /* HEADER BRANDING NEON GLOW */
         .brand-subtitle {
-            font-size: 1.05rem;
-            color: var(--price-color);
-            font-weight: bold;
-            margin-bottom: 4px;
-            letter-spacing: 2px;
+            font-size: 1.5rem !important;
+            font-weight: 900 !important;
+            color: #38bdf8 !important;
+            text-transform: uppercase;
+            letter-spacing: 3px !important;
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.8),
+                         0 0 20px rgba(56, 189, 248, 0.5),
+                         0 0 30px rgba(56, 189, 248, 0.3) !important;
+            margin-bottom: 6px !important;
+            text-align: center;
         }
         
         .realtime-clock-bar {
             font-size: 0.95rem;
             font-weight: bold;
-            color: #facc15;
-            background: rgba(30, 41, 59, 0.8);
-            padding: 4px 12px;
+            color: #facc15 !important;
+            background: rgba(15, 23, 42, 0.5) !important;
+            backdrop-filter: blur(8px) !important;
+            padding: 4px 14px;
             border-radius: 20px;
-            border: 1px solid #475569;
+            border: 1px solid #facc15 !important;
+            box-shadow: 0 0 12px rgba(250, 204, 21, 0.3) !important;
             margin-bottom: 8px;
             letter-spacing: 1px;
         }
@@ -103,9 +119,9 @@
             max-width: 500px;
         }
 
-        /* 3. TAMPILAN ARTISTIK TRANS PARAN (GLASSMORPHISM) PADA MODE KASIR & TV DISPLAY */
+        /* AKTIFKAN BACKGROUND GAMBAR DI MODE LANDSCAPE KASIR DAN TV DISPLAY */
         body.landscape-mode, body.tv-mode {
-            background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), 
+            background: linear-gradient(rgba(15, 23, 42, 0.70), rgba(15, 23, 42, 0.70)), 
                         url('bg-tv.png') no-repeat center center / cover !important;
             background-attachment: fixed !important;
         }
@@ -117,14 +133,14 @@
             gap: 10px;
         }
 
-        /* KARTU MEJA GLASSMORPHISM (MODE LANDSCAPE & TV) */
+        /* KARTU MEJA GLASSMORPHISM TRANSPARAN TIPIS (25%) */
         body.landscape-mode .table-card,
         body.tv-mode .table-card {
-            background: rgba(15, 23, 42, 0.65) !important;
-            backdrop-filter: blur(10px) !important;
-            -webkit-backdrop-filter: blur(10px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
+            background: rgba(15, 23, 42, 0.25) !important;
+            backdrop-filter: blur(6px) !important;
+            -webkit-backdrop-filter: blur(6px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.25) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
         }
 
         body.landscape-mode .card-body-split {
@@ -133,13 +149,14 @@
             gap: 8px;
             width: 100%;
         }
-        body.landscape-mode .card-left-detail {
+        body.landscape-mode .card-left-detail,
+        body.tv-mode .card-left-detail {
             display: flex !important;
             flex: 1;
-            background: rgba(15, 23, 42, 0.75);
+            background: rgba(15, 23, 42, 0.35) !important;
             border-radius: 6px;
             padding: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
             max-height: 110px;
             overflow-y: auto;
         }
@@ -174,7 +191,7 @@
         }
 
         .card-note-box {
-            background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); padding: 4px 8px;
+            background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.15); padding: 4px 8px;
             border-radius: 6px; font-size: 0.75rem; color: #cbd5e1; margin-bottom: 6px;
         }
 
@@ -297,7 +314,7 @@
             padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;
         }
 
-        body.tv-mode .brand-subtitle { font-size: 1.4rem; margin-bottom: 4px; letter-spacing: 2px; text-align: center; }
+        body.tv-mode .brand-subtitle { font-size: 1.6rem !important; margin-bottom: 4px; letter-spacing: 2px; text-align: center; }
         body.tv-mode .grid-container { 
             display: grid !important; grid-template-columns: repeat(3, 1fr) !important; 
             gap: 8px; max-width: 100%;
@@ -305,8 +322,8 @@
         body.tv-mode .table-card { padding: 8px 10px; border-radius: 8px; }
         body.tv-mode .card-body-split { display: flex !important; flex-direction: row; gap: 8px; width: 100%; }
         body.tv-mode .card-left-detail {
-            display: flex !important; flex: 1; background: rgba(15, 23, 42, 0.75);
-            border-radius: 6px; padding: 6px; border: 1px solid rgba(255, 255, 255, 0.1); max-height: 100px; overflow-y: auto;
+            display: flex !important; flex: 1;
+            border-radius: 6px; padding: 6px; max-height: 100px; overflow-y: auto;
         }
         body.tv-mode .card-right-timer { flex: 1.1; }
         body.tv-mode .timer-display { font-size: 2rem; margin: 2px 0; }
@@ -358,7 +375,7 @@
     </div>
 
     <div class="grid-container" id="tablesGrid"></div>
-    <!-- MODAL POP-UP PILIH DURASI MEJA -->
+        <!-- MODAL POP-UP PILIH DURASI MEJA -->
     <div class="modal-overlay" id="durationModal">
         <div class="modal-content" style="max-width:380px;">
             <div class="modal-title" id="durationModalTitle">Mulai Meja X</div>
@@ -800,7 +817,7 @@
         }
         setInterval(updateRealtimeClock, 1000);
 
-        // LOGIKA TARIF DINAMIS JAM OPERASIONAL
+        // LOGIKA TARIF DINAMIS JAM OPERASIONAL R21
         // 14:00 - 17:30 = Rp 17.500 / 30 Min | 17:30 - 05:00 = Rp 20.000 / 30 Min
         function calculateBillingLogic(totalMinutes, isSpecialBonus, isOpenTable, elapsedTimeSec, startTimeTs) {
             if (isSpecialBonus) {
