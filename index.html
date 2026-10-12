@@ -83,7 +83,6 @@
             color: #fca5a5;
         }
 
-        /* 2. MODE SELECTOR DROPDOWN RINGKAS + TOMBOL CAFE DEPAN */
         .mode-selector { margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; align-items: center; }
         .mode-selector select {
             padding: 8px 12px; font-weight: bold; cursor: pointer; border: 1px solid #475569;
@@ -104,12 +103,30 @@
             max-width: 500px;
         }
 
+        /* 3. TAMPILAN ARTISTIK TRANS PARAN (GLASSMORPHISM) PADA MODE KASIR & TV DISPLAY */
+        body.landscape-mode, body.tv-mode {
+            background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), 
+                        url('bg-tv.png') no-repeat center center / cover !important;
+            background-attachment: fixed !important;
+        }
+
         body.landscape-mode .grid-container {
             display: grid !important;
             grid-template-columns: repeat(3, 1fr) !important;
             max-width: 100% !important;
             gap: 10px;
         }
+
+        /* KARTU MEJA GLASSMORPHISM (MODE LANDSCAPE & TV) */
+        body.landscape-mode .table-card,
+        body.tv-mode .table-card {
+            background: rgba(15, 23, 42, 0.65) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
+        }
+
         body.landscape-mode .card-body-split {
             display: flex !important;
             flex-direction: row;
@@ -119,10 +136,10 @@
         body.landscape-mode .card-left-detail {
             display: flex !important;
             flex: 1;
-            background: rgba(15, 23, 42, 0.9);
+            background: rgba(15, 23, 42, 0.75);
             border-radius: 6px;
             padding: 6px;
-            border: 1px solid #334155;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             max-height: 110px;
             overflow-y: auto;
         }
@@ -132,18 +149,17 @@
             flex-direction: column; border: 2px solid #334155;
             transition: all 0.2s ease; box-sizing: border-box; width: 100%;
         }
-        .table-card.active { border-color: var(--accent); }
-        .table-card.opentable { border-color: #38bdf8; }
-        .table-card.warning { border-color: var(--warning); }
-        .table-card.expired { border-color: var(--danger); }
+        .table-card.active { border-color: var(--accent) !important; }
+        .table-card.opentable { border-color: #38bdf8 !important; }
+        .table-card.warning { border-color: var(--warning) !important; }
+        .table-card.expired { border-color: var(--danger) !important; }
 
         .card-header-row {
             display: flex; justify-content: space-between; align-items: center;
-            width: 100%; margin-bottom: 6px; border-bottom: 1px dashed #334155; padding-bottom: 6px;
+            width: 100%; margin-bottom: 6px; border-bottom: 1px dashed rgba(255, 255, 255, 0.2); padding-bottom: 6px;
         }
         .table-title { font-size: 1.05rem; font-weight: bold; color: white; }
         
-        /* 6. BADGE STATUS BAYAR PRESISI */
         .pay-status-badge {
             font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; font-weight: bold; text-transform: uppercase;
         }
@@ -157,9 +173,8 @@
             max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
-        /* 7. BOX CATATAN MEJA */
         .card-note-box {
-            background: #0f172a; border: 1px solid #334155; padding: 4px 8px;
+            background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); padding: 4px 8px;
             border-radius: 6px; font-size: 0.75rem; color: #cbd5e1; margin-bottom: 6px;
         }
 
@@ -215,10 +230,10 @@
         .btn-stop { background-color: var(--danger); color: white; }
         .btn-fnb { background-color: #f59e0b; color: white; }
         .btn-pay { background-color: #10b981; color: white; font-weight: bold; }
+        .btn-reset { background-color: #dc2626; color: white; font-weight: bold; }
         .btn-move { background-color: #8b5cf6; color: white; font-weight: bold; }
         .btn-note { background-color: #d97706; color: white; }
         
-        /* 4. SAKELAR TOGGLE RINGKAS 1 TOMBOL */
         .btn-toggle-light { width: 100%; padding: 8px; border: none; border-radius: 5px; font-weight: bold; font-size: 0.8rem; cursor: pointer; color: white; }
         .btn-toggle-light.on { background-color: #16a34a; }
         .btn-toggle-light.off { background-color: #dc2626; }
@@ -267,15 +282,12 @@
         body.tv-mode {
             padding: 8px !important; height: 100vh; box-sizing: border-box; overflow: hidden;
             justify-content: center;
-            background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), 
-                        url('bg-tv.png') no-repeat center center / cover !important;
         }
         body.tv-mode h1#page-title, 
         body.tv-mode .controls, 
         body.tv-mode .header-status-bar, 
         body.tv-mode .mode-selector { display: none !important; }
 
-        /* TOMBOL MELAYANG RAHASIA DARI MODE TV */
         .tv-switch-bar {
             display: none; position: fixed; top: 10px; right: 10px; z-index: 99; gap: 6px;
         }
@@ -293,8 +305,8 @@
         body.tv-mode .table-card { padding: 8px 10px; border-radius: 8px; }
         body.tv-mode .card-body-split { display: flex !important; flex-direction: row; gap: 8px; width: 100%; }
         body.tv-mode .card-left-detail {
-            display: flex !important; flex: 1; background: rgba(15, 23, 42, 0.9);
-            border-radius: 6px; padding: 6px; border: 1px solid #334155; max-height: 100px; overflow-y: auto;
+            display: flex !important; flex: 1; background: rgba(15, 23, 42, 0.75);
+            border-radius: 6px; padding: 6px; border: 1px solid rgba(255, 255, 255, 0.1); max-height: 100px; overflow-y: auto;
         }
         body.tv-mode .card-right-timer { flex: 1.1; }
         body.tv-mode .timer-display { font-size: 2rem; margin: 2px 0; }
@@ -320,7 +332,6 @@
     </style>
 </head>
 <body>
-    <!-- TOMBOL MELAYANG RAHASIA KELUAR DARI MODE TV DISPLAY -->
     <div class="tv-switch-bar">
         <button onclick="setMode('landscape')">💻 Kembali ke Mode Kasir</button>
     </div>
@@ -334,7 +345,6 @@
         <div id="relayStatusBadge" class="relay-status-badge">Relay IP: 192.168.1.20</div>
     </div>
     
-    <!-- 2 & 3. DROPDOWN MODE RINGKAS + TOMBOL CAFE DEPAN -->
     <div class="mode-selector">
         <select id="modeSelectDropdown" onchange="setMode(this.value)">
             <option value="controller">📱 Mode HP</option>
@@ -348,7 +358,6 @@
     </div>
 
     <div class="grid-container" id="tablesGrid"></div>
-
     <!-- MODAL POP-UP PILIH DURASI MEJA -->
     <div class="modal-overlay" id="durationModal">
         <div class="modal-content" style="max-width:380px;">
@@ -376,7 +385,7 @@
             </div>
 
             <div style="font-size:0.75rem; color:#facc15; margin-bottom:8px; line-height:1.3;">
-                💡 <b>Tarif:</b> Rp <span id="ratePreviewLabel">20.000</span> / 30 Menit. Promo: Main 5 Jam bayar 4 Jam!
+                💡 <b>Tarif Dinamis:</b> 14:00-17:30 (Rp 17.500) | 17:30-05:00 (Rp 20.000) / 30 Menit.
             </div>
             <div style="background:#0f172a; padding:10px; border-radius:6px; text-align:center; font-weight:bold; color:var(--price-color); margin-bottom:12px;" id="durationPreviewTxt">
                 Total: 1 Jam (Rp 40.000)
@@ -388,7 +397,7 @@
         </div>
     </div>
 
-    <!-- 1. MODAL EDIT / POTONG DURASI JAM MAIN -->
+    <!-- MODAL EDIT / POTONG DURASI JAM MAIN -->
     <div class="modal-overlay" id="reduceDurationModal">
         <div class="modal-content" style="max-width:360px;">
             <div class="modal-title" id="reduceModalTitle">Potong Durasi Meja X</div>
@@ -406,7 +415,7 @@
         </div>
     </div>
 
-    <!-- 7. MODAL CATATAN / KETERANGAN MEJA -->
+    <!-- MODAL CATATAN / KETERANGAN MEJA -->
     <div class="modal-overlay" id="quickNoteModal">
         <div class="modal-content" style="max-width:360px;">
             <div class="modal-title" id="quickNoteTitle">Catatan / Keterangan Meja</div>
@@ -430,7 +439,7 @@
                 <input type="text" id="openTableCustName" placeholder="Masukkan nama..." style="text-transform:uppercase;">
             </div>
             <div style="font-size:0.8rem; color:#38bdf8; background:#0f172a; padding:10px; border-radius:6px; margin-bottom:12px; line-height:1.4;">
-                ⏱️ <b>Mode Open Table:</b> Timer akan menghitung maju dari 00:00:00. Tarif otomatis dihitung per 30 menit berjalan.
+                ⏱️ <b>Mode Open Table:</b> Timer menghitung maju dari 00:00:00. Tarif dinamis otomatis dihitung per 30 menit berjalan.
             </div>
             <div class="modal-footer">
                 <button style="background:#ef4444; color:white;" onclick="closeOpenTableModal()">❌ Batal</button>
@@ -439,7 +448,7 @@
         </div>
     </div>
 
-    <!-- MODAL ⚙️ SETTING PUSAT -->
+    <!-- MODAL SETTING PUSAT -->
     <div class="modal-overlay" id="settingModal">
         <div class="modal-content" style="max-width:480px;">
             <div class="modal-title">⚙️ PENGATURAN SIKASIR R21</div>
@@ -466,9 +475,8 @@
                         <button style="background:#16a34a; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="saveRelayIp()">Simpan IP</button>
                     </div>
                 </div>
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>Tarif Biliar / 30 Menit (Rp):</label>
-                    <input type="number" id="halfHourlyRate" value="20000" step="1000" onchange="updateRateSetting(this.value)">
+                <div style="font-size:0.75rem; color:#facc15; margin-top:4px;">
+                    ℹ️ Tarif otomatis dinamis mengikuti jam operasional (Siang: Rp 17.500 | Malam: Rp 20.000 / 30 Min).
                 </div>
             </div>
 
@@ -654,7 +662,7 @@
         </div>
     </div>
 
-    <!-- MODAL RIWAYAT TRANSAKSI OPERASIONAL DENGAN REKAP CAFE TERJUAL -->
+    <!-- MODAL RIWAYAT TRANSAKSI -->
     <div class="modal-overlay" id="historyModal">
         <div class="modal-content" style="max-width:680px;">
             <div class="modal-title">RIWAYAT TRANSAKSI OPERASIONAL</div>
@@ -686,7 +694,6 @@
                 <button style="background:#16a34a; color:white; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="sendWaReport()">📱 Kirim WA Shift</button>
             </div>
 
-            <!-- FITUR: RINGKASAN MENU CAFE TERJUAL -->
             <div style="margin-top: 15px; border-top: 2px dashed #334155; padding-top: 12px;">
                 <div style="font-size:0.9rem; font-weight:bold; color:#38bdf8; margin-bottom:8px;">☕ RINGKASAN MENU CAFE TERJUAL (TANGGAL INI)</div>
                 <div style="overflow-x:auto;">
@@ -733,7 +740,6 @@
         </div>
     </div>
     <script>
-        // --- 100% ONLINE FIREBASE CLOUD REAL-TIME DATABASE ---
         var db = null;
         if (window.firebaseAvailable && typeof firebase !== 'undefined') {
             try {
@@ -746,7 +752,6 @@
         }
 
         var TOTAL_TABLES = 6;
-        var halfHourlyRate = 20000;
 
         var bizProfile = {
             name: "R21 POOL & CAFE",
@@ -760,7 +765,6 @@
         var staffAccounts = {};
         var inventoryData = {};
 
-        // DATA MEJA LENGKAP DENGAN STATUS PELUNASAN ISPAID & CATATAN
         var tablesData = Array(TOTAL_TABLES).fill(null).map(function() {
             return { 
                 endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, 
@@ -781,7 +785,6 @@
 
         var currentMode = localStorage.getItem('biliard_mode') || 'controller';
 
-        // JAM REAL-TIME HEADER (SINKRON ONLINE/TV)
         function updateRealtimeClock() {
             var now = new Date();
             var hours = String(now.getHours()).padStart(2, '0');
@@ -797,8 +800,9 @@
         }
         setInterval(updateRealtimeClock, 1000);
 
-        // LOGIKA BILLING DENGAN DUKUNGAN PER 30 MENIT & PROMO 5 JAM BAYAR 4 JAM
-        function calculateBillingLogic(totalMinutes, isSpecialBonus, isOpenTable, elapsedTimeSec) {
+        // LOGIKA TARIF DINAMIS JAM OPERASIONAL
+        // 14:00 - 17:30 = Rp 17.500 / 30 Min | 17:30 - 05:00 = Rp 20.000 / 30 Min
+        function calculateBillingLogic(totalMinutes, isSpecialBonus, isOpenTable, elapsedTimeSec, startTimeTs) {
             if (isSpecialBonus) {
                 return { paidHours: 0, bonusHours: 0, tablePrice: 0 };
             }
@@ -808,28 +812,47 @@
                 calcMinutes = Math.ceil((elapsedTimeSec || 0) / 60);
             }
 
-            var halfHourUnits = Math.ceil(calcMinutes / 30);
-            if (halfHourUnits < 1 && calcMinutes > 0) halfHourUnits = 1;
+            if (calcMinutes <= 0) return { paidHours: 0, bonusHours: 0, tablePrice: 0 };
 
-            var paidUnits = halfHourUnits;
+            var startObj = startTimeTs ? new Date(startTimeTs) : new Date();
+            var totalPrice = 0;
+            var currentObj = new Date(startObj.getTime());
+
+            for (var m = 0; m < calcMinutes; m++) {
+                var hour = currentObj.getHours();
+                var minute = currentObj.getMinutes();
+                var timeInMin = hour * 60 + minute;
+
+                // 14:00 (840 min) s/d 17:30 (1050 min)
+                var isSiang = (timeInMin >= 840 && timeInMin < 1050);
+
+                if (isSiang) {
+                    totalPrice += (17500 / 30);
+                } else {
+                    totalPrice += (20000 / 30);
+                }
+
+                currentObj.setMinutes(currentObj.getMinutes() + 1);
+            }
+
+            var halfHourUnits = Math.ceil(calcMinutes / 30);
             var bonusHours = 0;
 
             if (halfHourUnits >= 10) {
                 var sets = Math.floor(halfHourUnits / 10);
-                var remainder = halfHourUnits % 10;
-                paidUnits = (sets * 8) + remainder;
                 bonusHours = sets;
+                var discountAmount = sets * 2 * (20000 / 30) * 30;
+                totalPrice -= discountAmount;
+                if (totalPrice < 0) totalPrice = 0;
             }
 
-            var tablePrice = paidUnits * halfHourlyRate;
             return {
-                paidHours: paidUnits / 2,
+                paidHours: calcMinutes / 60,
                 bonusHours: bonusHours,
-                tablePrice: tablePrice
+                tablePrice: Math.round(totalPrice)
             };
         }
 
-        // SAKELAR RELAY SINKRON KE CLOUD & IP RELAY LOKAL
         function sakelarLampu(nomorMeja, status) {
             var mejaInt = parseInt(nomorMeja);
             var channelRelay = mejaInt;
@@ -852,7 +875,6 @@
             }
         }
 
-        // TOGGLE SAKELAR LAMPU 1 TOMBOL
         function toggleLampuTable(index) {
             var t = tablesData[index];
             var currentLightState = t.lightStatus !== undefined ? t.lightStatus : t.isRunning;
@@ -888,7 +910,6 @@
             document.getElementById('cfgBizAddress').value = bizProfile.address;
             document.getElementById('cfgBizPhone').value = bizProfile.phone;
             document.getElementById('cfgRelayIp').value = currentIpRelay;
-            document.getElementById('halfHourlyRate').value = halfHourlyRate;
             document.getElementById('settingModal').style.display = 'flex';
         }
 
@@ -915,11 +936,6 @@
             }
         }
 
-        function updateRateSetting(val) {
-            var parsed = parseInt(val) || 20000;
-            if (db) db.ref('halfHourlyRate').set(parsed);
-        }
-
         function updateRelayBadge() {
             var b = document.getElementById('relayStatusBadge');
             if(b) b.innerText = "Relay IP: " + currentIpRelay;
@@ -940,10 +956,6 @@
             document.getElementById('durationCustName').value = t.customerName || "";
             document.getElementById('customMinutesInput').value = "60";
             document.getElementById('isSpecialBonusCheck').checked = false;
-            
-            var previewLabel = document.getElementById('ratePreviewLabel');
-            if (previewLabel) previewLabel.innerText = formatRupiah(halfHourlyRate).replace('Rp', '').trim();
-
             updateDurationPreview();
             document.getElementById('durationModal').style.display = 'flex';
         }
@@ -953,7 +965,6 @@
             pendingStartTableIndex = null;
         }
 
-        // FITUR 1: EDIT / POTONG DURASI JAM MAIN
         function openReduceDurationModal(index) {
             activeReduceTableIndex = index;
             document.getElementById('reduceModalTitle').innerText = "Potong Durasi Meja " + (index + 1);
@@ -983,7 +994,6 @@
             alert("✅ Durasi Meja " + (index + 1) + " berhasil dipotong " + reduceMins + " menit.");
         }
 
-        // FITUR 7: CATATAN / KETERANGAN KHUSUS
         function openQuickNoteModal(index) {
             activeNoteTableIndex = index;
             var t = tablesData[index];
@@ -1033,7 +1043,7 @@
                 return;
             }
 
-            var billing = calculateBillingLogic(mnt, false, false, 0);
+            var billing = calculateBillingLogic(mnt, false, false, 0, Date.now());
             var jam = Math.floor(mnt / 60);
             var sisa = mnt % 60;
             var txtDurasi = "";
@@ -1094,7 +1104,7 @@
             }
 
             tablesData[index].isRunning = true;
-            tablesData[index].isPaid = false; // Reset status bayar saat main baru
+            tablesData[index].isPaid = false;
             tablesData[index].lightStatus = true;
             tablesData[index].warned = false;
             tablesData[index].expiredWarned = false;
@@ -1103,8 +1113,6 @@
             if (db) { try { db.ref('tables').set(tablesData); } catch(e) {} }
             renderTables();
         }
-
-        // RENDER KARTU MEJA PRESISI SAMA PERSIS SEPERTI FOTO 2
         function renderTables() {
             var grid = document.getElementById('tablesGrid');
             if (!grid) return;
@@ -1173,7 +1181,6 @@
             updateTimers();
         }
 
-        // UPDATE TIMER & STATUS MEJA REAL-TIME
         function updateTimers() {
             var now = Date.now();
             for (var i = 0; i < TOTAL_TABLES; i++) {
@@ -1199,7 +1206,6 @@
 
                 if (custTvEl) { custTvEl.innerText = table.customerName ? table.customerName.toUpperCase() : "-"; }
 
-                // BADGE PEMBAYARAN
                 if (payBadgeEl) {
                     if (table.isPaid) {
                         payBadgeEl.innerText = "✅ LUNAS"; payBadgeEl.className = "pay-status-badge paid";
@@ -1208,7 +1214,6 @@
                     }
                 }
 
-                // STATUS SAKELAR LAMPU
                 if (lightBtnEl) {
                     var isLightOn = table.lightStatus !== undefined ? table.lightStatus : table.isRunning;
                     if (isLightOn) {
@@ -1218,7 +1223,6 @@
                     }
                 }
 
-                // CATATAN
                 if (noteBoxEl && noteTxtEl) {
                     if (table.customerNote) {
                         noteTxtEl.innerText = table.customerNote; noteBoxEl.style.display = 'block';
@@ -1227,7 +1231,7 @@
 
                 var bookedMinutes = table.bookedMinutes || 0;
                 var elapsedSec = table.isRunning ? Math.floor((now - (table.startTime || now)) / 1000) : 0;
-                var billing = calculateBillingLogic(bookedMinutes, table.isSpecialBonus, table.isOpenTable, elapsedSec);
+                var billing = calculateBillingLogic(bookedMinutes, table.isSpecialBonus, table.isOpenTable, elapsedSec, table.startTime);
                 var fnbTotal = calculateFnbTotal(table.fnbList);
                 var grandTotal = billing.tablePrice + fnbTotal;
 
@@ -1299,7 +1303,6 @@
                         cardEl.classList.add('expired');
                         priceEl.innerText = formatRupiah(grandTotal);
 
-                        // AUTO-RESET SAAT HABIS WAKTU JIKA SUDAH PELUNASAN DULUAN
                         if (!table.expiredWarned) {
                             table.expiredWarned = true;
                             sakelarLampu(i + 1, false);
@@ -1326,23 +1329,22 @@
                         priceEl.innerText = formatRupiah(grandTotal);
 
                         if (normalControls && expiredControls) {
-    normalControls.style.display = 'flex'; 
-    expiredControls.style.display = 'none';
-}
+                            normalControls.style.display = 'flex'; 
+                            expiredControls.style.display = 'none';
+                        }
 
-var payBtnInCard = normalControls.querySelector('.btn-pay');
-if (payBtnInCard) {
-    if (table.isPaid) {
-        payBtnInCard.innerText = "Tutup / Reset Meja";
-        payBtnInCard.className = "btn-reset";
-        payBtnInCard.setAttribute("onclick", "resetTimerOnly(" + i + ")");
-    } else {
-        payBtnInCard.innerText = "Bayar / Pelunasan";
-        payBtnInCard.className = "btn-pay";
-        payBtnInCard.setAttribute("onclick", "openPayModal(" + i + ")");
-    }
-}
-
+                        var payBtnInCard = normalControls.querySelector('.btn-pay');
+                        if (payBtnInCard) {
+                            if (table.isPaid) {
+                                payBtnInCard.innerText = "Tutup / Reset Meja";
+                                payBtnInCard.className = "btn-reset";
+                                payBtnInCard.setAttribute("onclick", "resetTimerOnly(" + i + ")");
+                            } else {
+                                payBtnInCard.innerText = "Bayar / Pelunasan";
+                                payBtnInCard.className = "btn-pay";
+                                payBtnInCard.setAttribute("onclick", "openPayModal(" + i + ")");
+                            }
+                        }
 
                         if (totalSeconds <= 300 && !table.warned) {
                             table.warned = true;
@@ -1481,27 +1483,26 @@ if (payBtnInCard) {
         }
 
         function resetTimerOnly(index) {
-    var table = tablesData[index];
-    var pesan = (table && table.isPaid)
-        ? "Meja " + (index + 1) + " sudah LUNAS. Kosongkan meja & matikan lampu sekarang?" 
-        : "Reset Meja " + (index + 1) + " tanpa simpan omset? Lampu akan dimatikan.";
+            var table = tablesData[index];
+            var pesan = (table && table.isPaid)
+                ? "Meja " + (index + 1) + " sudah LUNAS. Kosongkan meja & matikan lampu sekarang?" 
+                : "Reset Meja " + (index + 1) + " tanpa simpan omset? Lampu akan dimatikan.";
 
-    if (confirm(pesan)) {
-        sakelarLampu(index + 1, false);
-        clearTableDataLocal(index);
-        if (db) db.ref('tables').set(tablesData);
-        renderTables();
-    }
-}
+            if (confirm(pesan)) {
+                sakelarLampu(index + 1, false);
+                clearTableDataLocal(index);
+                if (db) db.ref('tables').set(tablesData);
+                renderTables();
+            }
+        }
 
-        // FITUR 5: PELUNASAN PAS RUNNING (TIMER & LAMPU TETAP MENYALA SAMPAI HABIS)
         function openPayModal(index) {
             var table = tablesData[index];
             var now = Date.now();
             var bookedMinutes = table.bookedMinutes || 0;
             var elapsedSec = table.isRunning ? Math.floor((now - (table.startTime || now)) / 1000) : 0;
             
-            var billing = calculateBillingLogic(bookedMinutes, table.isSpecialBonus, table.isOpenTable, elapsedSec);
+            var billing = calculateBillingLogic(bookedMinutes, table.isSpecialBonus, table.isOpenTable, elapsedSec, table.startTime);
             var fnbTotal = calculateFnbTotal(table.fnbList);
             var grandTotal = billing.tablePrice + fnbTotal;
 
@@ -1563,7 +1564,7 @@ if (payBtnInCard) {
             var now = Date.now();
             var bookedMinutes = table.bookedMinutes || 0;
             var elapsedSec = table.isRunning ? Math.floor((now - (table.startTime || now)) / 1000) : 0;
-            var billing = calculateBillingLogic(bookedMinutes, table.isSpecialBonus, table.isOpenTable, elapsedSec);
+            var billing = calculateBillingLogic(bookedMinutes, table.isSpecialBonus, table.isOpenTable, elapsedSec, table.startTime);
             var grandTotal = billing.tablePrice + calculateFnbTotal(table.fnbList);
             var cashVal = parseInt(document.getElementById('splitCashInput').value) || 0;
             var qrisVal = grandTotal - cashVal;
@@ -1579,7 +1580,7 @@ if (payBtnInCard) {
             var nowTs = Date.now();
             var bookedMinutes = table.bookedMinutes || 0;
             var elapsedSec = table.isRunning ? Math.floor((nowTs - (table.startTime || nowTs)) / 1000) : 0;
-            var billing = calculateBillingLogic(bookedMinutes, table.isSpecialBonus, table.isOpenTable, elapsedSec);
+            var billing = calculateBillingLogic(bookedMinutes, table.isSpecialBonus, table.isOpenTable, elapsedSec, table.startTime);
             var fnbTotal = calculateFnbTotal(table.fnbList);
             var grandTotal = billing.tablePrice + fnbTotal;
             var method = document.getElementById('payMethodSelect').value;
@@ -1614,15 +1615,12 @@ if (payBtnInCard) {
                 fnbList: table.fnbList || []
             };
 
-            // SIMPAN OMSET KE CLOUD FIREBASE
             if (!table.isSpecialBonus) {
                 if (db) { try { db.ref('history').push(historyItem); } catch(e) {} }
             }
 
-            // TANDAI MEJA LUNAS
             tablesData[index].isPaid = true;
 
-            // CLEAR HANYA JIKA MAIN SUDAH SELESAI / EXPIRED, JIKA MASIH RUNNING BIARKAN LAMPU & TIMER TETAP JALAN
             if (!table.isRunning || table.endTime <= nowTs) {
                 clearTableDataLocal(index);
             }
@@ -2003,9 +2001,14 @@ if (payBtnInCard) {
 
         function closeHistoryModal() { document.getElementById('historyModal').style.display = 'none'; }
 
+        // KONFIRMASI PASSWORD OWNER UNTUK HAPUS RIWAYAT
         function deleteHistoryItem(key) {
-            if (confirm("Hapus transaksi ini?")) { 
+            var passInput = prompt("🔒 Keamanan Owner: Masukkan Password Owner untuk menghapus transaksi ini:");
+            if (passInput === "9999") {
                 if (db) db.ref('history/' + key).remove();
+                alert("✅ Transaksi berhasil dihapus.");
+            } else if (passInput !== null) {
+                alert("❌ Password Owner salah! Penghapusan dibatalkan.");
             }
         }
 
@@ -2078,7 +2081,6 @@ if (payBtnInCard) {
             window.open("https://wa.me/" + cleanPhone + "?text=" + encodeURIComponent(message), '_blank');
         }
 
-        // CONTROL DROPDOWN & SET MODE
         function setMode(mode) {
             currentMode = mode;
             localStorage.setItem('biliard_mode', mode);
@@ -2111,7 +2113,6 @@ if (payBtnInCard) {
             renderTables();
             setInterval(updateTimers, 1000);
 
-            // SINKRON CLOUD FIREBASE REAL-TIME
             if (db) {
                 db.ref('bizProfile').on('value', function(snap) {
                     if (snap.val()) { bizProfile = snap.val(); applyBizProfileUI(); }
@@ -2119,14 +2120,6 @@ if (payBtnInCard) {
 
                 db.ref('currentIpRelay').on('value', function(snap) {
                     if (snap.val()) { currentIpRelay = snap.val(); updateRelayBadge(); }
-                });
-
-                db.ref('halfHourlyRate').on('value', function(snap) {
-                    if (snap.val()) {
-                        halfHourlyRate = snap.val();
-                        var previewLabel = document.getElementById('ratePreviewLabel');
-                        if (previewLabel) previewLabel.innerText = formatRupiah(halfHourlyRate).replace('Rp', '').trim();
-                    }
                 });
 
                 db.ref('staffs').on('value', function(snap) {
@@ -2167,7 +2160,6 @@ if (payBtnInCard) {
 
         init();
 
-        // --- FULLSCREEN ---
         function mintaFullscreen() {
             const el = document.documentElement;
             if (el.requestFullscreen) {
