@@ -817,8 +817,9 @@
         }
         setInterval(updateRealtimeClock, 1000);
 
-        // LOGIKA TARIF DINAMIS JAM OPERASIONAL R21
-        // 14:00 - 17:30 = Rp 17.500 / 30 Min | 17:30 - 05:00 = Rp 20.000 / 30 Min
+        // LOGIKA TARIF MURNI BLOK 30 MENIT BERDASARKAN WAKTU LOG IN
+        // Siang: 14:00 - 17:30 (Rp 17.500 / 30 Min)
+        // Malam: 17:30 - 05:00 (Rp 20.000 / 30 Min)
         function calculateBillingLogic(totalMinutes, isSpecialBonus, isOpenTable, elapsedTimeSec, startTimeTs) {
             if (isSpecialBonus) {
                 return { paidHours: 0, bonusHours: 0, tablePrice: 0 };
@@ -831,40 +832,35 @@
 
             if (calcMinutes <= 0) return { paidHours: 0, bonusHours: 0, tablePrice: 0 };
 
+            // Hitung berapa blok 30 menit yang berjalan (pembulatan ke atas)
+            var totalBlocks = Math.ceil(calcMinutes / 30);
+
+            // Ambil jam saat START / LOG IN ditekan
             var startObj = startTimeTs ? new Date(startTimeTs) : new Date();
-            var totalPrice = 0;
-            var currentObj = new Date(startObj.getTime());
+            var startHour = startObj.getHours();
+            var startMin = startObj.getMinutes();
+            var startTimeInMin = startHour * 60 + startMin;
 
-            for (var m = 0; m < calcMinutes; m++) {
-                var hour = currentObj.getHours();
-                var minute = currentObj.getMinutes();
-                var timeInMin = hour * 60 + minute;
+            // Cek apakah jam log in berada di rentang SIANG (14:00 - 17:30)
+            var isStartSiang = (startTimeInMin >= 840 && startTimeInMin < 1050);
 
-                // 14:00 (840 min) s/d 17:30 (1050 min)
-                var isSiang = (timeInMin >= 840 && timeInMin < 1050);
+            // Tentukan tarif per 30 menit berdasarkan waktu log in
+            var ratePerBlock = isStartSiang ? 17500 : 20000;
 
-                if (isSiang) {
-                    totalPrice += (17500 / 30);
-                } else {
-                    totalPrice += (20000 / 30);
-                }
+            var totalPrice = totalBlocks * ratePerBlock;
 
-                currentObj.setMinutes(currentObj.getMinutes() + 1);
-            }
-
-            var halfHourUnits = Math.ceil(calcMinutes / 30);
+            // Promo gratis 1 jam (2 blok) setiap kelipatan 5 jam (10 blok)
             var bonusHours = 0;
-
-            if (halfHourUnits >= 10) {
-                var sets = Math.floor(halfHourUnits / 10);
+            if (totalBlocks >= 10) {
+                var sets = Math.floor(totalBlocks / 10);
                 bonusHours = sets;
-                var discountAmount = sets * 2 * (20000 / 30) * 30;
+                var discountAmount = sets * 2 * ratePerBlock;
                 totalPrice -= discountAmount;
                 if (totalPrice < 0) totalPrice = 0;
             }
 
             return {
-                paidHours: calcMinutes / 60,
+                paidHours: (totalBlocks * 30) / 60,
                 bonusHours: bonusHours,
                 tablePrice: Math.round(totalPrice)
             };
@@ -1096,12 +1092,16 @@
             }
         }
 
+        // FUNGSI EKSEKUSI TIMER (RESET BERSIH SAAT SESI BARU)
         function executeAddTime(index, minutes, customerName, isOpenTable, isSpecialBonus) {
             sakelarLampu(index + 1, true);
-        
+
             var now = Date.now();
-            var currentTable = tablesData[index] || { endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, isOpenTable: false, isSpecialBonus: false, warned: false, expiredWarned: false, customerName: "", customerNote: "", fnbList: [] };
+            var currentTable = tablesData[index];
             
+            // CEK: Jika meja mati ATAU sudah selesai/expired, WAJIB reset total dari awal
+            var isFreshStart = !currentTable || !currentTable.isRunning || (currentTable.endTime > 0 && currentTable.endTime <= now);
+
             if (isOpenTable) {
                 tablesData[index].startTime = now;
                 tablesData[index].endTime = 0;
@@ -1109,13 +1109,17 @@
                 tablesData[index].isOpenTable = true;
                 tablesData[index].isSpecialBonus = false;
             } else {
-                var baseTime = (currentTable.isRunning && !currentTable.isOpenTable && currentTable.endTime > now) ? currentTable.endTime : now;
-                var currentBooked = (currentTable.isRunning && !currentTable.isOpenTable) ? (currentTable.bookedMinutes || 0) : 0;
-                var startTs = (currentTable.isRunning && !currentTable.isOpenTable && currentTable.endTime > now) ? currentTable.startTime : now;
-
-                tablesData[index].endTime = baseTime + (minutes * 60 * 1000);
-                tablesData[index].bookedMinutes = currentBooked + minutes;
-                tablesData[index].startTime = startTs;
+                if (isFreshStart) {
+                    // Main Baru: Mulai dari jam sekarang & durasi murni baru
+                    tablesData[index].startTime = now;
+                    tablesData[index].endTime = now + (minutes * 60 * 1000);
+                    tablesData[index].bookedMinutes = minutes;
+                } else {
+                    // Tambah Waktu (Nambah Jam di Meja Aktif): Lanjutkan dari endTime yang ada
+                    var baseTime = (currentTable.endTime > now) ? currentTable.endTime : now;
+                    tablesData[index].endTime = baseTime + (minutes * 60 * 1000);
+                    tablesData[index].bookedMinutes = (currentTable.bookedMinutes || 0) + minutes;
+                }
                 tablesData[index].isOpenTable = false;
                 tablesData[index].isSpecialBonus = isSpecialBonus || false;
             }
