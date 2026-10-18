@@ -119,7 +119,7 @@
             max-width: 500px;
         }
 
-        /* AKTIFKAN BACKGROUND GAMBAR DI MODE LANDSCAPE KASIR DAN TV DISPLAY */
+        /* BACKGROUND GAMBAR DI MODE LANDSCAPE KASIR DAN TV DISPLAY */
         body.landscape-mode, body.tv-mode {
             background: linear-gradient(rgba(15, 23, 42, 0.70), rgba(15, 23, 42, 0.70)), 
                         url('bg-tv.png') no-repeat center center / cover !important;
@@ -133,7 +133,7 @@
             gap: 10px;
         }
 
-        /* KARTU MEJA GLASSMORPHISM TRANSPARAN TIPIS (25%) */
+        /* KARTU MEJA GLASSMORPHISM TRANSPARAN */
         body.landscape-mode .table-card,
         body.tv-mode .table-card {
             background: rgba(15, 23, 42, 0.25) !important;
@@ -171,14 +171,16 @@
         .table-card.warning { border-color: var(--warning) !important; }
         .table-card.expired { border-color: var(--danger) !important; }
 
+        /* CARD HEADER ROW DENGAN TOMBOL LAMPU PINDAH ATAS */
         .card-header-row {
             display: flex; justify-content: space-between; align-items: center;
             width: 100%; margin-bottom: 6px; border-bottom: 1px dashed rgba(255, 255, 255, 0.2); padding-bottom: 6px;
+            gap: 6px;
         }
-        .table-title { font-size: 1.05rem; font-weight: bold; color: white; }
+        .table-title { font-size: 1.05rem; font-weight: bold; color: white; white-space: nowrap; }
         
         .pay-status-badge {
-            font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; font-weight: bold; text-transform: uppercase;
+            font-size: 0.68rem; padding: 3px 6px; border-radius: 6px; font-weight: bold; text-transform: uppercase; white-space: nowrap;
         }
         .pay-status-badge.paid { background: #065f46; color: #34d399; border: 1px solid #10b981; }
         .pay-status-badge.unpaid { background: #881337; color: #fda4af; border: 1px solid #f43f5e; }
@@ -251,9 +253,13 @@
         .btn-move { background-color: #8b5cf6; color: white; font-weight: bold; }
         .btn-note { background-color: #d97706; color: white; }
         
-        .btn-toggle-light { width: 100%; padding: 8px; border: none; border-radius: 5px; font-weight: bold; font-size: 0.8rem; cursor: pointer; color: white; }
-        .btn-toggle-light.on { background-color: #16a34a; }
-        .btn-toggle-light.off { background-color: #dc2626; }
+        /* DESAIN TOMBOL LAMPU HEADER ATAS */
+        .btn-header-light { 
+            padding: 3px 8px; border: none; border-radius: 6px; font-weight: bold; 
+            font-size: 0.72rem; cursor: pointer; color: white; transition: all 0.2s ease;
+        }
+        .btn-header-light.on { background-color: #16a34a; border: 1px solid #22c55e; }
+        .btn-header-light.off { background-color: #dc2626; border: 1px solid #ef4444; }
 
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -447,7 +453,7 @@
         </div>
     </div>
 
-    <!-- MODAL OPEN TABLE (STOPWATCH) -->
+    <!-- MODAL OPEN TABLE (STOPWATCH + ALARM TARGET) -->
     <div class="modal-overlay" id="openTableModal">
         <div class="modal-content" style="max-width:360px;">
             <div class="modal-title" id="openTableModalTitle">Open Table Meja X</div>
@@ -455,8 +461,13 @@
                 <label>Nama Pelanggan (Wajib):</label>
                 <input type="text" id="openTableCustName" placeholder="Masukkan nama..." style="text-transform:uppercase;">
             </div>
+            <div class="form-group">
+                <label>🔔 Set Alarm Pengingat (Opsional / Menit):</label>
+                <input type="number" id="openTableTargetMins" placeholder="Contoh: 180 (untuk 3 Jam)" min="0" step="30">
+                <small style="color:#94a3b8; font-size:0.75rem;">Isi <b>180</b> jika ingin alarm berbunyi 5 menit sebelum jam ke-3.</small>
+            </div>
             <div style="font-size:0.8rem; color:#38bdf8; background:#0f172a; padding:10px; border-radius:6px; margin-bottom:12px; line-height:1.4;">
-                ⏱️ <b>Mode Open Table:</b> Timer menghitung maju dari 00:00:00. Tarif dinamis otomatis dihitung per 30 menit berjalan.
+                ⏱️ <b>Mode Open Table:</b> Timer menghitung maju dari 00:00:00. Diberi toleransi 5 menit di setiap blok 30 menit baru.
             </div>
             <div class="modal-footer">
                 <button style="background:#ef4444; color:white;" onclick="closeOpenTableModal()">❌ Batal</button>
@@ -785,7 +796,7 @@
         var tablesData = Array(TOTAL_TABLES).fill(null).map(function() {
             return { 
                 endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, 
-                isOpenTable: false, isSpecialBonus: false, isPaid: false,
+                isOpenTable: false, isSpecialBonus: false, isPaid: false, payMethod: "",
                 warned: false, expiredWarned: false, customerName: "", customerNote: "", fnbList: [] 
             };
         });
@@ -798,6 +809,7 @@
         var tempFnbList = [];
         var posCartList = [];
         var pendingStartTableIndex = null;
+        var isPendingAddMoreTime = false;
         var activeMoveSourceIndex = null;
 
         var currentMode = localStorage.getItem('biliard_mode') || 'controller';
@@ -817,9 +829,7 @@
         }
         setInterval(updateRealtimeClock, 1000);
 
-        // LOGIKA TARIF MURNI BLOK 30 MENIT BERDASARKAN WAKTU LOG IN
-        // Siang: 14:00 - 17:30 (Rp 17.500 / 30 Min)
-        // Malam: 17:30 - 05:00 (Rp 20.000 / 30 Min)
+        // LOGIKA TARIF DENGAN TOLERANSI 5 MENIT PADA OPEN TABLE
         function calculateBillingLogic(totalMinutes, isSpecialBonus, isOpenTable, elapsedTimeSec, startTimeTs) {
             if (isSpecialBonus) {
                 return { paidHours: 0, bonusHours: 0, tablePrice: 0 };
@@ -827,29 +837,26 @@
 
             var calcMinutes = totalMinutes;
             if (isOpenTable) {
-                calcMinutes = Math.ceil((elapsedTimeSec || 0) / 60);
+                var rawMins = Math.floor((elapsedTimeSec || 0) / 60);
+                // Kebijakan Toleransi 5 Menit Pertama di setiap blok baru
+                var effectiveMins = rawMins > 5 ? (rawMins - 5) : 0;
+                calcMinutes = Math.ceil(effectiveMins / 30) * 30;
+                if (calcMinutes === 0 && rawMins > 0) calcMinutes = 30; // Minimal 1 blok
             }
 
             if (calcMinutes <= 0) return { paidHours: 0, bonusHours: 0, tablePrice: 0 };
 
-            // Hitung berapa blok 30 menit yang berjalan (pembulatan ke atas)
             var totalBlocks = Math.ceil(calcMinutes / 30);
-
-            // Ambil jam saat START / LOG IN ditekan
             var startObj = startTimeTs ? new Date(startTimeTs) : new Date();
             var startHour = startObj.getHours();
             var startMin = startObj.getMinutes();
             var startTimeInMin = startHour * 60 + startMin;
 
-            // Cek apakah jam log in berada di rentang SIANG (14:00 - 17:30)
             var isStartSiang = (startTimeInMin >= 840 && startTimeInMin < 1050);
-
-            // Tentukan tarif per 30 menit berdasarkan waktu log in
             var ratePerBlock = isStartSiang ? 17500 : 20000;
 
             var totalPrice = totalBlocks * ratePerBlock;
 
-            // Promo gratis 1 jam (2 blok) setiap kelipatan 5 jam (10 blok)
             var bonusHours = 0;
             if (totalBlocks >= 10) {
                 var sets = Math.floor(totalBlocks / 10);
@@ -918,6 +925,11 @@
             }
         }
 
+        function formatRupiahToVoice(amount) {
+            if (!amount || amount <= 0) return "nol rupiah";
+            return formatRupiah(amount).replace("Rp", "").trim() + " rupiah";
+        }
+
         function openSettingModal() {
             document.getElementById('cfgBizName').value = bizProfile.name;
             document.getElementById('cfgBizAddress').value = bizProfile.address;
@@ -962,10 +974,11 @@
             document.getElementById('printFooterBizName').innerText = bizProfile.name;
         }
 
-        function openDurationModal(index) {
+        function openDurationModal(index, isAddingMore) {
             pendingStartTableIndex = index;
+            isPendingAddMoreTime = isAddingMore || false;
             var t = tablesData[index];
-            document.getElementById('durationModalTitle').innerText = "Atur Main Meja " + (index + 1);
+            document.getElementById('durationModalTitle').innerText = (isAddingMore ? "Tambah Waktu Meja " : "Atur Main Meja ") + (index + 1);
             document.getElementById('durationCustName').value = t.customerName || "";
             document.getElementById('customMinutesInput').value = "60";
             document.getElementById('isSpecialBonusCheck').checked = false;
@@ -976,6 +989,7 @@
         function closeDurationModal() {
             document.getElementById('durationModal').style.display = 'none';
             pendingStartTableIndex = null;
+            isPendingAddMoreTime = false;
         }
 
         function openReduceDurationModal(index) {
@@ -1032,6 +1046,7 @@
             var t = tablesData[index];
             document.getElementById('openTableModalTitle').innerText = "Open Table Meja " + (index + 1);
             document.getElementById('openTableCustName').value = t.customerName || "";
+            document.getElementById('openTableTargetMins').value = t.targetAlarmMins || "";
             document.getElementById('openTableModal').style.display = 'flex';
         }
 
@@ -1077,48 +1092,47 @@
             if (minutes <= 0) { alert("Durasi menit harus lebih dari 0!"); return; }
 
             if (pendingStartTableIndex !== null) {
-                executeAddTime(pendingStartTableIndex, minutes, name.toUpperCase(), false, isBonus);
+                executeAddTime(pendingStartTableIndex, minutes, name.toUpperCase(), false, isBonus, isPendingAddMoreTime);
                 closeDurationModal();
             }
         }
 
         function confirmStartOpenTable() {
             var name = document.getElementById('openTableCustName').value.trim();
+            var targetMins = parseInt(document.getElementById('openTableTargetMins').value) || 0;
             if (!name) { alert("Nama pelanggan wajib diisi!"); return; }
 
             if (pendingStartTableIndex !== null) {
-                executeAddTime(pendingStartTableIndex, 0, name.toUpperCase(), true, false);
+                executeAddTime(pendingStartTableIndex, targetMins, name.toUpperCase(), true, false, false);
                 closeOpenTableModal();
             }
         }
 
-        // FUNGSI EKSEKUSI TIMER (RESET BERSIH SAAT SESI BARU)
-        function executeAddTime(index, minutes, customerName, isOpenTable, isSpecialBonus) {
+        // FUNGSI EKSEKUSI TIMER DENGAN AKUMULASI TAMBAH WAKTU & VOICE START (TANPA NAMA)
+        function executeAddTime(index, minutes, customerName, isOpenTable, isSpecialBonus, isAddingMoreTime) {
             sakelarLampu(index + 1, true);
 
             var now = Date.now();
-            var currentTable = tablesData[index];
-            
-            // CEK: Jika meja mati ATAU sudah selesai/expired, WAJIB reset total dari awal
-            var isFreshStart = !currentTable || !currentTable.isRunning || (currentTable.endTime > 0 && currentTable.endTime <= now);
+            var currentTable = tablesData[index] || {};
+            var isFreshStart = !currentTable.isRunning && !isAddingMoreTime;
 
             if (isOpenTable) {
                 tablesData[index].startTime = now;
                 tablesData[index].endTime = 0;
                 tablesData[index].bookedMinutes = 0;
+                tablesData[index].targetAlarmMins = minutes;
                 tablesData[index].isOpenTable = true;
                 tablesData[index].isSpecialBonus = false;
             } else {
                 if (isFreshStart) {
-                    // Main Baru: Mulai dari jam sekarang & durasi murni baru
                     tablesData[index].startTime = now;
                     tablesData[index].endTime = now + (minutes * 60 * 1000);
                     tablesData[index].bookedMinutes = minutes;
                 } else {
-                    // Tambah Waktu (Nambah Jam di Meja Aktif): Lanjutkan dari endTime yang ada
-                    var baseTime = (currentTable.endTime > now) ? currentTable.endTime : now;
+                    var baseTime = (currentTable.endTime && currentTable.endTime > now) ? currentTable.endTime : now;
                     tablesData[index].endTime = baseTime + (minutes * 60 * 1000);
                     tablesData[index].bookedMinutes = (currentTable.bookedMinutes || 0) + minutes;
+                    if (!currentTable.startTime) tablesData[index].startTime = now;
                 }
                 tablesData[index].isOpenTable = false;
                 tablesData[index].isSpecialBonus = isSpecialBonus || false;
@@ -1126,11 +1140,17 @@
 
             tablesData[index].isRunning = true;
             tablesData[index].isPaid = false;
+            tablesData[index].payMethod = "";
             tablesData[index].lightStatus = true;
             tablesData[index].warned = false;
             tablesData[index].expiredWarned = false;
-            tablesData[index].customerName = customerName;
+            tablesData[index].customerName = customerName || currentTable.customerName || "";
             
+            // VOICE START (TANPA NAMA PELANGGAN)
+            var modeTxt = isOpenTable ? "dalam mode Open Table" : ("selama " + (minutes >= 60 ? (minutes/60) + " jam" : minutes + " menit"));
+            var pesanMulai = "Selamat bermain. Meja " + (index + 1) + " telah dimulai " + modeTxt + ".";
+            speakWarning(pesanMulai);
+
             if (db) { try { db.ref('tables').set(tablesData); } catch(e) {} }
             renderTables();
         }
@@ -1145,6 +1165,7 @@
                 card.innerHTML = 
                     '<div class="card-header-row">' +
                         '<div class="table-title">MEJA 0' + (i + 1) + '</div>' +
+                        '<button id="btn-toggle-light-' + i + '" class="btn-header-light off" onclick="toggleLampuTable(' + i + ')">💡 Lampu: OFF</button>' +
                         '<div id="pay-badge-' + i + '" class="pay-status-badge unpaid">🔴 BELUM BAYAR</div>' +
                     '</div>' +
 
@@ -1171,7 +1192,7 @@
                     
                     '<div class="controls" id="controls-normal-' + i + '">' +
                         '<div class="btn-row">' +
-                            '<button class="btn-start" onclick="openDurationModal(' + i + ')">⏱️ Paket</button>' +
+                            '<button class="btn-start" onclick="openDurationModal(' + i + ', false)">⏱️ Paket</button>' +
                             '<button class="btn-open" onclick="openOpenTableModal(' + i + ')">🔓 Open</button>' +
                             '<button class="btn-reduce" onclick="openReduceDurationModal(' + i + ')">✂️ Edit Jam</button>' +
                         '</div>' +
@@ -1184,14 +1205,11 @@
                             '<button class="btn-pay" onclick="openPayModal(' + i + ')">💳 Bayar / Pelunasan</button>' +
                             '<button class="btn-stop" id="btn-reset-' + i + '" onclick="resetTimerOnly(' + i + ')">Reset</button>' +
                         '</div>' +
-                        '<div class="btn-row" style="margin-top:2px;">' +
-                            '<button id="btn-toggle-light-' + i + '" class="btn-toggle-light off" onclick="toggleLampuTable(' + i + ')">💡 Lampu: OFF</button>' +
-                        '</div>' +
                     '</div>' +
 
                     '<div class="controls" id="controls-expired-' + i + '" style="display:none;">' +
                         '<div class="btn-row">' +
-                            '<button class="btn-start" onclick="openDurationModal(' + i + ')">+ Tambah Waktu</button>' +
+                            '<button class="btn-start" onclick="openDurationModal(' + i + ', true)">+ Tambah Waktu</button>' +
                         '</div>' +
                         '<div class="btn-row" style="margin-top:4px;">' +
                             '<button class="btn-pay" style="padding:10px;" onclick="openPayModal(' + i + ')">💳 LANJUT PEMBAYARAN</button>' +
@@ -1205,7 +1223,7 @@
         function updateTimers() {
             var now = Date.now();
             for (var i = 0; i < TOTAL_TABLES; i++) {
-                var table = tablesData[i] || { endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, isOpenTable: false, isSpecialBonus: false, isPaid: false, warned: false, expiredWarned: false, customerName: "", customerNote: "", fnbList: [] };
+                var table = tablesData[i] || { endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, isOpenTable: false, isSpecialBonus: false, isPaid: false, payMethod: "", warned: false, expiredWarned: false, customerName: "", customerNote: "", fnbList: [] };
                 var timerEl = document.getElementById('timer-' + i);
                 var jamMulaiSelesaiEl = document.getElementById('jam-mulai-selesai-' + i);
                 var priceEl = document.getElementById('price-' + i);
@@ -1227,20 +1245,24 @@
 
                 if (custTvEl) { custTvEl.innerText = table.customerName ? table.customerName.toUpperCase() : "-"; }
 
+                // BADGE DINAMIS SESUAI METODE BAYAR
                 if (payBadgeEl) {
                     if (table.isPaid) {
-                        payBadgeEl.innerText = "✅ LUNAS"; payBadgeEl.className = "pay-status-badge paid";
+                        var m = (table.payMethod || "TUNAI").toUpperCase();
+                        payBadgeEl.innerText = "✅ LUNAS " + m; 
+                        payBadgeEl.className = "pay-status-badge paid";
                     } else {
-                        payBadgeEl.innerText = "🔴 BELUM BAYAR"; payBadgeEl.className = "pay-status-badge unpaid";
+                        payBadgeEl.innerText = "🔴 BELUM BAYAR"; 
+                        payBadgeEl.className = "pay-status-badge unpaid";
                     }
                 }
 
                 if (lightBtnEl) {
                     var isLightOn = table.lightStatus !== undefined ? table.lightStatus : table.isRunning;
                     if (isLightOn) {
-                        lightBtnEl.innerText = "💡 Lampu: ON"; lightBtnEl.className = "btn-toggle-light on";
+                        lightBtnEl.innerText = "💡 Lampu: ON"; lightBtnEl.className = "btn-header-light on";
                     } else {
-                        lightBtnEl.innerText = "💡 Lampu: OFF"; lightBtnEl.className = "btn-toggle-light off";
+                        lightBtnEl.innerText = "💡 Lampu: OFF"; lightBtnEl.className = "btn-header-light off";
                     }
                 }
 
@@ -1302,8 +1324,9 @@
                     cardEl.classList.add('opentable');
                     cardEl.classList.remove('active', 'expired', 'warning');
 
+                    var targetTxt = table.targetAlarmMins ? " (Target: " + (table.targetAlarmMins / 60) + " Jam)" : " (Open)";
                     if(jamMulaiSelesaiEl) {
-                        jamMulaiSelesaiEl.innerText = "🕒 Mulai: " + formatJam(table.startTime) + " (Open)";
+                        jamMulaiSelesaiEl.innerText = "🕒 Mulai: " + formatJam(table.startTime) + targetTxt;
                     }
 
                     priceEl.innerText = formatRupiah(grandTotal);
@@ -1312,6 +1335,17 @@
                     var oMinutes = String(Math.floor((elapsedSec % 3600) / 60)).padStart(2, '0');
                     var oSeconds = String(elapsedSec % 60).padStart(2, '0');
                     timerEl.innerText = oHours + ':' + oMinutes + ':' + oSeconds;
+
+                    // ALARM TARGET OPEN TABLE (H-5 MIN)
+                    if (table.targetAlarmMins && table.targetAlarmMins > 0) {
+                        var targetSec = table.targetAlarmMins * 60;
+                        var warningSec = targetSec - 300;
+                        if (elapsedSec >= warningSec && elapsedSec < targetSec && !table.warned) {
+                            table.warned = true;
+                            speakWarning('Perhatian, main open table Meja ' + (i + 1) + ' mendekati ' + (table.targetAlarmMins / 60) + ' jam.');
+                            cardEl.classList.add('warning');
+                        }
+                    }
 
                     if (normalControls && expiredControls) {
                         normalControls.style.display = 'flex'; expiredControls.style.display = 'none';
@@ -1324,10 +1358,13 @@
                         cardEl.classList.add('expired');
                         priceEl.innerText = formatRupiah(grandTotal);
 
+                        // VOICE EXPIRED + TAGIHAN (TANPA NAMA PELANGGAN)
                         if (!table.expiredWarned) {
                             table.expiredWarned = true;
                             sakelarLampu(i + 1, false);
-                            speakWarning('Perhatian, waktu bermain Meja ' + (i + 1) + ' telah habis.');
+                            
+                            var teksTagihan = grandTotal > 0 ? ("Total tagihan " + formatRupiahToVoice(grandTotal) + ".") : "";
+                            speakWarning('Perhatian, waktu bermain Meja ' + (i + 1) + ' telah habis. ' + teksTagihan);
 
                             if (table.isPaid) {
                                 clearTableDataLocal(i);
@@ -1381,7 +1418,6 @@
                 }
             }
         }
-
         function processLogin() {
             var rawUser = document.getElementById('loginUsername').value.trim();
             var rawPass = document.getElementById('loginPassword').value.trim();
@@ -1498,7 +1534,7 @@
         function clearTableDataLocal(index) {
             tablesData[index] = { 
                 endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, 
-                isOpenTable: false, isSpecialBonus: false, isPaid: false, lightStatus: false,
+                isOpenTable: false, isSpecialBonus: false, isPaid: false, payMethod: "", lightStatus: false,
                 warned: false, expiredWarned: false, customerName: "", customerNote: "", fnbList: [] 
             };
         }
@@ -1594,6 +1630,7 @@
 
         function closePayModal() { document.getElementById('payModal').style.display = 'none'; }
 
+        // FUNGSI PROSES LUNAS DENGAN VOICE SUKSES BAYAR
         function confirmPayAndFinish() {
             if (activePayTableIndex === null) return;
             var index = activePayTableIndex;
@@ -1641,12 +1678,17 @@
             }
 
             tablesData[index].isPaid = true;
+            tablesData[index].payMethod = method;
 
             if (!table.isRunning || table.endTime <= nowTs) {
                 clearTableDataLocal(index);
             }
 
             if (db) { try { db.ref('tables').set(tablesData); } catch(e) {} }
+
+            // VOICE PEMBAYARAN BERHASIL
+            var voiceMethod = method === 'Split' ? 'split bill' : method.toLowerCase();
+            speakWarning("Pembayaran " + voiceMethod + " berhasil.");
 
             closePayModal();
             renderTables();
@@ -2022,7 +2064,6 @@
 
         function closeHistoryModal() { document.getElementById('historyModal').style.display = 'none'; }
 
-        // KONFIRMASI PASSWORD OWNER UNTUK HAPUS RIWAYAT
         function deleteHistoryItem(key) {
             var passInput = prompt("🔒 Keamanan Owner: Masukkan Password Owner untuk menghapus transaksi ini:");
             if (passInput === "9999") {
@@ -2120,6 +2161,22 @@
                 if (!currentUserRole) { document.getElementById('loginModal').style.display = 'flex'; }
             }
         }
+
+        // PAKSA AUTO-SYNC MULTI DEVICE
+        function forceRebindFirebase() {
+            if (db) {
+                db.ref('tables').once('value').then(function(snap) {
+                    var data = snap.val();
+                    if (data) { tablesData = data; renderTables(); }
+                });
+            }
+        }
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') { forceRebindFirebase(); }
+        });
+
+        window.addEventListener('focus', function() { forceRebindFirebase(); });
 
         function init() {
             setMode(currentMode);
