@@ -2101,69 +2101,73 @@
         }
 
         function renderHistoryTable() {
-            var filterDate = document.getElementById('historyDateFilter').value;
-            var tbody = document.getElementById('historyTableBody');
-            var cafeTbody = document.getElementById('cafeSummaryTableBody');
-            tbody.innerHTML = '';
-            if (cafeTbody) cafeTbody.innerHTML = '';
+    var filterDate = document.getElementById('historyDateFilter').value;
+    var tbody = document.getElementById('historyTableBody');
+    var cafeTbody = document.getElementById('cafeSummaryTableBody');
+    tbody.innerHTML = '';
+    if (cafeTbody) cafeTbody.innerHTML = '';
 
-            var records = dailyHistoryRaw[filterDate] || {};
-            var totalCount = 0;
-            var totalAmount = 0;
-            var cafeSummaryMap = {};
+    var totalCount = 0;
+    var totalAmount = 0;
+    var cafeSummaryMap = {};
 
-            for (var key in records) {
-                totalCount++;
-                var t = records[key];
-                totalAmount += (t.grandTotal || 0);
+    for (var dateKey in dailyHistoryRaw) {
+        if (filterDate && dateKey !== filterDate) continue;
 
-                var timeStr = new Date(t.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-                var methodBadge = t.payMethod === 'QRIS' ? '📱 QRIS' : (t.payMethod === 'Split' ? '🔀 SPLIT' : '💵 TUNAI');
+        var records = dailyHistoryRaw[dateKey] || {};
 
-                // REKAP PENJUALAN MENU CAFE
-                if (t.fnbList && t.fnbList.length > 0) {
-                    t.fnbList.forEach(function(f) {
-                        var itemName = f.name;
-                        var itemQty = f.qty || 1;
-                        var itemPrice = f.price || 0;
+        for (var key in records) {
+            totalCount++;
+            var t = records[key];
+            totalAmount += (t.grandTotal || 0);
 
-                        if (!cafeSummaryMap[itemName]) {
-                            cafeSummaryMap[itemName] = { qty: 0, total: 0 };
-                        }
-                        cafeSummaryMap[itemName].qty += itemQty;
-                        cafeSummaryMap[itemName].total += itemPrice;
-                    });
-                }
+            var timeStr = new Date(t.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            var dateStr = t.dateStr || dateKey;
+            var methodBadge = t.payMethod === 'QRIS' ? '📱 QRIS' : (t.payMethod === 'Split' ? '🔀 SPLIT' : '💵 TUNAI');
 
-                tbody.innerHTML += '<tr>' +
-                    '<td>' + timeStr + '</td>' +
-                    '<td><b>' + t.tableName + '</b></td>' +
-                    '<td>' + t.customerName + '</td>' +
-                    '<td>' + methodBadge + '</td>' +
-                    '<td><b>' + formatRupiah(t.grandTotal) + '</b></td>' +
-                    '<td><button style="background:#0284c7; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:0.7rem; cursor:pointer;" onclick="openEditMethodModal(\'' + key + '\')">✏️ Edit</button></td>' +
-                '</tr>';
+            if (t.fnbList && t.fnbList.length > 0) {
+                t.fnbList.forEach(function(f) {
+                    var itemName = f.name;
+                    var itemQty = f.qty || 1;
+                    var itemPrice = f.price || 0;
+
+                    if (!cafeSummaryMap[itemName]) {
+                        cafeSummaryMap[itemName] = { qty: 0, total: 0 };
+                    }
+                    cafeSummaryMap[itemName].qty += itemQty;
+                    cafeSummaryMap[itemName].total += itemPrice;
+                });
             }
 
-            document.getElementById('historyTotalCount').innerText = totalCount;
-            document.getElementById('historyTotalAmount').innerText = formatRupiah(totalAmount);
-
-            // RENDER TABEL REKAP MENU CAFE TERJUAL
-            if (cafeTbody) {
-                var hasCafeSales = false;
-                for (var name in cafeSummaryMap) {
-                    hasCafeSales = true;
-                    cafeTbody.innerHTML += '<tr>' +
-                        '<td>☕ <b>' + name + '</b></td>' +
-                        '<td style="text-align:center;">' + cafeSummaryMap[name].qty + ' Pcs</td>' +
-                        '<td style="text-align:right; font-weight:bold; color:var(--price-color);">' + formatRupiah(cafeSummaryMap[name].total) + '</td>' +
-                    '</tr>';
-                }
-                if (!hasCafeSales) {
-                    cafeTbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#94a3b8;">Belum ada pesanan cafe terjual pada tanggal ini.</td></tr>';
-                }
-            }
+            tbody.innerHTML += '<tr>' +
+                '<td>' + dateStr + ' ' + timeStr + '</td>' +
+                '<td><b>' + t.tableName + '</b></td>' +
+                '<td>' + t.customerName + '</td>' +
+                '<td>' + methodBadge + '</td>' +
+                '<td><b>' + formatRupiah(t.grandTotal) + '</b></td>' +
+                '<td><button style="background:#0284c7; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:0.7rem; cursor:pointer;" onclick="openEditMethodModal(\'' + key + '\')">✏️ Edit</button></td>' +
+            '</tr>';
         }
+    }
+
+    document.getElementById('historyTotalCount').innerText = totalCount;
+    document.getElementById('historyTotalAmount').innerText = formatRupiah(totalAmount);
+
+    if (cafeTbody) {
+        var hasCafeSales = false;
+        for (var name in cafeSummaryMap) {
+            hasCafeSales = true;
+            cafeTbody.innerHTML += '<tr>' +
+                '<td>☕ <b>' + name + '</b></td>' +
+                '<td style="text-align:center;">' + cafeSummaryMap[name].qty + ' Pcs</td>' +
+                '<td style="text-align:right; font-weight:bold; color:var(--price-color);">' + formatRupiah(cafeSummaryMap[name].total) + '</td>' +
+            '</tr>';
+        }
+        if (!hasCafeSales) {
+            cafeTbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#94a3b8;">Belum ada pesanan cafe terjual.</td></tr>';
+        }
+    }
+}
 
         function sendWaReport() {
             var filterDate = document.getElementById('historyDateFilter').value || new Date().toISOString().split('T')[0];
