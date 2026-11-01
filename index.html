@@ -2111,42 +2111,61 @@
     var totalAmount = 0;
     var cafeSummaryMap = {};
 
-    for (var dateKey in dailyHistoryRaw) {
-        if (filterDate && dateKey !== filterDate) continue;
+    var localHistory = {};
+    try {
+        localHistory = JSON.parse(localStorage.getItem('r21_history') || '{}');
+    } catch(e){}
 
-        var records = dailyHistoryRaw[dateKey] || {};
+    var combinedHistory = Object.assign({}, localHistory, dailyHistoryRaw);
 
-        for (var key in records) {
-            totalCount++;
-            var t = records[key];
-            totalAmount += (t.grandTotal || 0);
+    function appendRow(t, key, fallbackDate) {
+        totalCount++;
+        totalAmount += (t.grandTotal || 0);
 
-            var timeStr = new Date(t.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-            var dateStr = t.dateStr || dateKey;
-            var methodBadge = t.payMethod === 'QRIS' ? '📱 QRIS' : (t.payMethod === 'Split' ? '🔀 SPLIT' : '💵 TUNAI');
+        var timeStr = t.timestamp ? new Date(t.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : "-";
+        var dateStr = t.dateStr || fallbackDate || "-";
+        var methodBadge = t.payMethod === 'QRIS' ? '📱 QRIS' : (t.payMethod === 'Split' ? '🔀 SPLIT' : '💵 TUNAI');
 
-            if (t.fnbList && t.fnbList.length > 0) {
-                t.fnbList.forEach(function(f) {
-                    var itemName = f.name;
-                    var itemQty = f.qty || 1;
-                    var itemPrice = f.price || 0;
+        if (t.fnbList && t.fnbList.length > 0) {
+            t.fnbList.forEach(function(f) {
+                var itemName = f.name || "Item Cafe";
+                var itemQty = f.qty || 1;
+                var itemPrice = f.price || 0;
 
-                    if (!cafeSummaryMap[itemName]) {
-                        cafeSummaryMap[itemName] = { qty: 0, total: 0 };
-                    }
-                    cafeSummaryMap[itemName].qty += itemQty;
-                    cafeSummaryMap[itemName].total += itemPrice;
-                });
+                if (!cafeSummaryMap[itemName]) {
+                    cafeSummaryMap[itemName] = { qty: 0, total: 0 };
+                }
+                cafeSummaryMap[itemName].qty += itemQty;
+                cafeSummaryMap[itemName].total += itemPrice;
+            });
+        }
+
+        tbody.innerHTML += '<tr>' +
+            '<td>' + dateStr + ' ' + timeStr + '</td>' +
+            '<td><b>' + (t.tableName || 'BILIAR') + '</b></td>' +
+            '<td>' + (t.customerName || 'PELANGGAN') + '</td>' +
+            '<td>' + methodBadge + '</td>' +
+            '<td><b>' + formatRupiah(t.grandTotal) + '</b></td>' +
+            '<td><button style="background:#0284c7; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:0.7rem; cursor:pointer;" onclick="openEditMethodModal(\'' + key + '\')">✏️ Edit</button></td>' +
+        '</tr>';
+    }
+
+    for (var dateKey in combinedHistory) {
+        var item = combinedHistory[dateKey];
+        if (!item) continue;
+
+        if (typeof item === 'object' && !item.grandTotal && !item.timestamp) {
+            if (!filterDate || dateKey === filterDate) {
+                for (var trxKey in item) {
+                    appendRow(item[trxKey], trxKey, dateKey);
+                }
             }
-
-            tbody.innerHTML += '<tr>' +
-                '<td>' + dateStr + ' ' + timeStr + '</td>' +
-                '<td><b>' + t.tableName + '</b></td>' +
-                '<td>' + t.customerName + '</td>' +
-                '<td>' + methodBadge + '</td>' +
-                '<td><b>' + formatRupiah(t.grandTotal) + '</b></td>' +
-                '<td><button style="background:#0284c7; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:0.7rem; cursor:pointer;" onclick="openEditMethodModal(\'' + key + '\')">✏️ Edit</button></td>' +
-            '</tr>';
+        } 
+        else if (typeof item === 'object') {
+            var trxDate = item.dateStr || (item.timestamp ? new Date(item.timestamp).toISOString().split('T')[0] : '');
+            if (!filterDate || trxDate === filterDate) {
+                appendRow(item, dateKey, trxDate);
+            }
         }
     }
 
