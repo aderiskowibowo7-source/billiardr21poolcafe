@@ -2101,10 +2101,10 @@
         }
 
         function renderHistoryTable() {
-    var filterDate = document.getElementById('historyDateFilter').value;
+    var filterDate = document.getElementById('historyDateFilter') ? document.getElementById('historyDateFilter').value : '';
     var tbody = document.getElementById('historyTableBody');
     var cafeTbody = document.getElementById('cafeSummaryTableBody');
-    tbody.innerHTML = '';
+    if (tbody) tbody.innerHTML = '';
     if (cafeTbody) cafeTbody.innerHTML = '';
 
     var totalCount = 0;
@@ -2140,14 +2140,16 @@
             });
         }
 
-        tbody.innerHTML += '<tr>' +
-            '<td>' + dateStr + ' ' + timeStr + '</td>' +
-            '<td><b>' + (t.tableName || 'BILIAR') + '</b></td>' +
-            '<td>' + (t.customerName || 'PELANGGAN') + '</td>' +
-            '<td>' + methodBadge + '</td>' +
-            '<td><b>' + formatRupiah(t.grandTotal) + '</b></td>' +
-            '<td><button style="background:#0284c7; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:0.7rem; cursor:pointer;" onclick="openEditMethodModal(\'' + key + '\')">✏️ Edit</button></td>' +
-        '</tr>';
+        if (tbody) {
+            tbody.innerHTML += '<tr>' +
+                '<td>' + dateStr + ' ' + timeStr + '</td>' +
+                '<td><b>' + (t.tableName || 'BILIAR') + '</b></td>' +
+                '<td>' + (t.customerName || 'PELANGGAN') + '</td>' +
+                '<td>' + methodBadge + '</td>' +
+                '<td><b>' + formatRupiah(t.grandTotal) + '</b></td>' +
+                '<td><button style="background:#0284c7; color:white; border:none; padding:3px 6px; border-radius:4px; font-size:0.7rem; cursor:pointer;" onclick="openEditMethodModal(\'' + key + '\')">✏️ Edit</button></td>' +
+            '</tr>';
+        }
     }
 
     for (var dateKey in combinedHistory) {
@@ -2160,8 +2162,7 @@
                     appendRow(item[trxKey], trxKey, dateKey);
                 }
             }
-        } 
-        else if (typeof item === 'object') {
+        } else if (typeof item === 'object') {
             var trxDate = item.dateStr || (item.timestamp ? new Date(item.timestamp).toISOString().split('T')[0] : '');
             if (!filterDate || trxDate === filterDate) {
                 appendRow(item, dateKey, trxDate);
@@ -2169,8 +2170,10 @@
         }
     }
 
-    document.getElementById('historyTotalCount').innerText = totalCount;
-    document.getElementById('historyTotalAmount').innerText = formatRupiah(totalAmount);
+    var countEl = document.getElementById('historyTotalCount');
+    var amountEl = document.getElementById('historyTotalAmount');
+    if (countEl) countEl.innerText = totalCount;
+    if (amountEl) amountEl.innerText = formatRupiah(totalAmount);
 
     if (cafeTbody) {
         var hasCafeSales = false;
@@ -2187,7 +2190,6 @@
         }
     }
 }
-
         function sendWaReport() {
             var filterDate = document.getElementById('historyDateFilter').value || new Date().toISOString().split('T')[0];
             var records = dailyHistoryRaw[filterDate] || {};
