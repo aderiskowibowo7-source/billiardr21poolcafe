@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kasir & Timer Biliar R21 - FULL ONLINE</title>
+    <title>Kasir & Timer Biliar R21 - FULL ONLINE & AUTO OFFLINE</title>
     
     <script>
         window.firebaseAvailable = false;
     </script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js" onload="window.firebaseAvailable=true" onerror="alert('Koneksi Internet Putus! Firebase tidak dapat diakses.')"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js" onload="window.firebaseAvailable=true" onerror="console.log('Mode Offline Aktif - Firebase tidak terjangkau')"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js" onerror="console.log('Database Offline')"></script>
 
     <style>
@@ -88,8 +88,10 @@
             background: #334155;
             color: #94a3b8;
             font-weight: bold;
+            transition: all 0.3s ease;
         }
-        .status-badge.online { background: #065f46; color: #34d399; }
+        .status-badge.online { background: #065f46; color: #34d399; border: 1px solid #10b981; }
+        .status-badge.offline { background: #78350f; color: #fde047; border: 1px solid #f59e0b; }
         .relay-status-badge {
             font-size: 0.75rem;
             padding: 4px 10px;
@@ -767,8 +769,10 @@
             <p>-- <span id="printFooterBizName">R21 Pool & Cafe</span> --</p>
         </div>
     </div>
-    <script>
+            <script>
         var db = null;
+        var isCloudConnected = false;
+
         if (window.firebaseAvailable && typeof firebase !== 'undefined') {
             try {
                 var firebaseConfig = {
@@ -779,29 +783,182 @@
             } catch(e) { console.log("Firebase Connection Failed", e); }
         }
 
+        // --- SISTEM PENYIMPANAN LOKAL & SINKRONISASI OFFLINE ---
+        var LOCAL_KEYS = {
+            tables: 'r21_cache_tables',
+            history: 'r21_cache_history',
+            inventory: 'r21_cache_inventory',
+            staffs: 'r21_cache_staffs',
+            bizProfile: 'r21_cache_bizProfile',
+            relayIp: 'r21_cache_relayIp',
+            pendingHistory: 'r21_offline_pending_history',
+            dirtyTables: 'r21_offline_dirty_tables',
+            dirtyInventory: 'r21_offline_dirty_inventory'
+        };
+
+        function saveToLocalCache(key, data) {
+            try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {}
+        }
+
+        function loadFromLocalCache(key, fallback) {
+            try {
+                var raw = localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : fallback;
+            } catch(e) { return fallback; }
+        }
+
+        function updateConnectionBadgeUI(online) {
+            isCloudConnected = online;
+            var badge = document.getElementById('statusBadge');
+            if (!badge) return;
+            var pendingList = loadFromLocalCache(LOCAL_KEYS.pendingHistory, []);
+            if (online) {
+                badge.className = "status-badge online";
+                badge.innerText = pendingList.length > 0 ? "🔄 Menyinkronkan (" + pendingList.length + ")..." : "🌐 Mode Online (Cloud)";
+            } else {
+                badge.className = "status-badge offline";
+                badge.innerText = "⚠️ Mode Offline (Tersimpan Lokal" + (pendingList.length > 0 ? " • " + pendingList.length + " Antrean" : "") + ")";
+            }
+        }
+
+        function syncTablesData() {
+            saveToLocalCache(LOCAL_KEYS.tables, tablesData);
+            if (db && isCloudConnected) {
+                try {
+                    db.ref('tables').set(tablesData).then(function() {
+                        localStorage.removeItem(LOCAL_KEYS.dirtyTables);
+                    }).catch(function() {
+                        localStorage.setItem(LOCAL_KEYS.dirtyTables, '1');
+                    });
+                } catch(e) {
+                    localStorage.setItem(LOCAL_KEYS.dirtyTables, '1');
+                }
+            } else {
+                localStorage.setItem(LOCAL_KEYS.dirtyTables, '1');
+            }
+        }
+
+        function syncInventoryStock(itemName, newStockVal) {
+            saveToLocalCache(LOCAL_KEYS.inventory, inventoryData);
+            if (db && isCloudConnected) {
+                try {
+                    db.ref('inventory/' + itemName + '/stock').set(newStockVal).catch(function() {
+                        localStorage.setItem(LOCAL_KEYS.dirtyInventory, '1');
+                    });
+                } catch(e) {
+                    localStorage.setItem(LOCAL_KEYS.dirtyInventory, '1');
+                }
+            } else {
+                localStorage.setItem(LOCAL_KEYS.dirtyInventory, '1');
+            }
+        }
+
+        function pushHistoryData(historyItem) {
+            var tempKey = 'local_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+            dailyHistoryRaw[tempKey] = historyItem;
+            saveToLocalCache(LOCAL_KEYS.history, dailyHistoryRaw);
+
+            if (db && isCloudConnected) {
+                try {
+                    db.ref('history').push(historyItem).then(function() {
+                        delete dailyHistoryRaw[tempKey];
+                        saveToLocalCache(LOCAL_KEYS.history, dailyHistoryRaw);
+                    }).catch(function() {
+                        queueOfflineHistory(tempKey, historyItem);
+                    });
+                } catch(e) {
+                    queueOfflineHistory(tempKey, historyItem);
+                }
+            } else {
+                queueOfflineHistory(tempKey, historyItem);
+            }
+        }
+
+        function queueOfflineHistory(tempKey, historyItem) {
+            var queue = loadFromLocalCache(LOCAL_KEYS.pendingHistory, []);
+            queue.push({ tempKey: tempKey, data: historyItem });
+            saveToLocalCache(LOCAL_KEYS.pendingHistory, queue);
+            updateConnectionBadgeUI(false);
+        }
+
+        function flushOfflineQueue() {
+            if (!db || !isCloudConnected) return;
+
+            if (localStorage.getItem(LOCAL_KEYS.dirtyTables) === '1') {
+                db.ref('tables').set(tablesData).then(function() {
+                    localStorage.removeItem(LOCAL_KEYS.dirtyTables);
+                }).catch(function() {});
+            }
+
+            if (localStorage.getItem(LOCAL_KEYS.dirtyInventory) === '1') {
+                db.ref('inventory').set(inventoryData).then(function() {
+                    localStorage.removeItem(LOCAL_KEYS.dirtyInventory);
+                }).catch(function() {});
+            }
+
+            var queue = loadFromLocalCache(LOCAL_KEYS.pendingHistory, []);
+            if (queue.length > 0) {
+                var remaining = [];
+                var processed = 0;
+                queue.forEach(function(entry) {
+                    db.ref('history').push(entry.data).then(function() {
+                        if (dailyHistoryRaw[entry.tempKey]) {
+                            delete dailyHistoryRaw[entry.tempKey];
+                            saveToLocalCache(LOCAL_KEYS.history, dailyHistoryRaw);
+                        }
+                        processed++;
+                        if (processed === queue.length) {
+                            saveToLocalCache(LOCAL_KEYS.pendingHistory, remaining);
+                            updateConnectionBadgeUI(true);
+                        }
+                    }).catch(function() {
+                        remaining.push(entry);
+                        processed++;
+                        if (processed === queue.length) {
+                            saveToLocalCache(LOCAL_KEYS.pendingHistory, remaining);
+                            updateConnectionBadgeUI(isCloudConnected);
+                        }
+                    });
+                });
+            } else {
+                updateConnectionBadgeUI(true);
+            }
+        }
+
+        window.addEventListener('online', function() {
+            updateConnectionBadgeUI(true);
+            flushOfflineQueue();
+        });
+
+        window.addEventListener('offline', function() {
+            updateConnectionBadgeUI(false);
+        });
+        // --------------------------------------------------------
+
         var TOTAL_TABLES = 6;
 
-        var bizProfile = {
+        var bizProfile = loadFromLocalCache(LOCAL_KEYS.bizProfile, {
             name: "R21 POOL & CAFE",
             address: "Jl. Biliar No. 21",
             phone: "0811-4989-333"
-        };
+        });
 
-        var currentIpRelay = '192.168.1.20';
+        var currentIpRelay = localStorage.getItem(LOCAL_KEYS.relayIp) || '192.168.1.20';
         var currentUserRole = localStorage.getItem('r21_user_role') || null;
         var currentUsername = localStorage.getItem('r21_username') || '';
-        var staffAccounts = {};
-        var inventoryData = {};
+        var staffAccounts = loadFromLocalCache(LOCAL_KEYS.staffs, {});
+        var inventoryData = loadFromLocalCache(LOCAL_KEYS.inventory, {});
 
-        var tablesData = Array(TOTAL_TABLES).fill(null).map(function() {
+        var defaultTables = Array(TOTAL_TABLES).fill(null).map(function() {
             return { 
                 endTime: 0, bookedMinutes: 0, startTime: 0, isRunning: false, 
                 isOpenTable: false, isSpecialBonus: false, isPaid: false, payMethod: "",
                 warned: false, expiredWarned: false, customerName: "", customerNote: "", fnbList: [] 
             };
         });
+        var tablesData = loadFromLocalCache(LOCAL_KEYS.tables, defaultTables);
 
-        var dailyHistoryRaw = {};
+        var dailyHistoryRaw = loadFromLocalCache(LOCAL_KEYS.history, {});
         var activeFnbTableIndex = null;
         var activePayTableIndex = null;
         var activeNoteTableIndex = null;
@@ -829,7 +986,6 @@
         }
         setInterval(updateRealtimeClock, 1000);
 
-        // LOGIKA TARIF DENGAN TOLERANSI 5 MENIT PADA OPEN TABLE
         function calculateBillingLogic(totalMinutes, isSpecialBonus, isOpenTable, elapsedTimeSec, startTimeTs) {
             if (isSpecialBonus) {
                 return { paidHours: 0, bonusHours: 0, tablePrice: 0 };
@@ -838,10 +994,9 @@
             var calcMinutes = totalMinutes;
             if (isOpenTable) {
                 var rawMins = Math.floor((elapsedTimeSec || 0) / 60);
-                // Kebijakan Toleransi 5 Menit Pertama di setiap blok baru
                 var effectiveMins = rawMins > 5 ? (rawMins - 5) : 0;
                 calcMinutes = Math.ceil(effectiveMins / 30) * 30;
-                if (calcMinutes === 0 && rawMins > 0) calcMinutes = 30; // Minimal 1 blok
+                if (calcMinutes === 0 && rawMins > 0) calcMinutes = 30;
             }
 
             if (calcMinutes <= 0) return { paidHours: 0, bonusHours: 0, tablePrice: 0 };
@@ -882,7 +1037,7 @@
             var imgPing = new Image();
             imgPing.src = targetUrl + "?t=" + new Date().getTime();
 
-            if (db) {
+            if (db && isCloudConnected) {
                 var secret = "TGOVnUocfqgdoULy9ZxgGx0Y4gammmu9ttr45HI4";
                 var isPowered = status ? true : false;
                 var urlCloud = "https://billing0015-32812-default-rtdb.firebaseio.com/vTfGwLoX/relays/billing" + channelRelay + ".json?auth=" + secret;
@@ -901,7 +1056,7 @@
             var nextState = !currentLightState;
             tablesData[index].lightStatus = nextState;
             sakelarLampu(index + 1, nextState);
-            if (db) db.ref('tables').set(tablesData);
+            syncTablesData();
             renderTables();
         }
 
@@ -912,7 +1067,7 @@
                 pesan.lang = 'id-ID'; pesan.rate = 0.9;
                 window.speechSynthesis.speak(pesan);
             }
-            if (db) db.ref('audioTrigger').set(Date.now());
+            if (db && isCloudConnected) db.ref('audioTrigger').set(Date.now());
         }
 
         function speakWarning(text) {
@@ -949,14 +1104,20 @@
             if (!n) { alert("Nama usaha wajib diisi!"); return; }
             
             var updatedProfile = { name: n, address: a, phone: p };
-            if (db) db.ref('bizProfile').set(updatedProfile);
+            bizProfile = updatedProfile;
+            saveToLocalCache(LOCAL_KEYS.bizProfile, bizProfile);
+            applyBizProfileUI();
+            if (db && isCloudConnected) db.ref('bizProfile').set(updatedProfile);
             alert("✅ Profil usaha berhasil diperbarui!");
         }
 
         function saveRelayIp() {
             var ip = document.getElementById('cfgRelayIp').value.trim();
             if (ip) {
-                if (db) db.ref('currentIpRelay').set(ip);
+                currentIpRelay = ip;
+                localStorage.setItem(LOCAL_KEYS.relayIp, ip);
+                updateRelayBadge();
+                if (db && isCloudConnected) db.ref('currentIpRelay').set(ip);
                 alert("✅ IP Relay berhasil diperbarui: " + ip);
             }
         }
@@ -1015,7 +1176,7 @@
             t.bookedMinutes -= reduceMins;
             t.endTime -= (reduceMins * 60 * 1000);
             
-            if (db) db.ref('tables').set(tablesData);
+            syncTablesData();
             closeReduceModal();
             renderTables();
             alert("✅ Durasi Meja " + (index + 1) + " berhasil dipotong " + reduceMins + " menit.");
@@ -1036,7 +1197,7 @@
         function confirmSaveQuickNote() {
             if (activeNoteTableIndex === null) return;
             tablesData[activeNoteTableIndex].customerNote = document.getElementById('quickNoteInput').value.trim();
-            if (db) db.ref('tables').set(tablesData);
+            syncTablesData();
             closeQuickNoteModal();
             renderTables();
         }
@@ -1108,7 +1269,6 @@
             }
         }
 
-        // FUNGSI EKSEKUSI TIMER DENGAN AKUMULASI TAMBAH WAKTU & VOICE START (TANPA NAMA)
         function executeAddTime(index, minutes, customerName, isOpenTable, isSpecialBonus, isAddingMoreTime) {
             sakelarLampu(index + 1, true);
 
@@ -1146,12 +1306,11 @@
             tablesData[index].expiredWarned = false;
             tablesData[index].customerName = customerName || currentTable.customerName || "";
             
-            // VOICE START (TANPA NAMA PELANGGAN)
             var modeTxt = isOpenTable ? "dalam mode Open Table" : ("selama " + (minutes >= 60 ? (minutes/60) + " jam" : minutes + " menit"));
             var pesanMulai = "Selamat bermain. Meja " + (index + 1) + " telah dimulai " + modeTxt + ".";
             speakWarning(pesanMulai);
 
-            if (db) { try { db.ref('tables').set(tablesData); } catch(e) {} }
+            syncTablesData();
             renderTables();
         }
         function renderTables() {
@@ -1245,7 +1404,6 @@
 
                 if (custTvEl) { custTvEl.innerText = table.customerName ? table.customerName.toUpperCase() : "-"; }
 
-                // BADGE DINAMIS SESUAI METODE BAYAR
                 if (payBadgeEl) {
                     if (table.isPaid) {
                         var m = (table.payMethod || "TUNAI").toUpperCase();
@@ -1336,12 +1494,12 @@
                     var oSeconds = String(elapsedSec % 60).padStart(2, '0');
                     timerEl.innerText = oHours + ':' + oMinutes + ':' + oSeconds;
 
-                    // ALARM TARGET OPEN TABLE (H-5 MIN)
                     if (table.targetAlarmMins && table.targetAlarmMins > 0) {
                         var targetSec = table.targetAlarmMins * 60;
                         var warningSec = targetSec - 300;
                         if (elapsedSec >= warningSec && elapsedSec < targetSec && !table.warned) {
                             table.warned = true;
+                            syncTablesData();
                             speakWarning('Perhatian, main open table Meja ' + (i + 1) + ' mendekati ' + (table.targetAlarmMins / 60) + ' jam.');
                             cardEl.classList.add('warning');
                         }
@@ -1358,7 +1516,6 @@
                         cardEl.classList.add('expired');
                         priceEl.innerText = formatRupiah(grandTotal);
 
-                        // VOICE EXPIRED + TAGIHAN (TANPA NAMA PELANGGAN)
                         if (!table.expiredWarned) {
                             table.expiredWarned = true;
                             sakelarLampu(i + 1, false);
@@ -1368,8 +1525,8 @@
 
                             if (table.isPaid) {
                                 clearTableDataLocal(i);
-                                if (db) db.ref('tables').set(tablesData);
                             }
+                            syncTablesData();
                         }
 
                         if (normalControls && expiredControls) {
@@ -1406,6 +1563,7 @@
 
                         if (totalSeconds <= 300 && !table.warned) {
                             table.warned = true;
+                            syncTablesData();
                             speakWarning('Perhatian, waktu bermain Meja ' + (i + 1) + ' tersisa lima menit lagi.');
                             cardEl.classList.add('warning');
                         }
@@ -1418,6 +1576,7 @@
                 }
             }
         }
+
         function processLogin() {
             var rawUser = document.getElementById('loginUsername').value.trim();
             var rawPass = document.getElementById('loginPassword').value.trim();
@@ -1525,7 +1684,7 @@
             tablesData[targetIndex] = JSON.parse(JSON.stringify(tablesData[activeMoveSourceIndex]));
             clearTableDataLocal(activeMoveSourceIndex);
 
-            if (db) db.ref('tables').set(tablesData);
+            syncTablesData();
             closeMoveTableModal();
             renderTables();
             alert("Berhasil pindah ke Meja " + (targetIndex + 1) + "!");
@@ -1548,7 +1707,7 @@
             if (confirm(pesan)) {
                 sakelarLampu(index + 1, false);
                 clearTableDataLocal(index);
-                if (db) db.ref('tables').set(tablesData);
+                syncTablesData();
                 renderTables();
             }
         }
@@ -1630,7 +1789,6 @@
 
         function closePayModal() { document.getElementById('payModal').style.display = 'none'; }
 
-        // FUNGSI PROSES LUNAS DENGAN VOICE SUKSES BAYAR
         function confirmPayAndFinish() {
             if (activePayTableIndex === null) return;
             var index = activePayTableIndex;
@@ -1674,7 +1832,7 @@
             };
 
             if (!table.isSpecialBonus) {
-                if (db) { try { db.ref('history').push(historyItem); } catch(e) {} }
+                pushHistoryData(historyItem);
             }
 
             tablesData[index].isPaid = true;
@@ -1684,22 +1842,21 @@
                 clearTableDataLocal(index);
             }
 
-            if (db) { try { db.ref('tables').set(tablesData); } catch(e) {} }
+            syncTablesData();
 
-            // VOICE PEMBAYARAN BERHASIL
             var voiceMethod = method === 'Split' ? 'split bill' : method.toLowerCase();
             speakWarning("Pembayaran " + voiceMethod + " berhasil.");
 
             closePayModal();
             renderTables();
             
+            var offlineTag = isCloudConnected ? "" : " (Tersimpan Lokal - Offline)";
             if (table.isSpecialBonus) {
                 alert("⭐ Transaksi Selesai (Bonus Khusus - Tidak Dicatat di Omset Laporan)!");
             } else {
-                alert("✅ Pembayaran Berhasil & Status Meja " + (index + 1) + " Set LUNAS!");
+                alert("✅ Pembayaran Berhasil & Status Meja " + (index + 1) + " Set LUNAS!" + offlineTag);
             }
         }
-
         function showPreviewTrx(key) {
             var item = dailyHistoryRaw[key];
             if (!item) return;
@@ -1743,7 +1900,16 @@
             var stock = parseInt(document.getElementById('invItemStock').value) || 0;
             if (!name || price <= 0) { alert("Isi nama dan harga!"); return; }
 
-            if (db) db.ref('inventory/' + name).set({ price: price, stock: stock });
+            inventoryData[name] = { price: price, stock: stock };
+            saveToLocalCache(LOCAL_KEYS.inventory, inventoryData);
+            renderInventoryList();
+            populateStockDropdowns();
+
+            if (db && isCloudConnected) {
+                db.ref('inventory/' + name).set({ price: price, stock: stock });
+            } else {
+                localStorage.setItem(LOCAL_KEYS.dirtyInventory, '1');
+            }
             
             alert("Barang '" + name + "' tersimpan!");
             document.getElementById('invItemName').value = '';
@@ -1769,7 +1935,15 @@
 
         function deleteInventoryItem(key) {
             if (confirm("Hapus '" + key + "'?")) { 
-                if (db) db.ref('inventory/' + key).remove();
+                delete inventoryData[key];
+                saveToLocalCache(LOCAL_KEYS.inventory, inventoryData);
+                renderInventoryList();
+                populateStockDropdowns();
+                if (db && isCloudConnected) {
+                    db.ref('inventory/' + key).remove();
+                } else {
+                    localStorage.setItem(LOCAL_KEYS.dirtyInventory, '1');
+                }
             }
         }
 
@@ -1849,14 +2023,15 @@
                 if (inventoryData[i.name]) {
                     var newStock = (inventoryData[i.name].stock || 0) - i.qty;
                     inventoryData[i.name].stock = newStock < 0 ? 0 : newStock;
-                    if (db) db.ref('inventory/' + i.name + '/stock').set(inventoryData[i.name].stock);
+                    syncInventoryStock(i.name, inventoryData[i.name].stock);
                 }
             });
 
-            if (db) { try { db.ref('history').push(historyItem); } catch(e) {} }
+            pushHistoryData(historyItem);
 
             closePosCafeModal();
-            alert("✅ Transaksi Cafe Berhasil Disimpan!");
+            var offlineTag = isCloudConnected ? "" : " (Tersimpan Lokal - Offline)";
+            alert("✅ Transaksi Cafe Berhasil Disimpan!" + offlineTag);
         }
 
         function openFnbModal(index) {
@@ -1878,7 +2053,7 @@
                 var currentStock = inventoryData[name].stock || 0;
                 if (currentStock > 0) { 
                     inventoryData[name].stock = currentStock - 1;
-                    if (db) db.ref('inventory/' + name + '/stock').set(inventoryData[name].stock);
+                    syncInventoryStock(name, inventoryData[name].stock);
                 }
             }
 
@@ -1905,7 +2080,7 @@
         function saveFnbModal() {
             if (activeFnbTableIndex !== null) { 
                 tablesData[activeFnbTableIndex].fnbList = tempFnbList; 
-                if (db) db.ref('tables').set(tablesData); 
+                syncTablesData();
                 renderTables();
             }
             closeFnbModal();
@@ -1921,14 +2096,20 @@
             if (!u || !p) { alert("Isi Username dan Password!"); return; }
             if (u.toLowerCase() === 'owner') { alert("Username 'owner' dilarang!"); return; }
 
-            if (db) db.ref('staffs/' + u).set({ password: p, role: 'kasir' });
+            staffAccounts[u] = { password: p, role: 'kasir' };
+            saveToLocalCache(LOCAL_KEYS.staffs, staffAccounts);
+            renderStaffList();
+            if (db && isCloudConnected) db.ref('staffs/' + u).set({ password: p, role: 'kasir' });
 
             alert("Akun '" + u + "' dibuat!"); uInput.value = ''; pInput.value = '';
         }
 
         function deleteStaffAccount(u) {
             if (confirm("Hapus akun '" + u + "'?")) { 
-                if (db) db.ref('staffs/' + u).remove();
+                delete staffAccounts[u];
+                saveToLocalCache(LOCAL_KEYS.staffs, staffAccounts);
+                renderStaffList();
+                if (db && isCloudConnected) db.ref('staffs/' + u).remove();
             }
         }
 
@@ -2067,7 +2248,12 @@
         function deleteHistoryItem(key) {
             var passInput = prompt("🔒 Keamanan Owner: Masukkan Password Owner untuk menghapus transaksi ini:");
             if (passInput === "9999") {
-                if (db) db.ref('history/' + key).remove();
+                delete dailyHistoryRaw[key];
+                saveToLocalCache(LOCAL_KEYS.history, dailyHistoryRaw);
+                renderHistoryTable();
+                if (db && isCloudConnected && !key.startsWith('local_')) {
+                    db.ref('history/' + key).remove();
+                }
                 alert("✅ Transaksi berhasil dihapus.");
             } else if (passInput !== null) {
                 alert("❌ Password Owner salah! Penghapusan dibatalkan.");
@@ -2162,12 +2348,19 @@
             }
         }
 
-        // PAKSA AUTO-SYNC MULTI DEVICE
         function forceRebindFirebase() {
-            if (db) {
+            if (db && isCloudConnected) {
+                if (localStorage.getItem(LOCAL_KEYS.dirtyTables) === '1') {
+                    flushOfflineQueue();
+                    return;
+                }
                 db.ref('tables').once('value').then(function(snap) {
                     var data = snap.val();
-                    if (data) { tablesData = data; renderTables(); }
+                    if (data) { 
+                        tablesData = data; 
+                        saveToLocalCache(LOCAL_KEYS.tables, tablesData);
+                        renderTables(); 
+                    }
                 });
             }
         }
@@ -2180,6 +2373,8 @@
 
         function init() {
             setMode(currentMode);
+            applyBizProfileUI();
+            updateRelayBadge();
 
             if (currentUserRole && currentMode !== 'tv') {
                 document.getElementById('loginModal').style.display = 'none';
@@ -2192,32 +2387,64 @@
             setInterval(updateTimers, 1000);
 
             if (db) {
+                db.ref('.info/connected').on('value', function(snap) {
+                    var connected = snap.val() === true;
+                    updateConnectionBadgeUI(connected);
+                    if (connected) {
+                        flushOfflineQueue();
+                    }
+                });
+
                 db.ref('bizProfile').on('value', function(snap) {
-                    if (snap.val()) { bizProfile = snap.val(); applyBizProfileUI(); }
+                    if (snap.val()) { 
+                        bizProfile = snap.val(); 
+                        saveToLocalCache(LOCAL_KEYS.bizProfile, bizProfile);
+                        applyBizProfileUI(); 
+                    }
                 });
 
                 db.ref('currentIpRelay').on('value', function(snap) {
-                    if (snap.val()) { currentIpRelay = snap.val(); updateRelayBadge(); }
+                    if (snap.val()) { 
+                        currentIpRelay = snap.val(); 
+                        localStorage.setItem(LOCAL_KEYS.relayIp, currentIpRelay);
+                        updateRelayBadge(); 
+                    }
                 });
 
                 db.ref('staffs').on('value', function(snap) {
                     staffAccounts = snap.val() || {};
+                    saveToLocalCache(LOCAL_KEYS.staffs, staffAccounts);
                     renderStaffList();
                 });
 
                 db.ref('inventory').on('value', function(snap) {
-                    inventoryData = snap.val() || {};
-                    renderInventoryList();
-                    populateStockDropdowns();
+                    if (localStorage.getItem(LOCAL_KEYS.dirtyInventory) !== '1') {
+                        inventoryData = snap.val() || {};
+                        saveToLocalCache(LOCAL_KEYS.inventory, inventoryData);
+                        renderInventoryList();
+                        populateStockDropdowns();
+                    }
                 });
 
                 db.ref('tables').on('value', function(snap) {
-                    var data = snap.val();
-                    if (data) { tablesData = data; updateTimers(); }
+                    if (localStorage.getItem(LOCAL_KEYS.dirtyTables) !== '1') {
+                        var data = snap.val();
+                        if (data) { 
+                            tablesData = data; 
+                            saveToLocalCache(LOCAL_KEYS.tables, tablesData);
+                            updateTimers(); 
+                        }
+                    }
                 });
 
                 db.ref('history').on('value', function(snap) {
-                    dailyHistoryRaw = snap.val() || {};
+                    var remoteHist = snap.val() || {};
+                    var pending = loadFromLocalCache(LOCAL_KEYS.pendingHistory, []);
+                    pending.forEach(function(p) {
+                        remoteHist[p.tempKey] = p.data;
+                    });
+                    dailyHistoryRaw = remoteHist;
+                    saveToLocalCache(LOCAL_KEYS.history, dailyHistoryRaw);
                     renderHistoryTable();
                 });
 
@@ -2233,6 +2460,8 @@
                         }
                     }
                 });
+            } else {
+                updateConnectionBadgeUI(false);
             }
         }
 
